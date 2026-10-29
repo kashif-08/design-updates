@@ -40,6 +40,8 @@ export interface CollectOptions {
   noSearch?: boolean;
   /** Read sources and page details, save them to .cache, and stop: no model, nothing written to data/. */
   gatherOnly?: boolean;
+  /** Reuse the sources saved by an earlier --gather-only run instead of reading the network. */
+  fromCache?: boolean;
 }
 
 export interface Report {
@@ -104,7 +106,11 @@ async function gather(opts: CollectOptions, seen: Seen): Promise<Snapshot> {
     : !llm
       ? 'no model configured'
       : !llm.canSearch
-        ? 'manual mode has no web search'
+        ? llm.mode === 'company'
+          ? 'the company plan has no working web search'
+          : llm.mode === 'gemini'
+            ? 'Google Search is not free on current Gemini models'
+            : 'manual mode has no web search'
         : cfg.models.searchesPerGroup <= 0
           ? 'searches_per_group is 0'
           : null;
@@ -186,7 +192,8 @@ export async function collect(opts: CollectOptions): Promise<Report> {
   // Manual mode answers a saved question, so it reuses the sources saved for that day instead of reading
   // the network again (feeds change by the hour, and the question must stay the same).
   const snapPath = join(paths.cache, `candidates-${date}.json`);
-  const offline = llm?.mode === 'manual' && !opts.gatherOnly && existsSync(snapPath);
+  if (opts.fromCache && !existsSync(snapPath)) throw new Error(`No saved sources for ${date} in ${paths.cache}. Run with --gather-only first.`);
+  const offline = !opts.gatherOnly && existsSync(snapPath) && (opts.fromCache || llm?.mode === 'manual');
   let snap: Snapshot;
   if (offline) {
     snap = JSON.parse(readFileSync(snapPath, 'utf8')) as Snapshot;
@@ -206,7 +213,7 @@ export async function collect(opts: CollectOptions): Promise<Report> {
 
   const report: Report = {
     date,
-    mode: opts.dryRun ? 'dry run' : opts.gatherOnly ? 'gather only' : (llm?.mode ?? 'none'),
+    mode: opts.dryRun ? 'dry run' : opts.gatherOnly ? 'gather only' : `${llm?.mode ?? 'none'}${offline ? ', saved sources' : ''}`,
     feeds: snap.feeds,
     search: snap.search,
     candidates: snap.total,

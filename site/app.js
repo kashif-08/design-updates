@@ -474,7 +474,7 @@ function renderTop(radar, meta, latest) {
   const updated = radar.updated_at && radar.days.length ? new Date(radar.updated_at) : null;
   $('#footer').innerHTML = `<span>Radar · a morning paper for one</span><span>${
     updated ? `Last run ${fmt(updated, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ` : ''
-  }${meta.feeds ?? 'Several'} feeds${meta.search ? ' and web search' : ''}, filtered by Claude</span>`;
+  }${meta.feeds ?? 'Several'} feeds${meta.search ? ' and web search' : ''}, filtered by ${esc(meta.ai || 'Claude')}</span>`;
 }
 
 /* ---------- motion ---------- */

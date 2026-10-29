@@ -9,6 +9,21 @@ timezone: Asia/Shanghai
 # Only items published within this many hours of the run are kept.
 window_hours: 48
 
+# Where the model calls go:
+#   company    Trip.com's Coding Plan, signed in on this Mac with `ada cc`. Only works on the laptop. No web search.
+#   gemini     Google's Gemini API, free tier (GEMINI_API_KEY). Google blocks it from mainland China, so it only
+#              works on GitHub. No web search: Google Search is not free on current Gemini models.
+#   anthropic  your own Anthropic API key (ANTHROPIC_API_KEY), with web search.
+# Setting RADAR_PROVIDER overrides this; the GitHub workflows set it to gemini.
+provider: company
+
+company:
+  curate: kr-claude-opus-5.5  # the model list is at aicoding.console.ctripcorp.com/admin/modelList
+
+gemini:
+  curate: gemini-3.8-flash    # free tier; see ai.google.dev/gemini-api/docs/pricing
+
+# Used when provider is anthropic.
 models:
   curate: claude-sonnet-5-5   # the single filter-and-summarise call per run
   search: claude-haiku-5-5    # one web-search call per group below
@@ -21,6 +36,7 @@ models:
 prices:
   claude-sonnet-5-5: { input: 3, output: 15 }
   claude-haiku-5-5: { input: 1, output: 5 }
+  gemini-3.8-flash: { input: 0, output: 0 }   # free tier; wrong if billing is turned on for the key's project
   web_search_per_1000: 10
 
 # The four groups are also the four categories on the page: ota, rail, platform, consumer.

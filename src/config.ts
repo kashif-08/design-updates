@@ -27,8 +27,12 @@ export interface Feed {
   app: string | null;
 }
 
+export type Provider = 'company' | 'gemini' | 'anthropic';
+
 export interface Config {
   reader: string;
+  /** Where the model calls go. RADAR_PROVIDER overrides it. */
+  provider: Provider;
   timezone: string;
   windowHours: number;
   models: { curate: string; search: string; searchTool: string; searchesPerGroup: number; maxCandidates: number };
@@ -56,10 +60,10 @@ const strList = (v: unknown, where: string): string[] => {
 };
 
 export function loadConfig(path = 'watchlist.yaml'): Config {
-  return parseConfig(readFileSync(path, 'utf8'));
+  return parseConfig(readFileSync(path, 'utf8'), process.env);
 }
 
-export function parseConfig(src: string): Config {
+export function parseConfig(src: string, env: Record<string, string | undefined> = {}): Config {
   const y = parseYaml(src);
   if (!isObj(y)) throw new ConfigError('expected a mapping at the top level');
   const models = isObj(y.models) ? y.models : {};
@@ -108,12 +112,24 @@ export function parseConfig(src: string): Config {
     if (isObj(p)) priceTable[model] = { input: Number(p.input ?? 0), output: Number(p.output ?? 0) };
   }
 
+  const provider = String(env.RADAR_PROVIDER || y.provider || 'anthropic');
+  if (provider !== 'company' && provider !== 'gemini' && provider !== 'anthropic') throw new ConfigError(`provider must be company, gemini or anthropic, not "${provider}"`);
+  const company = isObj(y.company) ? y.company : {};
+  const gemini = isObj(y.gemini) ? y.gemini : {};
+  const curate =
+    provider === 'company'
+      ? String(company.curate ?? 'kr-claude-opus-5.5')
+      : provider === 'gemini'
+        ? String(gemini.curate ?? 'gemini-3.8-flash')
+        : String(models.curate ?? 'claude-sonnet-5-5');
+
   return {
     reader: String(y.reader ?? ''),
+    provider,
     timezone: String(y.timezone ?? 'Asia/Shanghai'),
     windowHours: Number(y.window_hours ?? 48),
     models: {
-      curate: String(models.curate ?? 'claude-sonnet-5-5'),
+      curate,
       search: String(models.search ?? 'claude-haiku-5-5'),
       searchTool: String(models.search_tool ?? 'web_search_20250305'),
       searchesPerGroup: Number(models.searches_per_group ?? 3),

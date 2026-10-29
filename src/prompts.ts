@@ -29,12 +29,12 @@ You get candidate news items as JSON. Decide which describe a real change worth 
 
 Keep an event only if ALL of these hold:
 1. It changes something users see or do in a product: UI, navigation, a flow, a feature, or a platform design rule (for example Apple's Human Interface Guidelines, Material Design, new system UI or developer design APIs).
-2. It is about one of the watchlist apps or platforms.
+2. It is about one of the watchlist apps or platforms. A separate product does not count just because its parent company is on the list: YouTube is not "Google", and Apple TV+ shows are not "Apple".
 3. It was published inside the window. Trust published_at; if it is missing or outside the window, drop it.
 4. It is announced by the company itself or reported as fact by a reputable outlet. Drop rumours, leaks, "reportedly", code teardowns of unreleased features, opinion and analysis pieces, SEO listicles, how-to guides, deals, reviews of hardware, case studies and community redesigns.
 
 Always drop: funding, earnings, stock moves, partnerships with no visible product change, hiring and executive news, lawsuits and regulation with no product change, OS bug-fix releases with no visible change, events and conference announcements without product news.
-Beta features, developer betas and gradual rollouts are fine; set "beta": true for them.
+Beta features, developer betas, tests and gradual rollouts are all fine to keep. Set "beta": true only when the source calls it a beta, a test, an experiment or a preview, or says it is limited to selected users. "Rolling out" on its own is not beta.
 
 Merge candidates that report the same event (one launch is often syndicated across many sites) into ONE item. List at most two source_cids, best first: the company's own post first, then the outlet with the most concrete detail.
 

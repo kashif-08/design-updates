@@ -313,3 +313,63 @@ test('similar() catches the same headline written twice', () => {
   assert.ok(similar('Airbnb adds a Services tab to the app', 'Airbnb adds Services tab to the app') >= 0.8);
   assert.ok(similar('iOS 26.1 beta 1 adds a slider', 'Airbnb adds Services tab') < 0.3);
 });
+
+test('company gateway: bearer login, Messages API, credits recorded, expired login explained', async () => {
+  const { companyLlm, LlmUnavailableError } = await import('../src/llm.ts');
+  const seen: { url: string; auth: string | null; body: { model: string } }[] = [];
+  const ok = (async (url: string, init: RequestInit) => {
+    seen.push({ url, auth: new Headers(init.headers).get('authorization'), body: JSON.parse(String(init.body)) });
+    return Response.json({ content: [{ type: 'text', text: '{"items":[]}' }], stop_reason: 'end_turn', usage: { input_tokens: 2000, output_tokens: 10, credit_usage: 0.0119 } });
+  }) as unknown as typeof fetch;
+  const llm = companyLlm({ baseUrl: 'http://gateway.example/coding-plan', token: 'T0KEN' }, ok);
+  assert.equal(llm.canSearch, false);
+  const r = await llm.messages({ model: 'kr-claude-opus-5.5', system: 's', maxTokens: 10, messages: [{ role: 'user', content: 'u' }] });
+  assert.equal(seen[0].url, 'http://gateway.example/coding-plan/v1/messages');
+  assert.equal(seen[0].auth, 'Bearer T0KEN');
+  assert.equal(seen[0].body.model, 'kr-claude-opus-5.5');
+  assert.equal(r.usage.credits, 0.0119);
+
+  const expired = (async () => new Response('no', { status: 401 })) as unknown as typeof fetch;
+  await assert.rejects(companyLlm({ baseUrl: 'http://g', token: 'x' }, expired).messages({ model: 'm', system: '', maxTokens: 1, messages: [] }), (e: Error) => e instanceof LlmUnavailableError && /ada refresh/.test(e.message));
+});
+
+test('provider: company switches the curate model and turns search off; RADAR_PROVIDER overrides', () => {
+  const yaml = 'provider: company\ncompany:\n  curate: kr-claude-opus-5.5\nmodels:\n  curate: claude-sonnet-5-5\ngroups:\n  ota:\n    apps:\n      - name: A\n';
+  assert.equal(parseConfig(yaml).models.curate, 'kr-claude-opus-5.5');
+  const api = parseConfig(yaml, { RADAR_PROVIDER: 'anthropic' });
+  assert.equal(api.provider, 'anthropic');
+  assert.equal(api.models.curate, 'claude-sonnet-5-5');
+  assert.equal(parseConfig(yaml, { RADAR_PROVIDER: 'gemini' }).models.curate, 'gemini-3.8-flash');
+  assert.throws(() => parseConfig(yaml, { RADAR_PROVIDER: 'openai' }), /company, gemini or anthropic/);
+});
+
+test('--from-cache reuses saved sources with any model, and says so when there are none', async () => {
+  const { paths } = setup();
+  await assert.rejects(collect({ cfg: CFG, now: NOW, llm: new FakeLlm(), paths, fromCache: true }), /Run with --gather-only first/);
+  await collect({ cfg: CFG, now: NOW, llm: null, fetchImpl: fakeFetch(day1World()), paths, gatherOnly: true });
+  const r = await collect({ cfg: CFG, now: NOW, llm: new FakeLlm(), fetchImpl: fakeFetch({ feeds: {}, pages: {}, down: true }), paths, fromCache: true });
+  assert.equal(r.mode, 'api, saved sources');
+  assert.deepEqual(r.kept.map((i) => i.id), ['airbnb-services-tab', 'apple-ios-liquid-glass-slider']);
+});
+
+test('gemini: request shape, JSON answer, thinking parts skipped, location block explained', async () => {
+  const { geminiLlm, LlmUnavailableError } = await import('../src/llm.ts');
+  const seen: { url: string; key: string | null; body: Record<string, any> }[] = [];
+  const ok = (async (url: string, init: RequestInit) => {
+    seen.push({ url, key: new Headers(init.headers).get('x-goog-api-key'), body: JSON.parse(String(init.body)) });
+    return Response.json({
+      candidates: [{ content: { parts: [{ text: 'thinking…', thought: true }, { text: '{"items":[]}' }] }, finishReason: 'STOP' }],
+      usageMetadata: { promptTokenCount: 900, candidatesTokenCount: 20, thoughtsTokenCount: 300 },
+    });
+  }) as unknown as typeof fetch;
+  const r = await geminiLlm('K3Y', ok).messages({ model: 'gemini-3.8-flash', system: 'sys', maxTokens: 8000, messages: [{ role: 'user', content: 'hi' }] });
+  assert.equal(seen[0].url, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent');
+  assert.equal(seen[0].key, 'K3Y');
+  assert.equal(seen[0].body.systemInstruction.parts[0].text, 'sys');
+  assert.equal(seen[0].body.generationConfig.responseMimeType, 'application/json');
+  assert.equal(r.content[0].text, '{"items":[]}');
+  assert.deepEqual(r.usage, { input_tokens: 900, output_tokens: 320, web_searches: 0 });
+
+  const blocked = (async () => Response.json({ error: { code: 400, status: 'FAILED_PRECONDITION', message: 'User location is not supported for the API use.' } }, { status: 400 })) as unknown as typeof fetch;
+  await assert.rejects(geminiLlm('k', blocked).messages({ model: 'm', system: '', maxTokens: 1, messages: [] }), (e: Error) => e instanceof LlmUnavailableError && /Run it on GitHub/.test(e.message));
+});

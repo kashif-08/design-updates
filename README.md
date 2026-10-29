@@ -11,9 +11,9 @@ Once a day a job reads news feeds and runs a few web searches, applies strict ru
 ## How a run works
 
 1. **Feeds.** Every RSS/Atom feed in `watchlist.yaml` is read.
-2. **Search.** One Claude call per app group (OTAs, rail, platforms, consumer) with the web search tool, limited to the apps' own sites and the trusted outlets list. This catches newsrooms that have no feed.
+2. **Search (Anthropic API only).** One call per app group (OTAs, rail, platforms, consumer) with the web search tool, limited to the apps' own sites and the trusted outlets list. This catches newsrooms that have no feed. The company plan and Gemini have no working web search, so with those the run uses feeds only.
 3. **Rules (no model).** Each item is dropped, with a reason, if it comes from a blocked or unknown site, has no real publish date or is older than 48 hours, is not about a watchlist app, has a drop word in the headline ("funding", "deals", "rumor"...), or was already reported. Search results are dated by the article page itself, not by the search engine.
-4. **One curate call.** Claude gets everything that passed, plus what was reported in the last two weeks. It merges syndicated copies of one launch into one item (keeping the two best sources), drops the rest with a reason, and writes `headline`, `what` and `why` for each item it keeps. It adds a `pattern` note only when three or more apps moved the same way.
+4. **One curate call.** The model gets everything that passed, plus what was reported in the last two weeks. It merges syndicated copies of one launch into one item (keeping the two best sources), drops the rest with a reason, and writes `headline`, `what` and `why` for each item it keeps. It adds a `pattern` note only when three or more apps moved the same way.
 5. **Checks.** The answer is validated in code: unknown apps, missing sources and incomplete write-ups are dropped; emojis and exclamation marks are removed; hype words are flagged in the log. Each kept page is re-read for its `og:image` and to make sure it is not an old story with a new date.
 6. **Write.** `data/radar.json` gets a new day at the top. A quiet day is recorded as `"quiet": true` with no items. `data/seen.json` remembers every reported event, so a launch never shows up again on a later day. `data/runs.json` logs token use and estimated cost per run.
 
@@ -35,7 +35,9 @@ Runs the job and prints what it kept and what it dropped, with the reason for ea
 | `--no-search` | Feeds only. |
 | `--manual` | Do the model step by hand instead of using the API (see below). |
 | `--gather-only` | Read sources and pages, save them to `.cache/`, stop. |
+| `--from-cache` | Use the sources saved by `--gather-only` instead of reading the network. Good for trying another model on the same news. |
 | `--backfill N` | Also fill the N−1 days before today, oldest first. Past days use feeds only. |
+| `--data DIR` | Write `radar.json` and the rest to DIR instead of `data/`, for trial runs. |
 | `--verbose` | List every dropped item, including the hundreds of old and off-topic ones. |
 
 Other commands:
@@ -46,9 +48,17 @@ Other commands:
 - `npm run dev`: builds and serves the site at http://localhost:5180.
 - `npm test`: runs the tests.
 
-### Running locally with a key
+### Which AI it uses
 
-Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`. `.env` is git-ignored.
+Set `provider:` in `watchlist.yaml`, or `RADAR_PROVIDER` in the environment, to one of:
+
+| Provider | Where it works | Login | Web search |
+| --- | --- | --- | --- |
+| `company` | Your laptop only (Trip.com network) | Run `ada cc` once in Terminal, log in, type `/exit`. Model: `company.curate` (default `kr-claude-opus-5.5`) | No |
+| `gemini` | GitHub only (Google blocks the API from mainland China) | `GEMINI_API_KEY`. Model: `gemini.curate` (default `gemini-3.8-flash`, free tier) | No |
+| `anthropic` | Anywhere Anthropic serves | `ANTHROPIC_API_KEY` | Yes |
+
+The GitHub workflows set `RADAR_PROVIDER=gemini`. Locally, keys go in `.env` (copy `.env.example`); it is git-ignored. If the company login expires, run `ada refresh`.
 
 ### Running without a key
 
@@ -94,11 +104,11 @@ When this was set up (October 2026) there was no working public feed for the Air
 
 ## Changing the run time
 
-The schedule is in `.github/workflows/radar.yml`:
+The schedule is in `.github/workflows/radar.yml`. It is switched off until the Gemini trial is approved; to turn it on, remove the `#` from these two lines:
 
 ```yaml
-  schedule:
-    - cron: '0 23 * * *'   # 23:00 UTC = 07:00 Shanghai
+  # schedule:
+  #   - cron: '0 23 * * *'   # 23:00 UTC = 07:00 Shanghai
 ```
 
 GitHub cron is always UTC. For 06:30 Shanghai use `30 22 * * *`. The page's "today" follows the timezone in `watchlist.yaml` (`timezone:`). Scheduled runs can start a few minutes late, and GitHub pauses schedules on repositories with no activity for 60 days (the daily commit counts as activity).
@@ -108,15 +118,20 @@ To run it now: Actions tab → Daily radar → Run workflow.
 ## Hosting on GitHub
 
 1. Create a repository and push this folder to `main`.
-2. Settings → Secrets and variables → Actions → New repository secret: `ANTHROPIC_API_KEY`.
+2. Settings → Secrets and variables → Actions → New repository secret: `GEMINI_API_KEY`.
 3. Settings → Pages → Source: **GitHub Actions**.
-4. Actions tab → Daily radar → Run workflow, to publish the first edition.
+4. Actions tab → **Try Gemini** → Run workflow. It runs Gemini on the saved news for 23–29 Oct and on today's feeds, without touching the real page, and saves the results to the `gemini-trial` branch.
+5. When the results look right: Actions tab → Daily radar → Run workflow to publish, then switch the schedule on (see above).
 
 The workflow commits `data/` after each run, so the repository holds the full history. Edits to `site/` or `watchlist.yaml` pushed to `main` republish the page without a new collection.
 
 ## Cost
 
-Per run: one curate call (Sonnet, roughly 10–25k input tokens) and up to four search calls (Haiku, up to 3 searches each). Web search is billed per search (about $10 per 1,000). Expect a few US cents a day. Every run logs tokens and an estimate to `data/runs.json` and to the Actions run summary. Prices used for the estimate are in `watchlist.yaml` under `prices:`.
+- **Gemini:** free on the free tier (one curate call a day). Google can change free-tier limits.
+- **Company plan:** about 0.6 credits a day with Opus 5.5 (4.4 for the test week). The run prints credits used.
+- **Anthropic API:** one Sonnet curate call plus up to four Haiku search calls, about $0.15–0.35 a day.
+
+Every run logs tokens (and credits or an estimated cost) to `data/runs.json` and to the Actions run summary. Prices for the estimate are in `watchlist.yaml` under `prices:`.
 
 ## Files
 
@@ -128,6 +143,8 @@ src/prompts.ts        the prompts sent to Claude
 src/prefilter.ts      rule checks before the model
 src/curate.ts         the model call and the checks on its answer
 src/radar.ts          append-only merge into radar.json, seen events
+src/llm.ts            model access: company gateway, Gemini, Anthropic API, manual
+trial/snapshots/      saved news for 23–29 Oct, used by the Try Gemini workflow
 site/                 the page (plain HTML, CSS, JS)
 data/radar.json       every day, newest first
 data/seen.json        events already reported

@@ -1,0 +1,56 @@
+name: Try Gemini
+
+# A test run that never touches the real page or data/.
+# 1. Runs Gemini on the saved news for 23–29 Oct (trial/snapshots), to compare with the hand-picked week.
+# 2. Runs Gemini on today's live feeds.
+# Results go to the gemini-trial branch.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  try:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RADAR_PROVIDER: gemini
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Saved week (23–29 Oct)
+        continue-on-error: true
+        run: |
+          mkdir -p .cache .trial
+          cp trial/snapshots/*.json .cache/
+          RADAR_NOW=2026-10-29T02:45:00Z node src/collect.ts --from-cache --backfill 7 --data .trial/week 2>&1 | tee .trial/week.log
+          exit ${PIPESTATUS[0]}
+        shell: bash
+
+      - name: Today's live news
+        continue-on-error: true
+        run: |
+          node src/collect.ts --data .trial/live 2>&1 | tee .trial/live.log
+          exit ${PIPESTATUS[0]}
+        shell: bash
+
+      - name: Save results to the gemini-trial branch
+        if: always()
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          cp -r .trial /tmp/trial-results
+          git checkout --orphan gemini-trial
+          git rm -rq --cached .
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r /tmp/trial-results/. .
+          echo "Results of the Try Gemini workflow, $(date -u +%FT%TZ)." > README.md
+          git add -A
+          git commit -qm "gemini trial $(date -u +%F)"
+          git push -f origin gemini-trial

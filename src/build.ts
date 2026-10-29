@@ -15,7 +15,8 @@ writeJson('dist/data/meta.json', {
   reader: cfg.reader,
   timezone: cfg.timezone,
   feeds: cfg.feeds.length,
-  search: cfg.models.searchesPerGroup > 0 && cfg.groups.some((g) => g.search.length),
+  search: cfg.provider === 'anthropic' && cfg.models.searchesPerGroup > 0 && cfg.groups.some((g) => g.search.length),
+  ai: cfg.provider === 'gemini' ? 'Gemini' : 'Claude',
   categories: Object.fromEntries(cfg.groups.map((g) => [g.category, g.label])),
 });
 writeFileSync('dist/.nojekyll', '');

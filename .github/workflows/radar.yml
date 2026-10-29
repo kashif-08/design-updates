@@ -1,9 +1,9 @@
 name: Daily radar
 
 on:
-  schedule:
-    # 23:00 UTC = 07:00 in Shanghai. GitHub may start scheduled runs a few minutes late.
-    - cron: '0 23 * * *'
+  # Switched off until the Try Gemini results are approved. To turn on, remove the # from the next two lines.
+  # schedule:
+  #   - cron: '0 23 * * *'   # 23:00 UTC = 07:00 in Shanghai. GitHub may start scheduled runs a few minutes late.
   # "Run workflow" button on the Actions tab.
   workflow_dispatch:
   # Publish design changes without waiting for the next morning run.
@@ -32,7 +32,9 @@ jobs:
           node-version: 24
       - name: Collect today's changes
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The company plan only works on your laptop, so GitHub uses Gemini.
+          RADAR_PROVIDER: gemini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run collect
       - name: Commit radar.json
         run: |

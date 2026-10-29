@@ -84,4 +84,6 @@ export interface CallUsage {
   input_tokens: number;
   output_tokens: number;
   web_searches: number;
+  /** Company Coding Plan quota used, when the gateway reports it. */
+  credits?: number;
 }

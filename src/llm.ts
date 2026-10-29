@@ -1,11 +1,16 @@
-// Model access. Two ways in:
-// - api:    the Anthropic Messages API with ANTHROPIC_API_KEY (what GitHub Actions uses).
-// - manual: no key and no spend. Each question is saved to .cache/llm/requests/<key>.json and the run stops;
+// Model access. Three ways in:
+// - company: Trip.com's Coding Plan gateway, signed in on this Mac with `ada cc`. Same Messages API as Anthropic,
+//            Claude models named kr-claude-…; no working web search.
+// - gemini:  Google's Gemini API with GEMINI_API_KEY (free tier). Google blocks it from mainland China, so it runs on
+//            GitHub's servers. No web search: Google Search is not free on current Gemini models.
+// - api:     the Anthropic Messages API with ANTHROPIC_API_KEY.
+// - manual:  no key and no spend. Each question is saved to .cache/llm/requests/<key>.json and the run stops;
 //           once someone writes the answer to .cache/llm/answers/<key>.json, the next run picks it up.
 //           Web search is not available in this mode.
 
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { CallUsage } from './types.ts';
 
@@ -31,11 +36,11 @@ export interface MessagesRequest {
 export interface MessagesResponse {
   content: ContentBlock[];
   stopReason: string;
-  usage: { input_tokens: number; output_tokens: number; web_searches: number };
+  usage: { input_tokens: number; output_tokens: number; web_searches: number; credits?: number };
 }
 
 export interface Llm {
-  readonly mode: 'api' | 'manual';
+  readonly mode: 'api' | 'company' | 'gemini' | 'manual';
   messages(req: MessagesRequest): Promise<MessagesResponse>;
   readonly canSearch: boolean;
 }
@@ -59,17 +64,66 @@ export class AnswerPendingError extends Error {
 type Sleep = (ms: number) => Promise<void>;
 const realSleep: Sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+interface MessagesClient {
+  mode: 'api' | 'company';
+  baseUrl: string;
+  headers: Record<string, string>;
+  canSearch: boolean;
+  name: string;
+  /** What to tell the reader when the login is rejected. */
+  onRejected: string;
+}
+
 export function apiLlm(apiKey: string, fetchImpl: typeof fetch = fetch, sleep: Sleep = realSleep, baseUrl = 'https://api.anthropic.com'): Llm {
+  return messagesLlm(
+    { mode: 'api', baseUrl, headers: { 'x-api-key': apiKey }, canSearch: true, name: 'Anthropic API', onRejected: 'Check ANTHROPIC_API_KEY.' },
+    fetchImpl,
+    sleep,
+  );
+}
+
+/** The company login `ada cc` saved on this Mac: the gateway address and token Claude Code is set up with. */
+export function companyLogin(home = homedir()): { baseUrl: string; token: string } | null {
+  const read = (p: string) => {
+    try {
+      return JSON.parse(readFileSync(p, 'utf8'));
+    } catch {
+      return null;
+    }
+  };
+  const env = read(join(home, '.claude', 'settings.json'))?.env ?? {};
+  const token = process.env.RADAR_COMPANY_TOKEN || env.ANTHROPIC_AUTH_TOKEN || read(join(home, '.ada-cli', 'config.json'))?.apiToken;
+  const baseUrl = process.env.RADAR_COMPANY_URL || env.ANTHROPIC_BASE_URL;
+  return token && baseUrl ? { baseUrl: String(baseUrl).replace(/\/+$/, ''), token: String(token) } : null;
+}
+
+export function companyLlm(login: { baseUrl: string; token: string }, fetchImpl: typeof fetch = fetch, sleep: Sleep = realSleep): Llm {
+  return messagesLlm(
+    {
+      mode: 'company',
+      baseUrl: login.baseUrl,
+      headers: { authorization: `Bearer ${login.token}` },
+      // The gateway answers web-search requests with a Google results link, not articles, so search stays off.
+      canSearch: false,
+      name: 'Company Coding Plan',
+      onRejected: 'The company login has expired. Run `ada refresh` in Terminal and log in again.',
+    },
+    fetchImpl,
+    sleep,
+  );
+}
+
+function messagesLlm(c: MessagesClient, fetchImpl: typeof fetch, sleep: Sleep): Llm {
   return {
-    mode: 'api',
-    canSearch: true,
+    mode: c.mode,
+    canSearch: c.canSearch,
     async messages(req) {
       for (let attempt = 0; ; attempt++) {
         let res: Response;
         try {
-          res = await fetchImpl(`${baseUrl}/v1/messages`, {
+          res = await fetchImpl(`${c.baseUrl}/v1/messages`, {
             method: 'POST',
-            headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+            headers: { 'content-type': 'application/json', 'anthropic-version': '2023-06-01', ...c.headers },
             body: JSON.stringify({
               model: req.model,
               max_tokens: req.maxTokens,
@@ -84,18 +138,18 @@ export function apiLlm(apiKey: string, fetchImpl: typeof fetch = fetch, sleep: S
             await sleep(3000 * 2 ** attempt);
             continue;
           }
-          throw new Error(`Anthropic API unreachable: ${(err as Error).message}`);
+          throw new Error(`${c.name} unreachable: ${(err as Error).message}${c.mode === 'company' ? ' (is the laptop on the company network or VPN?)' : ''}`);
         }
         if ((res.status === 429 || res.status === 529 || res.status >= 500) && attempt < 3) {
           await sleep(3000 * 2 ** attempt);
           continue;
         }
-        if (res.status === 401 || res.status === 403) throw new LlmUnavailableError(`Anthropic API rejected the key (HTTP ${res.status}). Check ANTHROPIC_API_KEY.`);
-        if (!res.ok) throw new Error(`Anthropic API returned HTTP ${res.status}: ${(await res.text()).slice(0, 400)}`);
+        if (res.status === 401 || res.status === 403) throw new LlmUnavailableError(`${c.name} rejected the login (HTTP ${res.status}). ${c.onRejected}`);
+        if (!res.ok) throw new Error(`${c.name} returned HTTP ${res.status}: ${(await res.text()).slice(0, 400)}`);
         const data = (await res.json()) as {
           content?: ContentBlock[];
           stop_reason?: string;
-          usage?: { input_tokens?: number; output_tokens?: number; server_tool_use?: { web_search_requests?: number } };
+          usage?: { input_tokens?: number; output_tokens?: number; credit_usage?: number; server_tool_use?: { web_search_requests?: number } };
         };
         return {
           content: data.content ?? [],
@@ -104,7 +158,73 @@ export function apiLlm(apiKey: string, fetchImpl: typeof fetch = fetch, sleep: S
             input_tokens: data.usage?.input_tokens ?? 0,
             output_tokens: data.usage?.output_tokens ?? 0,
             web_searches: data.usage?.server_tool_use?.web_search_requests ?? 0,
+            ...(typeof data.usage?.credit_usage === 'number' ? { credits: data.usage.credit_usage } : {}),
           },
+        };
+      }
+    },
+  };
+}
+
+export function geminiLlm(apiKey: string, fetchImpl: typeof fetch = fetch, sleep: Sleep = realSleep, baseUrl = 'https://generativelanguage.googleapis.com/v1beta'): Llm {
+  return {
+    mode: 'gemini',
+    canSearch: false,
+    async messages(req) {
+      if (req.tools?.length) throw new LlmUnavailableError('web search is not set up for Gemini');
+      const body = JSON.stringify({
+        systemInstruction: { parts: [{ text: req.system }] },
+        contents: req.messages.map((m) => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: typeof m.content === 'string' ? m.content : textOf(m.content) }],
+        })),
+        // Thinking tokens count against the output limit, so leave plenty of room.
+        generationConfig: { responseMimeType: 'application/json', maxOutputTokens: Math.max(req.maxTokens, 16_000) },
+      });
+      for (let attempt = 0; ; attempt++) {
+        let res: Response;
+        try {
+          res = await fetchImpl(`${baseUrl}/models/${encodeURIComponent(req.model)}:generateContent`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+            body,
+            signal: AbortSignal.timeout(300_000),
+          });
+        } catch (err) {
+          if (attempt < 3) {
+            await sleep(3000 * 2 ** attempt);
+            continue;
+          }
+          throw new Error(`Gemini API unreachable: ${(err as Error).message}`);
+        }
+        // The free tier allows only a few requests a minute; wait and retry.
+        if ((res.status === 429 || res.status >= 500) && attempt < 4) {
+          await sleep(10_000 * 2 ** attempt);
+          continue;
+        }
+        const text = await res.text();
+        if (!res.ok) {
+          let msg = text.slice(0, 300);
+          try {
+            msg = JSON.parse(text).error?.message ?? msg;
+          } catch {}
+          if (/location is not supported/i.test(msg)) throw new LlmUnavailableError(`Google does not allow Gemini API calls from here (${msg}). Run it on GitHub instead.`);
+          if (res.status === 401 || res.status === 403 || /api key/i.test(msg)) throw new LlmUnavailableError(`Gemini rejected the key (HTTP ${res.status}): ${msg} Check GEMINI_API_KEY.`);
+          throw new Error(`Gemini API returned HTTP ${res.status}: ${msg}`);
+        }
+        const data = JSON.parse(text) as {
+          candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] }; finishReason?: string }[];
+          promptFeedback?: { blockReason?: string };
+          usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number };
+        };
+        const c = data.candidates?.[0];
+        const out = (c?.content?.parts ?? []).filter((p) => !p.thought).map((p) => p.text ?? '').join('');
+        if (!out) throw new Error(`Gemini returned no text (${c?.finishReason ?? data.promptFeedback?.blockReason ?? 'no reason given'})`);
+        const u = data.usageMetadata ?? {};
+        return {
+          content: [{ type: 'text', text: out }],
+          stopReason: c?.finishReason === 'MAX_TOKENS' ? 'max_tokens' : 'end_turn',
+          usage: { input_tokens: u.promptTokenCount ?? 0, output_tokens: (u.candidatesTokenCount ?? 0) + (u.thoughtsTokenCount ?? 0), web_searches: 0 },
         };
       }
     },
