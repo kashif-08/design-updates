@@ -172,5 +172,42 @@
       }
     ],
     "cost_usd": 0
+  },
+  {
+    "at": "2026-10-29T23:01:02.946Z",
+    "date": "2026-10-30",
+    "mode": "company",
+    "feeds_ok": 2,
+    "feeds_failed": [
+      "The Keyword (Android)",
+      "The Keyword (Travel)",
+      "Booking Holdings",
+      "Meta Newsroom",
+      "Spotify Newsroom",
+      "Duolingo Blog",
+      "Linear Changelog",
+      "Notion Releases",
+      "9to5Mac",
+      "9to5Google",
+      "MacRumors",
+      "The Verge",
+      "TechCrunch Apps",
+      "Skift"
+    ],
+    "candidates": 173,
+    "sent_to_model": 1,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 5464,
+        "output_tokens": 48,
+        "web_searches": 0,
+        "credits": 0.09728921194029848
+      }
+    ],
+    "cost_usd": 0
   }
 ]
