@@ -116,6 +116,14 @@
       "urls": [
         "https://techcrunch.com/2026/10/28/tiktok-expands-into-restaurant-guides-with-must-eat-feature"
       ]
+    },
+    "gemini-notebook-audio-recorder": {
+      "app": "Google",
+      "headline": "Gemini Notebook on Android and iOS adds a built-in audio recorder.",
+      "date": "2026-10-28",
+      "urls": [
+        "https://9to5google.com/2026/10/27/gemini-notebook-recorder"
+      ]
     }
   }
 }

@@ -145,5 +145,32 @@
       }
     ],
     "cost_usd": 0
+  },
+  {
+    "at": "2026-10-29T16:18:24.175Z",
+    "date": "2026-10-30",
+    "mode": "company",
+    "feeds_ok": 12,
+    "feeds_failed": [
+      "The Keyword (Android)",
+      "The Keyword (Travel)",
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 864,
+    "sent_to_model": 43,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 16151,
+        "output_tokens": 929,
+        "web_searches": 0,
+        "credits": 0.7974941787728026
+      }
+    ],
+    "cost_usd": 0
   }
 ]

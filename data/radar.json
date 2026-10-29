@@ -1,7 +1,37 @@
 {
   "version": 1,
-  "updated_at": "2026-10-29T02:45:00.000Z",
+  "updated_at": "2026-10-29T16:18:24.175Z",
   "days": [
+    {
+      "date": "2026-10-30",
+      "collected_at": "2026-10-29T16:18:24.175Z",
+      "quiet": false,
+      "pattern": null,
+      "items": [
+        {
+          "id": "gemini-notebook-audio-recorder",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-28",
+          "published_at": "2026-10-27T22:44:07.000Z",
+          "beta": false,
+          "importance": 1,
+          "headline": "Gemini Notebook on Android and iOS adds a built-in audio recorder.",
+          "what": "Gemini Notebook has rolled out an audio recorder in its Android and iOS apps. It follows last week's addition of Connected App integration to the same notebook.",
+          "why": "If a trip-planning or itinerary notes screen accepts user input, this is an example of placing voice recording inside the notebook itself instead of sending people to a separate recorder.",
+          "sources": [
+            {
+              "title": "Gemini Notebook for Android, iOS adds built-in audio recorder",
+              "url": "https://9to5google.com/2026/10/27/gemini-notebook-recorder",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/07/gemini-notebook-fold-8-5.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-29T16:18:24.175Z"
+        }
+      ]
+    },
     {
       "date": "2026-10-29",
       "collected_at": "2026-10-29T02:45:00.000Z",
