@@ -1,0 +1,110 @@
+// Cheap, rule-based checks before the model sees anything: trusted source, real publish date inside the
+// window, about a watchlist app, not obviously off-topic, not already reported. Every drop has a reason.
+
+import { appByName, type App, type Config } from './config.ts';
+import type { Candidate, Dropped } from './types.ts';
+import { hoursAgo, onDomain, parseDate } from './util.ts';
+
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Whole-word pattern: only adds a word boundary on sides that start or end with a letter or digit. */
+function wordPattern(word: string, flags: string): RegExp {
+  const pre = /^\w/.test(word) ? '(?<!\\w)' : '';
+  const post = /\w$/.test(word) ? '(?!\\w)' : '';
+  return new RegExp(`${pre}${escape(word)}${post}`, flags);
+}
+
+/** The watchlist app a headline is about: the alias that appears earliest in the text. Exact capitals. */
+export function matchApp(cfg: Config, text: string): App | null {
+  let best: { app: App; at: number } | null = null;
+  for (const app of cfg.apps) {
+    for (const alias of app.aliases) {
+      const m = wordPattern(alias, '').exec(text);
+      if (m && (!best || m.index < best.at)) best = { app, at: m.index };
+    }
+  }
+  return best?.app ?? null;
+}
+
+export function dropWord(cfg: Config, title: string): string | null {
+  return cfg.trust.dropWords.find((w) => wordPattern(w, 'i').test(title)) ?? null;
+}
+
+export interface PrefilterResult {
+  kept: Candidate[];
+  dropped: Dropped[];
+}
+
+export function prefilter(cfg: Config, all: Candidate[], ctx: { now: Date; seenUrls: Set<string> }): PrefilterResult {
+  const dropped: Dropped[] = [];
+  const drop = (c: Candidate, reason: string, bulk = false) => dropped.push({ title: c.title, url: c.url, source: c.source, reason, bulk });
+
+  // Same URL from a feed and a search (or two feeds): keep one, feeds first.
+  const byUrl = new Map<string, Candidate>();
+  for (const c of [...all].sort((a, b) => (a.via === b.via ? 0 : a.via === 'feed' ? -1 : 1))) {
+    const prev = byUrl.get(c.url);
+    if (!prev) byUrl.set(c.url, { ...c });
+    else {
+      prev.image ??= c.image;
+      prev.publishedAt ??= c.publishedAt;
+      if (!prev.summary) prev.summary = c.summary;
+      prev.app ??= c.app;
+    }
+  }
+
+  const ok: Candidate[] = [];
+  for (const c of byUrl.values()) {
+    if (onDomain(c.domain, cfg.trust.blockedDomains)) {
+      drop(c, `blocked source (${c.domain})`);
+      continue;
+    }
+
+    const app = (c.app && appByName(cfg, c.app)) || matchApp(cfg, c.title);
+    if (!app) {
+      drop(c, 'not about a watchlist app', true);
+      continue;
+    }
+
+    const own = onDomain(c.domain, app.domains);
+    const outlet = onDomain(c.domain, cfg.trust.outlets);
+    // Feeds were chosen by hand, so they are trusted. Search results must come from a known site.
+    if (c.via === 'search' && !own && !outlet) {
+      drop(c, `not a trusted source (${c.domain})`);
+      continue;
+    }
+
+    const published = parseDate(c.publishedAt);
+    if (!published) {
+      drop(c, 'no publish date found');
+      continue;
+    }
+    const age = hoursAgo(published, ctx.now);
+    if (age > cfg.windowHours) {
+      drop(c, `older than ${cfg.windowHours}h`, true);
+      continue;
+    }
+    if (age < -1) {
+      drop(c, 'published after this run', true);
+      continue;
+    }
+
+    const word = dropWord(cfg, c.title);
+    if (word) {
+      drop(c, `headline matches drop word "${word}"`);
+      continue;
+    }
+
+    if (ctx.seenUrls.has(c.url)) {
+      drop(c, 'already reported on an earlier day');
+      continue;
+    }
+
+    ok.push({ ...c, app: app.name, trust: own || c.trust === 'company' ? 'company' : 'outlet' });
+  }
+
+  // Company posts first, then newest. Anything past the cap is dropped so the model call stays small.
+  ok.sort((a, b) => (a.trust === b.trust ? (b.publishedAt ?? '').localeCompare(a.publishedAt ?? '') : a.trust === 'company' ? -1 : 1));
+  for (const c of ok.slice(cfg.models.maxCandidates)) drop(c, `over the cap of ${cfg.models.maxCandidates} candidates`);
+  const kept = ok.slice(0, cfg.models.maxCandidates).map((c, i) => ({ ...c, cid: `c${i + 1}` }));
+  return { kept, dropped };
+}

@@ -1,0 +1,70 @@
+name: Daily radar
+
+on:
+  schedule:
+    # 23:00 UTC = 07:00 in Shanghai. GitHub may start scheduled runs a few minutes late.
+    - cron: '0 23 * * *'
+  # "Run workflow" button on the Actions tab.
+  workflow_dispatch:
+  # Publish design changes without waiting for the next morning run.
+  push:
+    branches: [main]
+    paths: ['site/**', 'src/build.ts', 'watchlist.yaml']
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Collect today's changes
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run collect
+      - name: Commit radar.json
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "radar: $(TZ=Asia/Shanghai date +%F)"
+            git push
+          fi
+
+  deploy:
+    needs: collect
+    # Runs after a collect, or on its own for a push. Skipped if the collect failed.
+    if: always() && (needs.collect.result == 'success' || needs.collect.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: pages
+        uses: actions/deploy-pages@v4

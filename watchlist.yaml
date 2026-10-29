@@ -1,0 +1,298 @@
+# App Change Radar: what to watch and where to look.
+# Edit this file freely; no code changes needed. See README.md for details.
+# Supported YAML: key: value, nested keys, "- " lists, [a, b] lists, # comments.
+
+# Shown in the greeting ("Good morning, <reader>."). Leave empty for no name.
+reader: ""
+timezone: Asia/Shanghai
+
+# Only items published within this many hours of the run are kept.
+window_hours: 48
+
+models:
+  curate: claude-sonnet-5-5   # the single filter-and-summarise call per run
+  search: claude-haiku-5-5    # one web-search call per group below
+  search_tool: web_search_20250305
+  searches_per_group: 3       # max web searches the model may run per group
+  max_candidates: 150         # cap on items sent to the curate call
+
+# USD per million tokens, used only to log an estimated cost per run.
+# Check https://www.anthropic.com/pricing if these change.
+prices:
+  claude-sonnet-5-5: { input: 3, output: 15 }
+  claude-haiku-5-5: { input: 1, output: 5 }
+  web_search_per_1000: 10
+
+# The four groups are also the four categories on the page: ota, rail, platform, consumer.
+# Per app:
+#   aliases      words that mark a headline as being about this app. Whole words, exact
+#                capitals, so "Threads" matches the app but not "email threads".
+#   domains      the company's own sites; items from these count as first-party
+#   appstore_id  App Store id used to fetch the icon (optional)
+#   icon_domain  use this site's favicon as the icon instead (optional)
+groups:
+  ota:
+    label: OTAs
+    search:
+      - Expedia OR Booking.com OR Airbnb app new feature OR redesign
+      - Agoda OR Hopper OR Klook OR Trip.com app launches new feature
+      - Google Flights OR Google Hotels new feature
+    apps:
+      - name: Expedia
+        aliases: [Expedia, Hotels.com, Vrbo]
+        domains: [expediagroup.com, expedia.com]
+        appstore_id: 427916203
+      - name: Booking.com
+        aliases: [Booking.com, Booking Holdings]
+        domains: [booking.com, bookingholdings.com]
+        appstore_id: 367003839
+      # Airbnb is also in your consumer list; it is tracked once, here.
+      - name: Airbnb
+        aliases: [Airbnb]
+        domains: [airbnb.com, news.airbnb.com]
+        appstore_id: 401626263
+      - name: Agoda
+        aliases: [Agoda]
+        domains: [agoda.com]
+      - name: Google Travel
+        aliases: [Google Flights, Google Travel, Google Hotels]
+        domains: [blog.google]
+        icon_domain: google.com
+      - name: Hopper
+        aliases: [Hopper]
+        domains: [hopper.com]
+        appstore_id: 904052407
+      - name: Klook
+        aliases: [Klook]
+        domains: [klook.com]
+      - name: Trip.com
+        aliases: [Trip.com, Ctrip]
+        domains: [trip.com, group.trip.com]
+        appstore_id: 681752345
+
+  rail:
+    label: Rail and ground
+    search:
+      - Trainline OR Omio app new feature
+      - JR East OR JR Central OR Shinkansen app booking new feature
+    apps:
+      - name: Trainline
+        aliases: [Trainline]
+        domains: [thetrainline.com, trainlinegroup.com]
+      - name: Omio
+        aliases: [Omio]
+        domains: [omio.com]
+      - name: JR / Japan rail
+        aliases: [JR East, JR West, JR Central, JR Kyushu, Eki-net, SmartEX, Shinkansen app]
+        domains: [jreast.co.jp, jr-central.co.jp, westjr.co.jp, jrkyushu.co.jp]
+        icon_domain: jreast.co.jp
+
+  platform:
+    label: Platforms
+    search:
+      - Apple iOS design OR Human Interface Guidelines update
+      - Android OR Material Design new UI feature
+    apps:
+      - name: Apple
+        aliases: [Apple, iOS, iPadOS, macOS, watchOS, visionOS, WWDC, Human Interface Guidelines, Liquid Glass, App Store]
+        domains: [apple.com, developer.apple.com]
+        icon_domain: apple.com
+      - name: Google
+        aliases: [Android, Material Design, Material 3, Material You, Pixel Drop, Gemini]
+        domains: [android.com, android-developers.googleblog.com, blog.google, m3.material.io, material.io, design.google]
+        icon_domain: android.com
+
+  consumer:
+    label: Consumer apps known for design
+    search:
+      - Duolingo OR Revolut OR Uber OR Spotify app redesign OR new feature
+      - Instagram OR WhatsApp OR TikTok OR Threads new feature rolling out
+      - Notion OR Linear new feature launch
+    apps:
+      - name: Duolingo
+        aliases: [Duolingo]
+        domains: [duolingo.com, blog.duolingo.com]
+        appstore_id: 570060128
+      - name: Revolut
+        aliases: [Revolut]
+        domains: [revolut.com]
+        appstore_id: 932493382
+      - name: Uber
+        aliases: [Uber]
+        domains: [uber.com]
+        appstore_id: 368677368
+      - name: Spotify
+        aliases: [Spotify]
+        domains: [spotify.com, newsroom.spotify.com]
+        appstore_id: 324684580
+      - name: Instagram
+        aliases: [Instagram]
+        domains: [about.instagram.com, about.fb.com, instagram.com]
+        appstore_id: 389801252
+      - name: WhatsApp
+        aliases: [WhatsApp]
+        domains: [blog.whatsapp.com, whatsapp.com, about.fb.com]
+        appstore_id: 310633997
+      - name: TikTok
+        aliases: [TikTok]
+        domains: [newsroom.tiktok.com, tiktok.com]
+        appstore_id: 835599320
+      - name: Threads
+        aliases: [Threads]
+        domains: [about.fb.com, threads.com, threads.net]
+        appstore_id: 6446901002
+      - name: Notion
+        aliases: [Notion]
+        domains: [notion.com, notion.so]
+        appstore_id: 1232780281
+      - name: Linear
+        aliases: [Linear app, Linear's, Linear launches, Linear adds]
+        domains: [linear.app]
+        icon_domain: linear.app
+
+# RSS/Atom feeds, read every run. These are the most trusted source.
+#   kind: company  the company's own feed; every item is about `app`
+#   kind: outlet   a news site; items are matched to apps by alias in the headline
+# `npm run check-feeds` tests every URL below.
+#
+# No working public feed was found (Oct 2026) for: Airbnb, Expedia Group, Agoda, Trainline and Omio
+# newsrooms, Google Design / Material Design, and PhocusWire (blocks automated readers). The web
+# search step covers them: it searches each app's own domains plus the trusted outlets below.
+feeds:
+  - name: Apple Developer News
+    url: https://developer.apple.com/news/rss/news.rss
+    kind: company
+    app: Apple
+  - name: Android Developers Blog
+    url: https://feeds.feedburner.com/blogspot/hsDu
+    kind: company
+    app: Google
+  - name: The Keyword (Android)
+    url: https://blog.google/products/android/rss/
+    kind: company
+    app: Google
+  - name: The Keyword (Travel)
+    url: https://blog.google/products/travel/rss/
+    kind: company
+    app: Google Travel
+  - name: Booking Holdings
+    url: https://www.bookingholdings.com/feed/
+    kind: company
+    app: Booking.com
+  - name: Meta Newsroom
+    url: https://about.fb.com/news/feed/
+    kind: outlet
+  - name: Spotify Newsroom
+    url: https://newsroom.spotify.com/feed/
+    kind: company
+    app: Spotify
+  - name: Duolingo Blog
+    url: https://blog.duolingo.com/rss/
+    kind: company
+    app: Duolingo
+  - name: Linear Changelog
+    url: https://linear.app/rss/changelog.xml
+    kind: company
+    app: Linear
+  - name: Notion Releases
+    url: https://www.notion.com/releases/rss.xml
+    kind: company
+    app: Notion
+  - name: 9to5Mac
+    url: https://9to5mac.com/feed/
+    kind: outlet
+  - name: 9to5Google
+    url: https://9to5google.com/feed/
+    kind: outlet
+  - name: MacRumors
+    url: https://feeds.macrumors.com/MacRumors-All
+    kind: outlet
+  - name: The Verge
+    url: https://www.theverge.com/rss/index.xml
+    kind: outlet
+  - name: TechCrunch Apps
+    url: https://techcrunch.com/category/apps/feed/
+    kind: outlet
+  - name: Skift
+    url: https://skift.com/feed/
+    kind: outlet
+
+# What counts as a reputable source.
+trust:
+  # News sites whose reporting is trusted. Search results from any other site are dropped
+  # unless they come from the app's own domains above.
+  outlets:
+    - 9to5mac.com
+    - 9to5google.com
+    - macrumors.com
+    - phocuswire.com
+    - skift.com
+    - theverge.com
+    - techcrunch.com
+    - engadget.com
+    - arstechnica.com
+    - wired.com
+    - androidpolice.com
+    - androidauthority.com
+    - appleinsider.com
+    - macstories.net
+    - travelweekly.com
+    - businesstravelnews.com
+    - railway-technology.com
+    - railjournal.com
+    - nikkei.com
+    - japantimes.co.jp
+    - reuters.com
+    - bloomberg.com
+    - cnbc.com
+    - theinformation.com
+    - socialmediatoday.com
+  # Never kept, whatever the content.
+  blocked_domains:
+    - medium.com
+    - dribbble.com
+    - behance.net
+    - figma.com
+    - uxplanet.org
+    - uxdesign.cc
+    - wabetainfo.com
+    - reddit.com
+    - x.com
+    - twitter.com
+    - youtube.com
+  # Headlines containing any of these (as whole words) are dropped before the model sees them.
+  # Keep them specific: "shares" alone would also drop "Apple shares new design guidance".
+  drop_words:
+    - funding
+    - funding round
+    - earnings
+    - quarterly results
+    - revenue
+    - stock price
+    - shares fall
+    - shares rise
+    - investors
+    - IPO
+    - acquires
+    - acquisition
+    - appoints
+    - hires
+    - hiring
+    - layoffs
+    - lawsuit
+    - sues
+    - antitrust
+    - rumor
+    - rumors
+    - rumour
+    - leak
+    - leaks
+    - leaked
+    - reportedly
+    - best deals
+    - deals
+    - discount
+    - "% off"
+    - best apps
+    - case study
+    - redesign concept

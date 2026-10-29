@@ -1,0 +1,393 @@
+{
+  "version": 1,
+  "updated_at": "2026-10-29T02:45:00.000Z",
+  "days": [
+    {
+      "date": "2026-10-29",
+      "collected_at": "2026-10-29T02:45:00.000Z",
+      "quiet": false,
+      "pattern": "Booking is moving into AI products: Google opened Gemini and Search to outside apps, and Agoda and Expedia now supply hotels to Meta's Muse.",
+      "items": [
+        {
+          "id": "apple-macbook-pro-touch-screen",
+          "app": "Apple",
+          "category": "platform",
+          "date": "2026-10-29",
+          "published_at": "2026-10-28T17:00:55.000Z",
+          "beta": false,
+          "importance": 5,
+          "headline": "Apple's new MacBook Pro has a touch screen, and Apple has published guidance on designing Mac apps for touch.",
+          "what": "The new 14- and 16-inch MacBook Pro with a PROLED XDR display is the first Mac you can touch. Apple has posted developer videos on adapting apps for touch, with live sessions in November, and added the model to its Design Resources. Apple says it still sees the Mac as an indirect input device, so pointer and keyboard stay primary.",
+          "why": "Booking flows on a Mac, in Safari or an iPad app running on the Mac, will now be tapped as well as clicked. Hover-only controls and small targets in filters, calendars and seat maps need a touch-sized fallback.",
+          "sources": [
+            {
+              "title": "Say hello to Touch on Mac",
+              "url": "https://developer.apple.com/news?id=i9boeiqc",
+              "publisher": "Apple Developer News"
+            },
+            {
+              "title": "Apple releases touchscreen Mac developer videos, with live sessions coming in November",
+              "url": "https://9to5mac.com/2026/10/28/apple-releases-touchscreen-mac-developer-videos-with-live-sessions-coming-in-november",
+              "publisher": "9to5Mac"
+            }
+          ],
+          "image": "https://developer.apple.com/news/images/og/mbpt-og.jpg",
+          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "vrbo-reserve-now-pay-later",
+          "app": "Expedia",
+          "category": "ota",
+          "date": "2026-10-29",
+          "published_at": "2026-10-28T21:00:00.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "Vrbo launches Reserve Now, Pay Later, with less cancellation flexibility than Airbnb's version.",
+          "what": "Vrbo, part of Expedia Group, now lets guests book a stay and pay nothing up front. Skift reports the terms favour hosts more than Airbnb's version and give guests less say over when they can cancel without a penalty.",
+          "why": "When payment moves later, the cancellation deadline becomes the date that matters. Pay-later flows need that deadline on the results card, at checkout and on the confirmation, not only in the policy text.",
+          "sources": [
+            {
+              "title": "Vrbo Launches Reserve Now, Pay Later — With a Twist on Airbnb’s Approach",
+              "url": "https://skift.com/2026/10/28/vrbo-launches-reserve-now-pay-later-with-a-twist-on-airbnbs-approach",
+              "publisher": "Skift"
+            }
+          ],
+          "image": "https://skift.com/wp-content/uploads/2022/05/vrbo-ad.jpg?resize=1024,683",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/7c/a1/dc/7ca1dcf7-48c2-d47b-eee5-517872450a88/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "apple-mac-dynamic-island",
+          "app": "Apple",
+          "category": "platform",
+          "date": "2026-10-29",
+          "published_at": "2026-10-28T17:28:03.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "The Dynamic Island comes to the Mac, bringing Live Activities to the laptop screen.",
+          "what": "Apple introduced the Dynamic Island on the Mac with the new 14- and 16-inch MacBook Pro. It brings Live Activities, Spotlight and Siri AI together in one interactive area of the display.",
+          "why": "Live Activities now have a place on the Mac. If your app shows flight or train status as a Live Activity, check how its compact and expanded layouts read in this new space before travellers see them there.",
+          "sources": [
+            {
+              "title": "Apple Brings Dynamic Island to Mac for the First Time",
+              "url": "https://macrumors.com/2026/10/28/apple-brings-dynamic-island-to-mac",
+              "publisher": "MacRumors"
+            }
+          ],
+          "image": "https://images.macrumors.com/t/61Kn5pPVrYuSL-h2E4RqN2nhGUs=/3840x/article-new/2026/10/Apple-MacBook-Pro-with-PROLED-XDR-Display-Dynamic-Island-Apple-Music.jpg",
+          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "chrome-suggested-by-gemini-autofill",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-29",
+          "published_at": "2026-10-28T17:00:00.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "Chrome starts filling in much more of a web form with Gemini, under the name Suggested by Gemini.",
+          "what": "Google Chrome is rolling out Suggested by Gemini, which uses Gemini and Personal Intelligence to autofill far more information than standard autofill. Google first showed it in May.",
+          "why": "Passenger and guest forms on web checkout may now be filled by a model reading the page. Clear field labels and correct autocomplete attributes on name, passport and date-of-birth fields decide whether it fills them correctly.",
+          "sources": [
+            {
+              "title": "Google Chrome rolling out ‘Suggested by Gemini’ autofill",
+              "url": "https://9to5google.com/2026/10/28/chrome-autofill-gemini",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/08/google-chrome-navigation-gemini-1.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "google-connected-apps-platform",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-29",
+          "published_at": "2026-10-28T17:00:00.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "Google opens Gemini and Search to outside apps through a new Connected Apps Platform.",
+          "what": "Google announced the Connected Apps Platform, a single way for developers to bring their services into Gemini and Search. TechCrunch notes it could change how people find and use apps as AI agents do more on the web.",
+          "why": "Searching and even booking could start inside Gemini instead of your app. Decide early which steps a travel app would hand over, such as search and availability, and which stay in its own UI, such as seat choice, payment and changes.",
+          "sources": [
+            {
+              "title": "Google adding more Connected Apps to Gemini & Search with new dev platform",
+              "url": "https://9to5google.com/2026/10/28/gemini-google-connected-apps-platform",
+              "publisher": "9to5Google"
+            },
+            {
+              "title": "As AI agents reshape the web, Google opens Gemini and Search to more apps",
+              "url": "https://techcrunch.com/2026/10/28/as-ai-agents-reshape-the-web-google-opens-gemini-and-search-to-more-apps",
+              "publisher": "TechCrunch Apps"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Pixel-11-Pro-Gemini-Splashscreen.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "agoda-meta-muse-hotels",
+          "app": "Agoda",
+          "category": "ota",
+          "date": "2026-10-28",
+          "published_at": "2026-10-28T11:11:04.000Z",
+          "beta": false,
+          "importance": 3,
+          "headline": "Agoda now supplies hotels to Meta's Muse in Singapore and Japan.",
+          "what": "Agoda, part of Booking Holdings, has plugged its hotels into Meta's Muse in Singapore and Japan. Expedia holds the same hotel slot in North America. Skift points out that if Meta charges a fee, hotels could pay twice for one booking.",
+          "why": "Hotel discovery is moving into products that are not travel apps. The design work is the hand-off: what the guest has already chosen there, and how much they must re-enter when they land in the OTA's checkout.",
+          "sources": [
+            {
+              "title": "Agoda Plugs Into Meta’s Muse in Singapore and Japan",
+              "url": "https://skift.com/2026/10/28/agoda-plugs-into-metas-muse-in-singapore-and-japan",
+              "publisher": "Skift"
+            }
+          ],
+          "image": "https://skift.com/wp-content/uploads/2026/10/Agoda-One-Bangkok-Office-2-1-1-1-1.jpg?resize=1024,683",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/5a/eb/5a/5aeb5a27-61f3-7df1-e25b-571af62079bb/AppIcon-0-0-1x_U007epad-0-1-0-0-0-GLES2_U002c0-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        },
+        {
+          "id": "tiktok-must-eat-restaurant-guides",
+          "app": "TikTok",
+          "category": "consumer",
+          "date": "2026-10-28",
+          "published_at": "2026-10-28T14:26:36.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "TikTok adds Must Eat, a restaurant guide feature.",
+          "what": "TikTok is expanding into restaurant guides with a feature called Must Eat. TechCrunch says it puts TikTok in more direct competition with Yelp and Google.",
+          "why": "Restaurant lists in travel apps now compete with short video from people who have been there. A ranking alone will struggle; showing who recommends a place, and why, matters more.",
+          "sources": [
+            {
+              "title": "TikTok expands into restaurant guides with ‘Must Eat’ feature",
+              "url": "https://techcrunch.com/2026/10/28/tiktok-expands-into-restaurant-guides-with-must-eat-feature",
+              "publisher": "TechCrunch Apps"
+            }
+          ],
+          "image": "https://techcrunch.com/wp-content/uploads/2026/10/TikTok-MustEat.jpg?w=1200",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/19/60/31/1960312d-f882-d651-6ea6-53a3179dee9b/TikTok_AppIcon26-0-0-1x_U007epad-0-1-0-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-29T02:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-28",
+      "collected_at": "2026-10-28T02:45:00.000Z",
+      "quiet": false,
+      "pattern": null,
+      "items": [
+        {
+          "id": "apple-ios-27-2-selfie-age-verification",
+          "app": "Apple",
+          "category": "platform",
+          "date": "2026-10-27",
+          "published_at": "2026-10-27T15:21:41.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "iOS 27.2 adds age verification using a selfie.",
+          "what": "iOS 27.2 introduces a way to verify a person's age with a selfie. It shipped this week alongside the Apple Music redesign and new Siri AI languages.",
+          "why": "If the system can confirm age, apps may be able to ask iOS instead of building their own ID upload step. Worth watching for travel products with age rules: car hire, youth and senior rail fares, age-limited activities.",
+          "sources": [
+            {
+              "title": "iOS 27.2 introduces new age verification feature using selfie",
+              "url": "https://9to5mac.com/2026/10/27/ios-27-2-introduces-new-age-verification-feature-using-selfie",
+              "publisher": "9to5Mac"
+            }
+          ],
+          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/07/camera-app-icon-fi-highres.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
+          "collected_at": "2026-10-28T02:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "collected_at": "2026-10-27T02:45:00.000Z",
+      "quiet": false,
+      "pattern": null,
+      "items": [
+        {
+          "id": "apple-ios-27-2-release",
+          "app": "Apple",
+          "category": "platform",
+          "date": "2026-10-27",
+          "published_at": "2026-10-26T18:33:04.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "Apple releases iOS 27.2 with a new look for Apple Music and Siri AI in five more languages.",
+          "what": "iOS 27.2 is out for iPhone. It changes the design of Apple Music, adds Siri AI in five more languages with four more announced, and brings changes to Messages and Podcasts. iPadOS, macOS, watchOS and visionOS 27.2 shipped the same day.",
+          "why": "A redesign of a first-party app is the clearest sign of where Apple's visual language is heading; capture Apple Music's new screens before the next iOS design review. Siri AI reaching new languages also widens where voice shortcuts into a booking app can be used.",
+          "sources": [
+            {
+              "title": "Apple releases iOS 27.2, here’s what’s new",
+              "url": "https://9to5mac.com/2026/10/26/apple-releases-ios-27-2-heres-whats-new",
+              "publisher": "9to5Mac"
+            },
+            {
+              "title": "Siri AI keeps getting better, here’s what’s new in iOS 27.2",
+              "url": "https://9to5mac.com/2026/10/26/siri-ai-keeps-getting-better-heres-whats-new-in-ios-27-2",
+              "publisher": "9to5Mac"
+            }
+          ],
+          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/09/iOS-27.2-hero.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
+          "collected_at": "2026-10-27T02:45:00.000Z"
+        },
+        {
+          "id": "gemini-live-plus-menu-attachments",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-27",
+          "published_at": "2026-10-26T19:00:50.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "Gemini Live on Android gets a plus button for adding photos and files to a conversation.",
+          "what": "Google is rolling out a small redesign to Gemini Live on Android. A new plus control makes it easier to add photos and files to a live chat. It follows other large Gemini interface updates this month.",
+          "why": "One plus control for every kind of attachment is a pattern to borrow for customer-service chat, where travellers need to send a booking screenshot or a photo of a ticket mid-conversation.",
+          "sources": [
+            {
+              "title": "Gemini Live redesign makes it easier to add context to chats",
+              "url": "https://9to5google.com/2026/10/26/gemini-live-plus-redesign",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/05/gemini-live-2.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-27T02:45:00.000Z"
+        },
+        {
+          "id": "instagram-features-long-form-video-test",
+          "app": "Instagram",
+          "category": "consumer",
+          "date": "2026-10-27",
+          "published_at": "2026-10-26T17:25:00.000Z",
+          "beta": true,
+          "importance": 2,
+          "headline": "Instagram is testing Features, a horizontal long-form video format of up to 90 minutes.",
+          "what": "Instagram has started testing Features, a long-form horizontal video format, with selected creators in the US. Videos can run up to 90 minutes. There is no ad revenue share for creators yet.",
+          "why": "A vertical-first app adding a landscape player has to handle rotation and switching between orientations. Destination and hotel video in travel apps runs into the same question.",
+          "sources": [
+            {
+              "title": "Instagram takes on YouTube with new 90-minute horizontal video format",
+              "url": "https://9to5mac.com/2026/10/26/instagram-takes-on-youtube-with-new-90-minute-horizontal-video-format",
+              "publisher": "9to5Mac"
+            },
+            {
+              "title": "Instagram tests ‘Features’ long-form videos, but missing YouTube’s ad share for now",
+              "url": "https://9to5google.com/2026/10/26/instagram-features-long-form-video-test",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/06/instagram-app-icon-new.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/44/b0/cc/44b0cc3a-e91f-2824-d98f-3e5e095a73f3/Prod-0-0-1x_U007epad-0-0-0-1-0-0-sRGB-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-27T02:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-26",
+      "collected_at": "2026-10-26T02:45:00.000Z",
+      "quiet": true,
+      "pattern": null,
+      "items": []
+    },
+    {
+      "date": "2026-10-25",
+      "collected_at": "2026-10-25T02:45:00.000Z",
+      "quiet": true,
+      "pattern": null,
+      "items": []
+    },
+    {
+      "date": "2026-10-24",
+      "collected_at": "2026-10-24T02:45:00.000Z",
+      "quiet": false,
+      "pattern": null,
+      "items": [
+        {
+          "id": "gemini-android-side-panel-settings-redesign",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-24",
+          "published_at": "2026-10-23T22:02:00.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "The Gemini app on Android gets a redesigned side panel and settings screen.",
+          "what": "Google has rolled out new designs for the Gemini app's side panel and its settings on Android. It follows the Spark-to-Task update, and the side panel is also where Gemini Notebooks live.",
+          "why": "Google is putting history, notebooks and tools in one side panel. Worth checking before deciding where an in-app travel assistant's past chats and saved trips should sit.",
+          "sources": [
+            {
+              "title": "Gemini for Android rolls out side panel and settings redesign",
+              "url": "https://9to5google.com/2026/10/23/gemini-settings-redesign-android",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/05/gemini-app-2.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-24T02:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-23",
+      "collected_at": "2026-10-23T02:45:00.000Z",
+      "quiet": false,
+      "pattern": null,
+      "items": [
+        {
+          "id": "airbnb-checkout-chores-limit",
+          "app": "Airbnb",
+          "category": "ota",
+          "date": "2026-10-22",
+          "published_at": "2026-10-21T22:16:05.000Z",
+          "beta": false,
+          "importance": 3,
+          "headline": "Airbnb stops hosts from requiring guests to strip beds or do other heavy cleaning at checkout.",
+          "what": "Airbnb says hosts can no longer require guests to do time-consuming chores, such as stripping beds, before they leave. The checkout tasks a host lists are now limited by the platform, and some hosts say they will leave over it.",
+          "why": "Checkout expectations move from host free text to platform rules. On Trip.com homestay and apartment listings, checkout tasks are still found late in house rules; showing them before payment is the same fix.",
+          "sources": [
+            {
+              "title": "Airbnb limits chores for guests, sparking backlash from hosts",
+              "url": "https://techcrunch.com/2026/10/21/airbnb-limits-chores-for-guests-sparking-backlash-from-hosts",
+              "publisher": "TechCrunch Apps"
+            }
+          ],
+          "image": "https://techcrunch.com/wp-content/uploads/2018/09/GettyImages-733478305.jpg?resize=1200,713",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/e3/4e/c6/e34ec66c-5147-037c-282a-4ea295af5d36/AppIcon-0-0-1x_U007epad-0-1-0-0-0-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-23T02:45:00.000Z"
+        },
+        {
+          "id": "spotify-family-plan-qr-verification",
+          "app": "Spotify",
+          "category": "consumer",
+          "date": "2026-10-22",
+          "published_at": "2026-10-22T15:24:32.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "Spotify is asking Family Plan members to confirm they live together by scanning a QR code.",
+          "what": "Spotify is rolling out a QR-code check that asks Family Plan members to confirm they share the plan owner's household. On its earnings call the company called it a routine improvement rather than a crackdown, and said the check has no end date.",
+          "why": "Re-verifying people who already pay is the same problem as re-checking saved travellers or railcards: a QR hand-off between devices instead of a form, and wording that does not read as an accusation.",
+          "sources": [
+            {
+              "title": "Spotify confirms Family Plan crackdown, but calls it a ‘routine improvement’",
+              "url": "https://techcrunch.com/2026/10/22/spotify-confirms-family-plan-crackdown-but-calls-it-a-routine-improvement",
+              "publisher": "TechCrunch Apps"
+            },
+            {
+              "title": "Spotify confirms it won’t stop Family Plan sharing verification, but it’s not a ‘crackdown’",
+              "url": "https://9to5google.com/2026/10/22/spotify-confirms-it-wont-stop-family-plan-sharing-verification-but-its-not-a-crackdown",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://techcrunch.com/wp-content/uploads/2026/10/girl-wearing-headphones-teen-GettyImages-2155720072.jpg?resize=1200,675",
+          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/8b/f2/6a/8bf26ab9-3ced-cb5c-a2b3-19f65e7f5cc6/AppIcon-0-0-1x_U007epad-0-1-0-0-85-220.png/128x128bb.png",
+          "collected_at": "2026-10-23T02:45:00.000Z"
+        }
+      ]
+    }
+  ]
+}

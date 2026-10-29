@@ -1,0 +1,149 @@
+[
+  {
+    "at": "2026-10-23T02:45:00.000Z",
+    "date": "2026-10-23",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 18,
+    "kept": 2,
+    "added": 2,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-24T02:45:00.000Z",
+    "date": "2026-10-24",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 18,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-25T02:45:00.000Z",
+    "date": "2026-10-25",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 6,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-26T02:45:00.000Z",
+    "date": "2026-10-26",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 1,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-27T02:45:00.000Z",
+    "date": "2026-10-27",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 26,
+    "kept": 3,
+    "added": 3,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-28T02:45:00.000Z",
+    "date": "2026-10-28",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 47,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  },
+  {
+    "at": "2026-10-29T02:45:00.000Z",
+    "date": "2026-10-29",
+    "mode": "manual",
+    "feeds_ok": 16,
+    "feeds_failed": [],
+    "candidates": 924,
+    "sent_to_model": 63,
+    "kept": 7,
+    "added": 7,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "web_searches": 0
+      }
+    ],
+    "cost_usd": 0
+  }
+]

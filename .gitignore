@@ -1,0 +1,10 @@
+# Credentials: never commit keys
+.env
+.env.*
+!.env.example
+
+# Build output and local caches
+dist/
+.cache/
+node_modules/
+.DS_Store
