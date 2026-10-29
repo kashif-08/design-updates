@@ -2,6 +2,7 @@
 
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { loadConfig } from './config.ts';
+import { mirrorAssets } from './mirror.ts';
 import { emptyRadar } from './radar.ts';
 import { readJson, writeJson } from './util.ts';
 
@@ -9,7 +10,9 @@ const cfg = loadConfig();
 rmSync('dist', { recursive: true, force: true });
 mkdirSync('dist/data', { recursive: true });
 cpSync('site', 'dist', { recursive: true });
-writeJson('dist/data/radar.json', readJson('data/radar.json', emptyRadar()));
+const mirrored = await mirrorAssets(readJson('data/radar.json', emptyRadar()), 'dist');
+writeJson('dist/data/radar.json', mirrored.radar);
+console.log(`Copied ${mirrored.saved} icons into the site${mirrored.failed ? ` (${mirrored.failed} could not be downloaded and load from their original address)` : ''}.`);
 // Page settings the site needs from watchlist.yaml: the name in the greeting and the category labels.
 writeJson('dist/data/meta.json', {
   reader: cfg.reader,

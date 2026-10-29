@@ -43,7 +43,8 @@ export function buildCurateInput(cfg: Config, candidates: Candidate[], recent: R
   return {
     today: localDate(now, cfg.timezone),
     window: { from: new Date(now.getTime() - cfg.windowHours * 3_600_000).toISOString(), to: now.toISOString() },
-    watchlist: Object.fromEntries(cfg.groups.map((g) => [g.category, g.apps.map((a) => a.name)])),
+    // Each app with the names that count as it, so sub-brands (Vrbo for Expedia) are not dropped as off-list.
+    watchlist: Object.fromEntries(cfg.groups.map((g) => [g.category, Object.fromEntries(g.apps.map((a) => [a.name, a.aliases]))])),
     recently_reported: recent,
     candidates: candidates.map((c) => ({
       cid: c.cid,

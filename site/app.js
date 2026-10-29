@@ -236,7 +236,7 @@ function metaRow(item, big = false) {
 
 function sources(item) {
   const list = item.sources ?? [];
-  const icons = list.map((s) => `<img src="${esc(favicon(domainOf(s.url)))}" alt="" width="16" height="16" loading="lazy" referrerpolicy="no-referrer">`).join('');
+  const icons = list.map((s) => `<img src="${esc(s.favicon || favicon(domainOf(s.url)))}" alt="" width="16" height="16" loading="lazy" referrerpolicy="no-referrer">`).join('');
   const links = list.map((s) => `<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(s.publisher || domainOf(s.url))}</a>`).join(', ');
   return `<div class="sources"><span class="stack" aria-hidden="true">${icons}</span><span>${list.length} source${list.length === 1 ? '' : 's'}</span><span aria-hidden="true">·</span><span>${links}</span></div>`;
 }

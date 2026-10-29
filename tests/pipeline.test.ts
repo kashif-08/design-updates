@@ -373,3 +373,10 @@ test('gemini: request shape, JSON answer, thinking parts skipped, location block
   const blocked = (async () => Response.json({ error: { code: 400, status: 'FAILED_PRECONDITION', message: 'User location is not supported for the API use.' } }, { status: 400 })) as unknown as typeof fetch;
   await assert.rejects(geminiLlm('k', blocked).messages({ model: 'm', system: '', maxTokens: 1, messages: [] }), (e: Error) => e instanceof LlmUnavailableError && /Run it on GitHub/.test(e.message));
 });
+
+test('curate input lists each app with the names that count as it', async () => {
+  const { buildCurateInput } = await import('../src/curate.ts');
+  const input = buildCurateInput(CFG, [], [], NOW) as { watchlist: Record<string, Record<string, string[]>> };
+  assert.deepEqual(input.watchlist.ota.Expedia, ['Expedia']);
+  assert.deepEqual(input.watchlist.platform.Apple, ['Apple', 'iOS', 'Liquid Glass']);
+});

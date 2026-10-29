@@ -9,5 +9,3 @@ dist/
 node_modules/
 .DS_Store
 
-# Trial run output (the Try Gemini workflow saves it to its own branch)
-.trial/

@@ -2,7 +2,7 @@
 
 A morning paper for one: what popular apps changed in design, flows and features, filtered so only real changes get through.
 
-Once a day a job reads news feeds and runs a few web searches, applies strict rules, asks Claude to pick what is worth your time and write it up, and publishes a static page. Today's changes are on top; older days are listed below with a date rail, category filters and unread dots.
+Every morning at 07:00 a job on the laptop reads news feeds, applies strict rules, asks the company Claude (Opus 5.5) to pick what is worth your time and write it up, and uploads the result. GitHub then publishes it as a static page at https://kashif-08.github.io/design-updates/. Today's changes are on top; older days are listed below with a date rail, category filters and unread dots.
 
 | Phone (375px) | Desktop (1280px) |
 | --- | --- |
@@ -58,7 +58,9 @@ Set `provider:` in `watchlist.yaml`, or `RADAR_PROVIDER` in the environment, to 
 | `gemini` | GitHub only (Google blocks the API from mainland China) | `GEMINI_API_KEY`. Model: `gemini.curate` (default `gemini-3.8-flash`, free tier) | No |
 | `anthropic` | Anywhere Anthropic serves | `ANTHROPIC_API_KEY` | Yes |
 
-The GitHub workflows set `RADAR_PROVIDER=gemini`. Locally, keys go in `.env` (copy `.env.example`); it is git-ignored. If the company login expires, run `ada refresh`.
+The morning job uses `company`. Keys for the other two go in `.env` (copy `.env.example`); it is git-ignored. If the company login expires, run `ada refresh` in Terminal and log in again.
+
+Gemini was tried on GitHub in October 2026 and not used: it timed out on several calls, invented a detail, and dropped stories Opus kept.
 
 ### Running without a key
 
@@ -102,36 +104,35 @@ Run `npm run check-feeds` to confirm it works. If a site has no feed, add its do
 
 When this was set up (October 2026) there was no working public feed for the Airbnb, Expedia Group, Agoda, Trainline and Omio newsrooms, Google Design / Material Design, or PhocusWire (it blocks automated readers). Those are covered by search.
 
+## The morning job (this Mac)
+
+`scripts/daily.sh` runs the collector with the company Claude, then commits and uploads `data/` to GitHub, which republishes the page. macOS starts it at **07:00, 09:00, 12:00 and 16:00**; after the first successful run of the day, the later ones do nothing. So if the Mac was asleep or off the company network at 07:00, the next slot catches up.
+
+- **Install or update:** `sh scripts/install-mac.sh` (add `--run-now` to start a test run straight away).
+- **Remove:** `sh scripts/uninstall-mac.sh`.
+- **Log:** `.cache/daily.log`. The last run's full output is in `.cache/last-run.txt`.
+- **Run again today anyway:** `RADAR_FORCE=1 sh scripts/daily.sh`.
+- **If something needs you,** a Mac notification says so: an expired company login (`ada refresh`), or an upload that failed (usually an expired GitHub token).
+
+The Mac has to be awake at one of those times and able to reach the company AI server (`ada-cli-golang.ctripcorp.com`), which may need the office network or VPN. The upload uses the GitHub token saved in the macOS Keychain. Fine-grained tokens expire; when it does, make a new one (GitHub → Settings → Developer settings → Personal access tokens) and run `git push` once in Terminal to save it.
+
 ## Changing the run time
 
-The schedule is in `.github/workflows/radar.yml`. It is switched off until the Gemini trial is approved; to turn it on, remove the `#` from these two lines:
-
-```yaml
-  # schedule:
-  #   - cron: '0 23 * * *'   # 23:00 UTC = 07:00 Shanghai
-```
-
-GitHub cron is always UTC. For 06:30 Shanghai use `30 22 * * *`. The page's "today" follows the timezone in `watchlist.yaml` (`timezone:`). Scheduled runs can start a few minutes late, and GitHub pauses schedules on repositories with no activity for 60 days (the daily commit counts as activity).
-
-To run it now: Actions tab → Daily radar → Run workflow.
+Edit the `HOURS` line in `scripts/install-mac.sh` (24-hour clock, this Mac's time zone), then run `sh scripts/install-mac.sh` again. The page's "today" follows `timezone:` in `watchlist.yaml`.
 
 ## Hosting on GitHub
 
-1. Create a repository and push this folder to `main`.
-2. Settings → Secrets and variables → Actions → New repository secret: `GEMINI_API_KEY`.
-3. Settings → Pages → Source: **GitHub Actions**.
-4. Actions tab → **Try Gemini** → Run workflow. It runs Gemini on the saved news for 23–29 Oct and on today's feeds, without touching the real page, and saves the results to the `gemini-trial` branch.
-5. When the results look right: Actions tab → Daily radar → Run workflow to publish, then switch the schedule on (see above).
+The page is published by `.github/workflows/radar.yml` whenever `data/`, `site/`, `src/` or `watchlist.yaml` changes on `main`, or by hand (Actions tab → Publish page → Run workflow). It needs no secrets. While building, it copies app icons and source favicons into the site, because Google's and Apple's image servers may not load in mainland China. Article photos still load from the publishers' sites.
 
-The workflow commits `data/` after each run, so the repository holds the full history. Edits to `site/` or `watchlist.yaml` pushed to `main` republish the page without a new collection.
+To set it up from scratch: create a repository, push this folder to `main`, and set Settings → Pages → Source to **GitHub Actions**.
 
 ## Cost
 
-- **Gemini:** free on the free tier (one curate call a day). Google can change free-tier limits.
-- **Company plan:** about 0.6 credits a day with Opus 5.5 (4.4 for the test week). The run prints credits used.
+- **Company plan (in use):** about 0.6 credits a day with Opus 5.5 (4.4 for the test week; a busy day about 1.6). The run prints credits used. `kr-claude-opus-5` costs about a third less: set `company.curate` in `watchlist.yaml`.
+- **Gemini:** free on the free tier.
 - **Anthropic API:** one Sonnet curate call plus up to four Haiku search calls, about $0.15–0.35 a day.
 
-Every run logs tokens (and credits or an estimated cost) to `data/runs.json` and to the Actions run summary. Prices for the estimate are in `watchlist.yaml` under `prices:`.
+Every run logs tokens (and credits or an estimated cost) to `data/runs.json`. Prices for the estimate are in `watchlist.yaml` under `prices:`.
 
 ## Files
 
@@ -144,7 +145,9 @@ src/prefilter.ts      rule checks before the model
 src/curate.ts         the model call and the checks on its answer
 src/radar.ts          append-only merge into radar.json, seen events
 src/llm.ts            model access: company gateway, Gemini, Anthropic API, manual
-trial/snapshots/      saved news for 23–29 Oct, used by the Try Gemini workflow
+src/mirror.ts         copies icons into the built site
+scripts/daily.sh      the morning job on this Mac
+scripts/install-mac.sh / uninstall-mac.sh   schedule it with macOS (launchd)
 site/                 the page (plain HTML, CSS, JS)
 data/radar.json       every day, newest first
 data/seen.json        events already reported

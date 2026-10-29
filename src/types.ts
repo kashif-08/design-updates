@@ -31,6 +31,8 @@ export interface Source {
   title: string;
   url: string;
   publisher: string;
+  /** Set only in the built site: the publisher's icon, copied into the site. */
+  favicon?: string | null;
 }
 
 /** One reported change, as stored in radar.json and shown on the page. */
