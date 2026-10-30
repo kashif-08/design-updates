@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-29T23:01:02.946Z",
+  "updated_at": "2026-10-30T04:00:06.947Z",
   "days": [
     {
       "date": "2026-10-30",
@@ -8,6 +8,33 @@
       "quiet": false,
       "pattern": null,
       "items": [
+        {
+          "id": "gemini-file-generation-editing",
+          "app": "Google",
+          "category": "platform",
+          "date": "2026-10-30",
+          "published_at": "2026-10-29T18:45:31.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "Gemini can now generate, preview and edit PDFs, Docs, Sheets and slide decks directly inside a chat.",
+          "what": "Gemini users can now create, preview and edit PDFs, Google Docs, Google Sheets, slide decks, Markdown files, TXT files and code without leaving the conversation. The feature is available to all Gemini users starting today, and PDF previews and editing work on the web. 9to5Google also reports a separate update that brings the latest Gemini app design to all Android devices.",
+          "why": "Assistants are moving from text answers to editable files shown in the chat. If your app offers AI trip planning, this affects how the plan is handed over: users may expect an itinerary they can preview and adjust in place rather than a block of text.",
+          "sources": [
+            {
+              "title": "You can generate and edit Google Docs files directly in Gemini chats now",
+              "url": "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
+              "publisher": "The Verge"
+            },
+            {
+              "title": "Latest Gemini design comes to all Android devices, app upgrades file generation",
+              "url": "https://9to5google.com/2026/10/29/gemini-design-file-generation",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/STK255_Google_Gemini_B_474198.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
+          "collected_at": "2026-10-30T04:00:06.947Z"
+        },
         {
           "id": "gemini-notebook-audio-recorder",
           "app": "Google",

@@ -124,6 +124,15 @@
       "urls": [
         "https://9to5google.com/2026/10/27/gemini-notebook-recorder"
       ]
+    },
+    "gemini-file-generation-editing": {
+      "app": "Google",
+      "headline": "Gemini can now generate, preview and edit PDFs, Docs, Sheets and slide decks directly inside a chat.",
+      "date": "2026-10-30",
+      "urls": [
+        "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
+        "https://9to5google.com/2026/10/29/gemini-design-file-generation"
+      ]
     }
   }
 }
