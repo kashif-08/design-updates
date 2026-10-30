@@ -439,5 +439,50 @@
     ],
     "cost_usd": 0,
     "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-30T23:01:01.247Z",
+    "date": "2026-10-31",
+    "mode": "company",
+    "feeds_ok": 3,
+    "feeds_failed": [
+      "Android Developers Blog",
+      "The Keyword (Travel)",
+      "Booking Holdings",
+      "Spotify Newsroom",
+      "Duolingo Blog",
+      "Linear Changelog",
+      "Notion Releases",
+      "9to5Mac",
+      "9to5Google",
+      "MacRumors",
+      "The Verge",
+      "TechCrunch Apps",
+      "Skift",
+      "Apple Newsroom",
+      "It's Nice That",
+      "Dezeen",
+      "Dezeen (logos)",
+      "BP&O",
+      "Logo Design Love",
+      "PRINT",
+      "Sidebar",
+      "Figma Blog"
+    ],
+    "candidates": 178,
+    "sent_to_model": 1,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 5715,
+        "output_tokens": 51,
+        "web_searches": 0,
+        "credits": 0.09247611542288556
+      }
+    ],
+    "cost_usd": 0
   }
 ]
