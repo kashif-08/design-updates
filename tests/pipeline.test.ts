@@ -190,8 +190,8 @@ test('collect: keeps real changes, merges syndicated copies, drops everything el
   assert.equal(reasons['Airbnb Summer Release recap'], 'older than 48h');
   assert.equal(reasons['Expedia closes funding round'], 'headline matches drop word "funding"');
   assert.equal(reasons['Best Apple Watch deals this week'], 'headline matches drop word "deals"');
-  assert.equal(reasons['Samsung unveils a new foldable'], 'not about a watchlist app');
-  assert.equal(reasons['Gmail email threads get a new look'], 'not about a watchlist app', 'aliases match exact capitals only');
+  assert.equal(reasons['Samsung unveils a new foldable'], 'not about a watchlist app or a design change');
+  assert.equal(reasons['Gmail email threads get a new look'], 'no UI change', 'a design headline about any app reaches the model');
   assert.equal(reasons['I redesigned Airbnb'], 'blocked source (medium.com)');
   assert.equal(reasons['Airbnb Services: 10 things'], 'not a trusted source (travel-seo-blog.example)');
   assert.equal(reasons['Airbnb tests a new map'], 'older than 48h', 'page date beats the search date');
@@ -242,7 +242,7 @@ test('next day: a re-syndicated launch is not reported again, and an empty day i
   assert.ok(r.preDropped.some((d) => d.reason === 'already reported on an earlier day'), 'yesterday’s URLs are filtered before the model');
   const radar = read<Radar>(paths.radar);
   assert.equal(radar.days.length, 2);
-  assert.deepEqual(radar.days[0], { date: '2026-10-30', collected_at: tomorrow.toISOString(), quiet: true, pattern: null, items: [] });
+  assert.deepEqual(radar.days[0], { date: '2026-10-30', collected_at: tomorrow.toISOString(), quiet: true, pattern: null, pattern_zh: null, items: [] });
   assert.deepEqual(radar.days[1], day1, 'past day untouched');
 });
 
@@ -379,4 +379,48 @@ test('curate input lists each app with the names that count as it', async () => 
   const input = buildCurateInput(CFG, [], [], NOW) as { watchlist: Record<string, Record<string, string[]>> };
   assert.deepEqual(input.watchlist.ota.Expedia, ['Expedia']);
   assert.deepEqual(input.watchlist.platform.Apple, ['Apple', 'iOS', 'Liquid Glass']);
+});
+
+test('design focus: a design publication item reaches the model, and a non-watchlist brand keeps its own name, kind, icon and Chinese text', async () => {
+  const { curate } = await import('../src/curate.ts');
+  const cfg = parseConfig(`
+groups:
+  consumer:
+    label: Consumer
+    apps:
+      - name: Threads
+        aliases: [Threads]
+        domains: [threads.com]
+feeds:
+  - name: It's Nice That
+    url: https://www.itsnicethat.com/articles.rss
+    kind: design
+trust:
+  outlets: [itsnicethat.com]
+`);
+  const fresh = new Date(NOW.getTime() - 3_600_000).toISOString();
+  const { kept } = prefilter(cfg, [
+    { cid: '', title: 'Pentagram gives Mastercard a new wordmark', url: 'https://itsnicethat.com/a', source: "It's Nice That", domain: 'itsnicethat.com', publishedAt: fresh, summary: '', image: null, via: 'feed', trust: 'outlet', app: null, design: true },
+    { cid: '', title: 'YouTube redesigns its tab bar', url: 'https://9to5google.com/b', source: '9to5Google', domain: '9to5google.com', publishedAt: fresh, summary: '', image: null, via: 'feed', trust: 'outlet', app: null },
+    { cid: '', title: 'Samsung posts record profit', url: 'https://9to5google.com/c', source: '9to5Google', domain: '9to5google.com', publishedAt: fresh, summary: '', image: null, via: 'feed', trust: 'outlet', app: null },
+  ], { now: NOW, seenUrls: new Set() });
+  assert.deepEqual(kept.map((c) => c.title), ['Pentagram gives Mastercard a new wordmark', 'YouTube redesigns its tab bar']);
+
+  const answer = {
+    items: [{
+      event_id: 'youtube-tab-bar', app: 'YouTube', category: 'consumer', domain: 'www.youtube.com', kind: 'ui', importance: 3,
+      headline: 'YouTube redesigns its tab bar!', what: 'Subscriptions moves out of the bottom bar.', why: 'Tab bars are scarce.',
+      zh: { headline: 'YouTube 重新设计底部标签栏！', what: '订阅移出底部栏。', why: '标签栏位置有限。' }, source_cids: ['c2'],
+    }],
+    dropped: [{ cid: 'c1', reason: 'small client work' }],
+    pattern: null,
+  };
+  const llm: Llm = { mode: 'api', canSearch: false, messages: async () => ({ content: [{ type: 'text', text: JSON.stringify(answer) }], stopReason: 'end_turn', usage: { input_tokens: 1, output_tokens: 1, web_searches: 0 } }) };
+  const r = await curate(cfg, llm, kept, { now: NOW, recent: [], seen: { events: {} }, icons: {} });
+  const [item] = r.items;
+  assert.equal(item.app, 'YouTube');
+  assert.equal(item.kind, 'ui');
+  assert.equal(item.icon, 'https://www.google.com/s2/favicons?domain=youtube.com&sz=64');
+  assert.deepEqual(item.zh, { headline: 'YouTube 重新设计底部标签栏。', what: '订阅移出底部栏。', why: '标签栏位置有限。' });
+  assert.equal(r.dropped[0].reason, 'small client work');
 });

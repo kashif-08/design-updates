@@ -26,6 +26,12 @@ export function matchApp(cfg: Config, text: string): App | null {
   return best?.app ?? null;
 }
 
+/** Headline words that suggest a visible design change. News about any app with these passes to the model. */
+const DESIGN_WORDS =
+  /\b(redesign(s|ed)?|rebrand(s|ed|ing)?|new (look|logo|icon|design|interface|layout|identity|ui)|logo|logos|icons?|brand identity|visual identity|typeface|font|design (language|system|refresh|overhaul|update)|refresh(ed)?|revamp(s|ed)?|overhaul(s|ed)?|makeover|facelift|dark mode|interface|UI|UX|layout|navigation|tab bar|home ?screen|onboarding|checkout|widget|Liquid Glass|Material (3|You|Expressive)|Human Interface Guidelines)\b/i;
+
+export const looksLikeDesign = (title: string): boolean => DESIGN_WORDS.test(title);
+
 export function dropWord(cfg: Config, title: string): string | null {
   return cfg.trust.dropWords.find((w) => wordPattern(w, 'i').test(title)) ?? null;
 }
@@ -54,18 +60,22 @@ export function prefilter(cfg: Config, all: Candidate[], ctx: { now: Date; seenU
 
   const ok: Candidate[] = [];
   for (const c of byUrl.values()) {
-    if (onDomain(c.domain, cfg.trust.blockedDomains)) {
-      drop(c, `blocked source (${c.domain})`);
+    // An entry with a path (figma.com/community) blocks only that part of the site.
+    const blocked = cfg.trust.blockedDomains.find((b) => (b.includes('/') ? c.url.replace(/^https?:\/\/(www\.)?/, '').startsWith(b) : onDomain(c.domain, [b])));
+    if (blocked) {
+      drop(c, `blocked source (${blocked})`);
       continue;
     }
 
+    // Design publications and design-sounding headlines pass without a watchlist app; the model names the brand.
     const app = (c.app && appByName(cfg, c.app)) || matchApp(cfg, c.title);
-    if (!app) {
-      drop(c, 'not about a watchlist app', true);
+    const design = c.design || looksLikeDesign(c.title);
+    if (!app && !design) {
+      drop(c, 'not about a watchlist app or a design change', true);
       continue;
     }
 
-    const own = onDomain(c.domain, app.domains);
+    const own = app ? onDomain(c.domain, app.domains) : null;
     const outlet = onDomain(c.domain, cfg.trust.outlets);
     // Feeds were chosen by hand, so they are trusted. Search results must come from a known site.
     if (c.via === 'search' && !own && !outlet) {
@@ -99,7 +109,7 @@ export function prefilter(cfg: Config, all: Candidate[], ctx: { now: Date; seenU
       continue;
     }
 
-    ok.push({ ...c, app: app.name, trust: own || c.trust === 'company' ? 'company' : 'outlet' });
+    ok.push({ ...c, app: app?.name ?? null, trust: own || c.trust === 'company' ? 'company' : 'outlet' });
   }
 
   // Company posts first, then newest. Anything past the cap is dropped so the model call stays small.

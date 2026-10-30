@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Pixel Post · app changes worth your time</title>
+    <title>Pixel Post · app design changes worth your time</title>
     <meta name="description" content="A one-person morning paper of design, flow and feature changes in popular apps." />
     <meta name="theme-color" content="#f3efe6" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -12,10 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Geist:wght@400..700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <script>
-      // Set the theme before first paint so dark mode never flashes light.
+      // Set the theme and language before first paint so neither flashes.
       try {
         const t = localStorage.getItem('radar.theme');
         if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+        const l = new URLSearchParams(location.search).get('lang') || localStorage.getItem('radar.lang');
+        if (l === 'zh') document.documentElement.lang = 'zh-CN';
       } catch {}
     </script>
   </head>
@@ -29,6 +31,7 @@
             <span class="wordmark-text">Pixel Post</span>
           </a>
           <p class="masthead-meta" id="issue"></p>
+          <button class="lang-toggle" id="lang" type="button" aria-label="切换到中文" lang="zh-CN">中</button>
           <button class="theme-toggle" id="theme" type="button" aria-label="Switch to dark mode"></button>
         </div>
         <div class="rule rule-heavy" aria-hidden="true"></div>

@@ -4,7 +4,7 @@
 import { appByName, type Config } from './config.ts';
 import { textOf, usageOf, type Llm } from './llm.ts';
 import { CURATE_SYSTEM } from './prompts.ts';
-import type { CallUsage, Candidate, Dropped, Item, Seen } from './types.ts';
+import { CATEGORIES, KINDS, type CallUsage, type Candidate, type Category, type Dropped, type Item, type ItemZh, type Kind, type Seen } from './types.ts';
 import { localDate, parseJsonLoose, slugify, truncate } from './util.ts';
 
 export interface RecentItem {
@@ -18,6 +18,7 @@ export interface CurateResult {
   items: Item[];
   dropped: Dropped[];
   pattern: string | null;
+  pattern_zh: string | null;
   usage: CallUsage;
   warnings: string[];
 }
@@ -27,6 +28,19 @@ const EMOJI = /[\p{Extended_Pictographic}\u{FE0F}]/gu;
 
 const clean = (s: unknown, max: number): string =>
   typeof s === 'string' ? truncate(s.replace(EMOJI, '').replace(/\.?!+(?=\s|$)/g, '.'), max) : '';
+
+/** Chinese text: same clean-up, with full-width exclamation marks turned into full stops too. */
+const cleanZh = (s: unknown, max: number): string => (typeof s === 'string' ? clean(s.replace(/！+/g, '。'), max) : '');
+
+function zhOf(raw: unknown): ItemZh | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const z = raw as Record<string, unknown>;
+  const out = { headline: cleanZh(z.headline, 120), what: cleanZh(z.what, 400), why: cleanZh(z.why, 260) };
+  return out.headline && out.what && out.why ? out : null;
+}
+
+const favicon = (domain: string) => `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
+const DOMAIN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
 
 /** Headline words, for spotting the same event written two ways. */
 const words = (s: string) => new Set(s.toLowerCase().match(/[a-z0-9]{3,}/g) ?? []);
@@ -59,7 +73,20 @@ export function buildCurateInput(cfg: Config, candidates: Candidate[], recent: R
   };
 }
 
-type RawItem = { event_id?: unknown; app?: unknown; beta?: unknown; importance?: unknown; headline?: unknown; what?: unknown; why?: unknown; source_cids?: unknown };
+type RawItem = {
+  event_id?: unknown;
+  app?: unknown;
+  category?: unknown;
+  domain?: unknown;
+  kind?: unknown;
+  beta?: unknown;
+  importance?: unknown;
+  headline?: unknown;
+  what?: unknown;
+  why?: unknown;
+  zh?: unknown;
+  source_cids?: unknown;
+};
 
 export async function curate(
   cfg: Config,
@@ -72,10 +99,11 @@ export async function curate(
     model: cfg.models.curate,
     system: CURATE_SYSTEM,
     messages: [{ role: 'user', content: JSON.stringify(input) }],
-    maxTokens: 8000,
+    // English and Chinese for every item.
+    maxTokens: 16_000,
   });
   const usage = usageOf('curate', cfg.models.curate, res);
-  const out = parseJsonLoose(textOf(res.content)) as { items?: RawItem[]; dropped?: { cid?: unknown; reason?: unknown }[]; pattern?: unknown };
+  const out = parseJsonLoose(textOf(res.content)) as { items?: RawItem[]; dropped?: { cid?: unknown; reason?: unknown }[]; pattern?: unknown; pattern_zh?: unknown };
 
   const byCid = new Map(candidates.map((c) => [c.cid, c]));
   const accounted = new Set<string>();
@@ -96,7 +124,12 @@ export async function curate(
   for (const raw of out.items ?? []) {
     const cids = (Array.isArray(raw.source_cids) ? raw.source_cids : []).filter((x): x is string => typeof x === 'string' && byCid.has(x));
     const srcs = cids.map((cid) => byCid.get(cid)!);
-    const app = typeof raw.app === 'string' ? appByName(cfg, raw.app) : undefined;
+    // A watchlist app, or another well-known brand the model named (design news is not limited to the watchlist).
+    const listed = typeof raw.app === 'string' ? appByName(cfg, raw.app) : undefined;
+    const brand = listed?.name ?? clean(raw.app, 40);
+    const category: Category = listed?.category ?? (CATEGORIES.includes(raw.category as Category) ? (raw.category as Category) : 'consumer');
+    const domain = typeof raw.domain === 'string' && DOMAIN.test(raw.domain.trim()) ? raw.domain.trim().toLowerCase().replace(/^www\./, '') : null;
+    const kind: Kind | null = KINDS.includes(raw.kind as Kind) ? (raw.kind as Kind) : null;
     const headline = clean(raw.headline, 220);
     const what = clean(raw.what, 700);
     const why = clean(raw.why, 450);
@@ -105,8 +138,8 @@ export async function curate(
       warnings.push(`model returned "${headline || 'an item'}" with no valid sources; skipped`);
       continue;
     }
-    if (!app) {
-      fail(`model named an app not on the watchlist (${String(raw.app)})`);
+    if (!brand) {
+      fail('model did not name the app or brand');
       continue;
     }
     if (!headline || !what || !why) {
@@ -118,10 +151,10 @@ export async function curate(
     const kept = srcs.slice(0, 2);
     const extra = srcs.slice(2);
 
-    const id = slugify(typeof raw.event_id === 'string' && raw.event_id ? raw.event_id : `${app.name} ${headline}`);
+    const id = slugify(typeof raw.event_id === 'string' && raw.event_id ? raw.event_id : `${brand} ${headline}`);
     const repeat =
       ctx.seen.events[id] ??
-      recentSeen.find(([, e]) => e.app === app.name && similar(e.headline, headline) >= 0.8)?.[1] ??
+      recentSeen.find(([, e]) => e.app === brand && similar(e.headline, headline) >= 0.8)?.[1] ??
       recentSeen.find(([, e]) => e.urls.some((u) => kept.some((k) => k.url === u)))?.[1];
     if (repeat) {
       fail(`already reported on ${repeat.date} ("${truncate(repeat.headline, 60)}")`);
@@ -135,12 +168,15 @@ export async function curate(
     for (const c of kept) accounted.add(c.cid);
     for (const c of extra) dropCandidate(c, `syndicated copy of ${id}`);
     for (const field of [headline, what, why]) if (HYPE.test(field)) warnings.push(`hype word in ${id}: "${field.match(HYPE)![0]}"`);
+    const zh = zhOf(raw.zh);
+    if (!zh) warnings.push(`no Chinese write-up for ${id}; the page shows English there`);
 
     const published = kept.map((c) => c.publishedAt!).sort()[0];
     items.push({
       id,
-      app: app.name,
-      category: app.category,
+      app: brand,
+      category,
+      kind,
       date: localDate(new Date(published), cfg.timezone),
       published_at: published,
       beta: raw.beta === true,
@@ -150,13 +186,15 @@ export async function curate(
       why,
       sources: kept.map((c) => ({ title: c.title, url: c.url, publisher: c.source })),
       image: kept.find((c) => c.image)?.image ?? null,
-      icon: ctx.icons[app.name] ?? null,
+      icon: (listed && ctx.icons[listed.name]) || (domain ? favicon(domain) : null),
       collected_at: ctx.now.toISOString(),
+      zh,
     });
   }
 
   for (const c of candidates) if (!accounted.has(c.cid)) dropCandidate(c, 'not mentioned by the model');
 
   const pattern = items.length && typeof out.pattern === 'string' && out.pattern.trim() ? clean(out.pattern, 300) : null;
-  return { items, dropped, pattern, usage, warnings };
+  const pattern_zh = pattern && typeof out.pattern_zh === 'string' && out.pattern_zh.trim() ? cleanZh(out.pattern_zh, 200) : null;
+  return { items, dropped, pattern, pattern_zh, usage, warnings };
 }

@@ -1,81 +1,91 @@
 {
   "version": 1,
-  "updated_at": "2026-10-30T04:00:06.947Z",
+  "updated_at": "2026-10-30T15:45:10.721Z",
   "days": [
     {
       "date": "2026-10-30",
-      "collected_at": "2026-10-29T16:18:24.175Z",
+      "collected_at": "2026-10-30T15:45:10.721Z",
       "quiet": false,
       "pattern": null,
+      "pattern_zh": null,
       "items": [
         {
-          "id": "gemini-file-generation-editing",
-          "app": "Google",
-          "category": "platform",
+          "id": "nytimes-175-identity",
+          "app": "The New York Times",
+          "category": "consumer",
+          "kind": "brand",
           "date": "2026-10-30",
-          "published_at": "2026-10-29T18:45:31.000Z",
+          "published_at": "2026-10-30T11:25:26.000Z",
           "beta": false,
           "importance": 2,
-          "headline": "Gemini can now generate, preview and edit PDFs, Docs, Sheets and slide decks directly inside a chat.",
-          "what": "Gemini users can now create, preview and edit PDFs, Google Docs, Google Sheets, slide decks, Markdown files, TXT files and code without leaving the conversation. The feature is available to all Gemini users starting today, and PDF previews and editing work on the web. 9to5Google also reports a separate update that brings the latest Gemini app design to all Android devices.",
-          "why": "Assistants are moving from text answers to editable files shown in the chat. If your app offers AI trip planning, this affects how the plan is handed over: users may expect an itinerary they can preview and adjust in place rather than a block of text.",
+          "headline": "The New York Times marks its 175th anniversary with a custom 175 mark and identity system.",
+          "what": "The anniversary identity is built around a custom 175 mark. It is designed to work across editorial, opinion, advertising, events and marketing, and it accompanies a set of events and a campaign.",
+          "why": "This is a model for a time-limited campaign mark designed as a full system for several surfaces at once. A travel brand could apply the same approach to an anniversary or sale event, covering home-screen modules, banners, push artwork and emails from one set of rules instead of one-off badges.",
           "sources": [
             {
-              "title": "You can generate and edit Google Docs files directly in Gemini chats now",
-              "url": "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
-              "publisher": "The Verge"
-            },
-            {
-              "title": "Latest Gemini design comes to all Android devices, app upgrades file generation",
-              "url": "https://9to5google.com/2026/10/29/gemini-design-file-generation",
-              "publisher": "9to5Google"
+              "title": "The New York Times turns 175",
+              "url": "https://the-brandidentity.com/project/the-new-york-times-turns-175-with-an-identity-events-and-a-campaign",
+              "publisher": "Sidebar"
             }
           ],
-          "image": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/STK255_Google_Gemini_B_474198.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
-          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-30T04:00:06.947Z"
+          "image": "https://the-brandidentity.com/uploads/articles/2026/10/the-new-york-times-turns-175-with-an-identity-events-and-a-campaign/The-New-York-Times-175-The-New-York-Times-02.jpg",
+          "icon": "https://www.google.com/s2/favicons?domain=nytimes.com&sz=64",
+          "collected_at": "2026-10-30T15:45:10.721Z",
+          "zh": {
+            "headline": "《纽约时报》为创刊 175 周年推出定制 175 标志和整套视觉识别。",
+            "what": "这套周年识别以一个定制的 175 标志为核心，可用于编辑内容、评论版、广告、活动和营销等场景，并配合一系列活动和广告宣传一起推出。",
+            "why": "这是限时活动标志按完整系统来设计、同时覆盖多个触点的一个例子。旅行品牌做周年庆或大促时，可以用同一套规则统一首页运营位、横幅、推送配图和邮件，而不是每处单独做一个角标。"
+          }
         },
         {
-          "id": "gemini-notebook-audio-recorder",
-          "app": "Google",
-          "category": "platform",
-          "date": "2026-10-28",
-          "published_at": "2026-10-27T22:44:07.000Z",
-          "beta": false,
+          "id": "youtube-google-tv-youtube-music-red-logo",
+          "app": "YouTube",
+          "category": "consumer",
+          "kind": "ui",
+          "date": "2026-10-30",
+          "published_at": "2026-10-30T11:30:00.000Z",
+          "beta": true,
           "importance": 1,
-          "headline": "Gemini Notebook on Android and iOS adds a built-in audio recorder.",
-          "what": "Gemini Notebook has rolled out an audio recorder in its Android and iOS apps. It follows last week's addition of Connected App integration to the same notebook.",
-          "why": "If a trip-planning or itinerary notes screen accepts user input, this is an example of placing voice recording inside the notebook itself instead of sending people to a separate recorder.",
+          "headline": "YouTube on Google TV starts showing YouTube Music with a red logo.",
+          "what": "9to5Google reports that an update to the YouTube app on Google TV, either rolling out or still in testing, gives YouTube Music a red logo. The reviewer says the logo stands out sharply from the rest of the interface.",
+          "why": "Cross-selling a sibling product, such as hotels inside a rail app, raises the same question. A single high-contrast brand mark among neutral entries draws attention but can look like noise, so the colour and weight of cross-sell entry points next to core features need deliberate choices.",
           "sources": [
             {
-              "title": "Gemini Notebook for Android, iOS adds built-in audio recorder",
-              "url": "https://9to5google.com/2026/10/27/gemini-notebook-recorder",
+              "title": "YouTube for Google TV update gives YouTube Music a distracting red logo I can’t stand",
+              "url": "https://9to5google.com/2026/10/30/youtube-google-tv-music-update-change",
               "publisher": "9to5Google"
             }
           ],
-          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/07/gemini-notebook-fold-8-5.jpg?quality=82&strip=all&resize=1200,628",
-          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-29T16:18:24.175Z"
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2025/10/YouTube-Google-TV-1.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=youtube.com&sz=64",
+          "collected_at": "2026-10-30T15:45:10.721Z",
+          "zh": {
+            "headline": "Google TV 上的 YouTube 开始用红色标志显示 YouTube Music。",
+            "what": "据 9to5Google 报道，Google TV 版 YouTube 应用的一次更新（可能正在推送，也可能仍在测试）给 YouTube Music 换上了红色标志。作者认为它和界面其他部分反差过大。",
+            "why": "旅行 App 做交叉推荐时会遇到同样的问题，比如在火车票 App 里放酒店入口。一个高对比度的品牌标志放在一排中性入口里很显眼，但也可能显得突兀。交叉推荐入口和核心功能并列时，颜色和视觉权重需要专门设计。"
+          }
         }
       ]
     },
     {
       "date": "2026-10-29",
-      "collected_at": "2026-10-29T02:45:00.000Z",
+      "collected_at": "2026-10-29T15:45:10.721Z",
       "quiet": false,
-      "pattern": "Booking is moving into AI products: Google opened Gemini and Search to outside apps, and Agoda and Expedia now supply hotels to Meta's Muse.",
+      "pattern": null,
+      "pattern_zh": null,
       "items": [
         {
-          "id": "apple-macbook-pro-touch-screen",
+          "id": "apple-macos-touch-macbook-pro",
           "app": "Apple",
           "category": "platform",
+          "kind": "ui",
           "date": "2026-10-29",
           "published_at": "2026-10-28T17:00:55.000Z",
           "beta": false,
-          "importance": 5,
-          "headline": "Apple's new MacBook Pro has a touch screen, and Apple has published guidance on designing Mac apps for touch.",
-          "what": "The new 14- and 16-inch MacBook Pro with a PROLED XDR display is the first Mac you can touch. Apple has posted developer videos on adapting apps for touch, with live sessions in November, and added the model to its Design Resources. Apple says it still sees the Mac as an indirect input device, so pointer and keyboard stay primary.",
-          "why": "Booking flows on a Mac, in Safari or an iPad app running on the Mac, will now be tapped as well as clicked. Hover-only controls and small targets in filters, calendars and seat maps need a touch-sized fallback.",
+          "importance": 4,
+          "headline": "Apple brings touch input to the Mac and publishes guidance for adapting apps to it.",
+          "what": "Apple announced its first touchscreen Mac, the MacBook Pro with PROLED XDR Display, on October 28. Alongside it, Apple released developer videos, articles and resources on preparing apps for touch on Mac, with live Group Labs sessions starting in November.",
+          "why": "If your booking app has a Mac version, controls built for a pointer will now also be tapped with a finger. That affects date pickers, seat maps and small filter chips in the results list. Watch the new sessions for Apple's guidance on target sizes and on controls that rely on hover.",
           "sources": [
             {
               "title": "Say hello to Touch on Mac",
@@ -90,63 +100,25 @@
           ],
           "image": "https://developer.apple.com/news/images/og/mbpt-og.jpg",
           "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
-          "collected_at": "2026-10-29T02:45:00.000Z"
-        },
-        {
-          "id": "vrbo-reserve-now-pay-later",
-          "app": "Expedia",
-          "category": "ota",
-          "date": "2026-10-29",
-          "published_at": "2026-10-28T21:00:00.000Z",
-          "beta": false,
-          "importance": 4,
-          "headline": "Vrbo launches Reserve Now, Pay Later, with less cancellation flexibility than Airbnb's version.",
-          "what": "Vrbo, part of Expedia Group, now lets guests book a stay and pay nothing up front. Skift reports the terms favour hosts more than Airbnb's version and give guests less say over when they can cancel without a penalty.",
-          "why": "When payment moves later, the cancellation deadline becomes the date that matters. Pay-later flows need that deadline on the results card, at checkout and on the confirmation, not only in the policy text.",
-          "sources": [
-            {
-              "title": "Vrbo Launches Reserve Now, Pay Later — With a Twist on Airbnb’s Approach",
-              "url": "https://skift.com/2026/10/28/vrbo-launches-reserve-now-pay-later-with-a-twist-on-airbnbs-approach",
-              "publisher": "Skift"
-            }
-          ],
-          "image": "https://skift.com/wp-content/uploads/2022/05/vrbo-ad.jpg?resize=1024,683",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/7c/a1/dc/7ca1dcf7-48c2-d47b-eee5-517872450a88/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-29T02:45:00.000Z"
-        },
-        {
-          "id": "apple-mac-dynamic-island",
-          "app": "Apple",
-          "category": "platform",
-          "date": "2026-10-29",
-          "published_at": "2026-10-28T17:28:03.000Z",
-          "beta": false,
-          "importance": 4,
-          "headline": "The Dynamic Island comes to the Mac, bringing Live Activities to the laptop screen.",
-          "what": "Apple introduced the Dynamic Island on the Mac with the new 14- and 16-inch MacBook Pro. It brings Live Activities, Spotlight and Siri AI together in one interactive area of the display.",
-          "why": "Live Activities now have a place on the Mac. If your app shows flight or train status as a Live Activity, check how its compact and expanded layouts read in this new space before travellers see them there.",
-          "sources": [
-            {
-              "title": "Apple Brings Dynamic Island to Mac for the First Time",
-              "url": "https://macrumors.com/2026/10/28/apple-brings-dynamic-island-to-mac",
-              "publisher": "MacRumors"
-            }
-          ],
-          "image": "https://images.macrumors.com/t/61Kn5pPVrYuSL-h2E4RqN2nhGUs=/3840x/article-new/2026/10/Apple-MacBook-Pro-with-PROLED-XDR-Display-Dynamic-Island-Apple-Music.jpg",
-          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
-          "collected_at": "2026-10-29T02:45:00.000Z"
+          "collected_at": "2026-10-29T15:45:10.721Z",
+          "zh": {
+            "headline": "Apple 让 Mac 支持触控，并发布了应用适配指南。",
+            "what": "Apple 于 10 月 28 日发布首款触屏 Mac，即配备 PROLED XDR 显示屏的 MacBook Pro。同时，Apple 推出了一批开发者视频、文章和资源，介绍如何让应用适配 Mac 触控，11 月起还会举办 Group Labs 线上答疑。",
+            "why": "如果你们的预订应用有 Mac 版，原本为鼠标设计的控件现在也会被手指点按，日期选择器、选座图和结果列表里的小筛选标签都会受影响。建议关注这些课程中关于点击区域尺寸和悬停交互的说明。"
+          }
         },
         {
           "id": "chrome-suggested-by-gemini-autofill",
-          "app": "Google",
-          "category": "platform",
+          "app": "Chrome",
+          "category": "consumer",
+          "kind": "ux",
           "date": "2026-10-29",
           "published_at": "2026-10-28T17:00:00.000Z",
           "beta": false,
-          "importance": 4,
-          "headline": "Chrome starts filling in much more of a web form with Gemini, under the name Suggested by Gemini.",
-          "what": "Google Chrome is rolling out Suggested by Gemini, which uses Gemini and Personal Intelligence to autofill far more information than standard autofill. Google first showed it in May.",
-          "why": "Passenger and guest forms on web checkout may now be filled by a model reading the page. Clear field labels and correct autocomplete attributes on name, passport and date-of-birth fields decide whether it fills them correctly.",
+          "importance": 3,
+          "headline": "Chrome rolls out \"Suggested by Gemini\" autofill, which fills in more information on web forms.",
+          "what": "Chrome can now use Gemini and Personal Intelligence to autofill more information than standard autofill handles. Autofill suggestions from Gemini carry the \"Suggested by Gemini\" name. Google first previewed the feature in May.",
+          "why": "Traveller-detail and checkout forms on the web may arrive partly filled by Gemini. Clear field labels and correct autocomplete attributes will affect what gets filled. Give users an easy way to review prefilled passenger names and document numbers before they pay.",
           "sources": [
             {
               "title": "Google Chrome rolling out ‘Suggested by Gemini’ autofill",
@@ -155,99 +127,100 @@
             }
           ],
           "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/08/google-chrome-navigation-gemini-1.jpg?quality=82&strip=all&resize=1200,628",
-          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-29T02:45:00.000Z"
+          "icon": "https://www.google.com/s2/favicons?domain=google.com&sz=64",
+          "collected_at": "2026-10-29T15:45:10.721Z",
+          "zh": {
+            "headline": "Chrome 推出“Suggested by Gemini”自动填充，可以在网页表单里填入更多信息。",
+            "what": "Chrome 现在可以借助 Gemini 和 Personal Intelligence，自动填写比原有自动填充更多的信息。这类建议以“Suggested by Gemini”的名义出现。该功能今年 5 月曾预告过。",
+            "why": "网页端的乘客信息和支付表单可能会被 Gemini 预先填好一部分。表单字段的标签是否清楚、autocomplete 属性是否正确，会决定填进去的内容。付款前应让用户方便地核对预填的乘客姓名和证件号。"
+          }
         },
         {
-          "id": "google-connected-apps-platform",
-          "app": "Google",
-          "category": "platform",
-          "date": "2026-10-29",
-          "published_at": "2026-10-28T17:00:00.000Z",
-          "beta": false,
-          "importance": 4,
-          "headline": "Google opens Gemini and Search to outside apps through a new Connected Apps Platform.",
-          "what": "Google announced the Connected Apps Platform, a single way for developers to bring their services into Gemini and Search. TechCrunch notes it could change how people find and use apps as AI agents do more on the web.",
-          "why": "Searching and even booking could start inside Gemini instead of your app. Decide early which steps a travel app would hand over, such as search and availability, and which stay in its own UI, such as seat choice, payment and changes.",
-          "sources": [
-            {
-              "title": "Google adding more Connected Apps to Gemini & Search with new dev platform",
-              "url": "https://9to5google.com/2026/10/28/gemini-google-connected-apps-platform",
-              "publisher": "9to5Google"
-            },
-            {
-              "title": "As AI agents reshape the web, Google opens Gemini and Search to more apps",
-              "url": "https://techcrunch.com/2026/10/28/as-ai-agents-reshape-the-web-google-opens-gemini-and-search-to-more-apps",
-              "publisher": "TechCrunch Apps"
-            }
-          ],
-          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Pixel-11-Pro-Gemini-Splashscreen.jpg?quality=82&strip=all&resize=1200,628",
-          "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-29T02:45:00.000Z"
-        },
-        {
-          "id": "agoda-meta-muse-hotels",
-          "app": "Agoda",
-          "category": "ota",
-          "date": "2026-10-28",
-          "published_at": "2026-10-28T11:11:04.000Z",
-          "beta": false,
-          "importance": 3,
-          "headline": "Agoda now supplies hotels to Meta's Muse in Singapore and Japan.",
-          "what": "Agoda, part of Booking Holdings, has plugged its hotels into Meta's Muse in Singapore and Japan. Expedia holds the same hotel slot in North America. Skift points out that if Meta charges a fee, hotels could pay twice for one booking.",
-          "why": "Hotel discovery is moving into products that are not travel apps. The design work is the hand-off: what the guest has already chosen there, and how much they must re-enter when they land in the OTA's checkout.",
-          "sources": [
-            {
-              "title": "Agoda Plugs Into Meta’s Muse in Singapore and Japan",
-              "url": "https://skift.com/2026/10/28/agoda-plugs-into-metas-muse-in-singapore-and-japan",
-              "publisher": "Skift"
-            }
-          ],
-          "image": "https://skift.com/wp-content/uploads/2026/10/Agoda-One-Bangkok-Office-2-1-1-1-1.jpg?resize=1024,683",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/5a/eb/5a/5aeb5a27-61f3-7df1-e25b-571af62079bb/AppIcon-0-0-1x_U007epad-0-1-0-0-0-GLES2_U002c0-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-29T02:45:00.000Z"
-        },
-        {
-          "id": "tiktok-must-eat-restaurant-guides",
-          "app": "TikTok",
+          "id": "microsoft-copilot-identity",
+          "app": "Copilot",
           "category": "consumer",
-          "date": "2026-10-28",
-          "published_at": "2026-10-28T14:26:36.000Z",
+          "kind": "brand",
+          "date": "2026-10-29",
+          "published_at": "2026-10-29T07:24:37.000Z",
           "beta": false,
           "importance": 2,
-          "headline": "TikTok adds Must Eat, a restaurant guide feature.",
-          "what": "TikTok is expanding into restaurant guides with a feature called Must Eat. TechCrunch says it puts TikTok in more direct competition with Yelp and Google.",
-          "why": "Restaurant lists in travel apps now compete with short video from people who have been there. A ranking alone will struggle; showing who recommends a place, and why, matters more.",
+          "headline": "Microsoft gives Copilot a new identity that positions it as a work tool.",
+          "what": "The Brand Identity reports that the new Copilot identity is built on dynamic motion geometry. The identity is aimed at enterprise productivity. The source gives no further detail on the logo or the rollout.",
+          "why": "Copilot's identity makes motion a core brand element rather than decoration. That approach is worth considering if your brand system is being extended to loading states and app transitions.",
           "sources": [
             {
-              "title": "TikTok expands into restaurant guides with ‘Must Eat’ feature",
-              "url": "https://techcrunch.com/2026/10/28/tiktok-expands-into-restaurant-guides-with-must-eat-feature",
-              "publisher": "TechCrunch Apps"
+              "title": "Microsoft’s identity for Copilot positions it as a tool for work",
+              "url": "https://the-brandidentity.com/project/microsofts-identity-for-copilot-positions-it-as-a-tool-for-work",
+              "publisher": "Sidebar"
             }
           ],
-          "image": "https://techcrunch.com/wp-content/uploads/2026/10/TikTok-MustEat.jpg?w=1200",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/19/60/31/1960312d-f882-d651-6ea6-53a3179dee9b/TikTok_AppIcon26-0-0-1x_U007epad-0-1-0-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-29T02:45:00.000Z"
+          "image": null,
+          "icon": "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64",
+          "collected_at": "2026-10-29T15:45:10.721Z",
+          "zh": {
+            "headline": "Microsoft 为 Copilot 推出新品牌形象，定位为工作工具。",
+            "what": "据 The Brand Identity 报道，新的 Copilot 品牌形象以动态几何图形为基础，面向企业办公场景。报道没有提供更多关于标志和上线安排的细节。",
+            "why": "Copilot 把动效当作品牌的核心元素，而不只是装饰。如果你们正在把品牌规范延伸到加载状态和页面转场，可以参考这种做法。"
+          }
         }
       ]
     },
     {
       "date": "2026-10-28",
-      "collected_at": "2026-10-28T02:45:00.000Z",
+      "collected_at": "2026-10-28T15:45:10.721Z",
       "quiet": false,
       "pattern": null,
+      "pattern_zh": null,
+      "items": [
+        {
+          "id": "google-photos-collections-tab-redesign",
+          "app": "Google Photos",
+          "category": "consumer",
+          "kind": "ui",
+          "date": "2026-10-28",
+          "published_at": "2026-10-27T16:23:35.000Z",
+          "beta": false,
+          "importance": 3,
+          "headline": "Google Photos redesigns its Collections tab so users can customise it.",
+          "what": "Google Photos is rolling out a redesign of the Collections tab on Android and iOS that lets users customise the tab. It follows the floating navigation bar the app introduced in July.",
+          "why": "A travel app's Trips or Saved tab mixes bookings, wishlists and documents, much like a photo library tab. This redesign is a current reference for letting users rearrange a library-style tab instead of fixing its sections.",
+          "sources": [
+            {
+              "title": "Google Photos rolls out customizable redesign of your ‘Collections’ tab",
+              "url": "https://9to5google.com/2026/10/26/google-photos-collections-redesign",
+              "publisher": "9to5Mac"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/03/google-photos-1.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=photos.google.com&sz=64",
+          "collected_at": "2026-10-28T15:45:10.721Z",
+          "zh": {
+            "headline": "Google Photos 改版「Collections」标签页，支持用户自定义。",
+            "what": "Google Photos 正在 Android 和 iOS 上推出「Collections」标签页的改版，用户可以自定义这个标签页。此前该应用在 7 月已改用悬浮导航栏。",
+            "why": "旅行 App 的「行程」或「收藏」页同样混合了订单、心愿单和证件等内容，和相册的合集页类似。这次改版可以作为参考：这类内容汇总页是否应该交给用户自己调整分区，而不是由产品写死。"
+          }
+        }
+      ]
+    },
+    {
+      "date": "2026-10-27",
+      "collected_at": "2026-10-27T15:45:10.721Z",
+      "quiet": false,
+      "pattern": null,
+      "pattern_zh": null,
       "items": [
         {
           "id": "apple-ios-27-2-selfie-age-verification",
           "app": "Apple",
           "category": "platform",
+          "kind": "ux",
           "date": "2026-10-27",
           "published_at": "2026-10-27T15:21:41.000Z",
           "beta": false,
-          "importance": 4,
-          "headline": "iOS 27.2 adds age verification using a selfie.",
-          "what": "iOS 27.2 introduces a way to verify a person's age with a selfie. It shipped this week alongside the Apple Music redesign and new Siri AI languages.",
-          "why": "If the system can confirm age, apps may be able to ask iOS instead of building their own ID upload step. Worth watching for travel products with age rules: car hire, youth and senior rail fares, age-limited activities.",
+          "importance": 2,
+          "headline": "iOS 27.2 adds age verification by selfie.",
+          "what": "iOS 27.2 introduces a feature that lets iPhone users verify their age by taking a selfie. The candidate text does not describe the screens or where the check appears.",
+          "why": "Some travel products are age-gated, such as car hire or youth and senior rail discounts. A system-level selfie check may become an option alongside an app's own document upload step, so it is worth watching how Apple exposes it to apps.",
           "sources": [
             {
               "title": "iOS 27.2 introduces new age verification feature using selfie",
@@ -257,54 +230,25 @@
           ],
           "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/07/camera-app-icon-fi-highres.jpg?quality=82&strip=all&resize=1200,628",
           "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
-          "collected_at": "2026-10-28T02:45:00.000Z"
-        }
-      ]
-    },
-    {
-      "date": "2026-10-27",
-      "collected_at": "2026-10-27T02:45:00.000Z",
-      "quiet": false,
-      "pattern": null,
-      "items": [
-        {
-          "id": "apple-ios-27-2-release",
-          "app": "Apple",
-          "category": "platform",
-          "date": "2026-10-27",
-          "published_at": "2026-10-26T18:33:04.000Z",
-          "beta": false,
-          "importance": 4,
-          "headline": "Apple releases iOS 27.2 with a new look for Apple Music and Siri AI in five more languages.",
-          "what": "iOS 27.2 is out for iPhone. It changes the design of Apple Music, adds Siri AI in five more languages with four more announced, and brings changes to Messages and Podcasts. iPadOS, macOS, watchOS and visionOS 27.2 shipped the same day.",
-          "why": "A redesign of a first-party app is the clearest sign of where Apple's visual language is heading; capture Apple Music's new screens before the next iOS design review. Siri AI reaching new languages also widens where voice shortcuts into a booking app can be used.",
-          "sources": [
-            {
-              "title": "Apple releases iOS 27.2, here’s what’s new",
-              "url": "https://9to5mac.com/2026/10/26/apple-releases-ios-27-2-heres-whats-new",
-              "publisher": "9to5Mac"
-            },
-            {
-              "title": "Siri AI keeps getting better, here’s what’s new in iOS 27.2",
-              "url": "https://9to5mac.com/2026/10/26/siri-ai-keeps-getting-better-heres-whats-new-in-ios-27-2",
-              "publisher": "9to5Mac"
-            }
-          ],
-          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/09/iOS-27.2-hero.jpg?quality=82&strip=all&resize=1200,628",
-          "icon": "https://www.google.com/s2/favicons?domain=apple.com&sz=64",
-          "collected_at": "2026-10-27T02:45:00.000Z"
+          "collected_at": "2026-10-27T15:45:10.721Z",
+          "zh": {
+            "headline": "iOS 27.2 新增自拍年龄验证。",
+            "what": "iOS 27.2 推出了通过自拍验证年龄的功能。现有资料没有说明具体界面，也没有说明验证入口出现在哪里。",
+            "why": "租车、青年或长者火车票优惠等旅行产品有年龄限制。系统级的自拍验证将来可能成为 App 自建证件上传流程之外的另一种选择，值得关注 Apple 如何向第三方 App 开放这项能力。"
+          }
         },
         {
-          "id": "gemini-live-plus-menu-attachments",
+          "id": "google-gemini-live-plus-menu-redesign",
           "app": "Google",
           "category": "platform",
+          "kind": "ui",
           "date": "2026-10-27",
           "published_at": "2026-10-26T19:00:50.000Z",
           "beta": false,
           "importance": 2,
-          "headline": "Gemini Live on Android gets a plus button for adding photos and files to a conversation.",
-          "what": "Google is rolling out a small redesign to Gemini Live on Android. A new plus control makes it easier to add photos and files to a live chat. It follows other large Gemini interface updates this month.",
-          "why": "One plus control for every kind of attachment is a pattern to borrow for customer-service chat, where travellers need to send a booking screenshot or a photo of a ticket mid-conversation.",
+          "headline": "Google redesigns the plus button in Gemini Live on Android to make adding photos and files easier.",
+          "what": "Google is rolling out a small redesign of the 'plus' control in Gemini Live on Android, so users can attach photos and files to a live conversation more easily. It follows several other Gemini interface updates this month.",
+          "why": "Travel apps with in-app support chat face the same question of how visible the attachment entry point should be. Users there often need to send booking screenshots, receipts or ID photos mid-conversation.",
           "sources": [
             {
               "title": "Gemini Live redesign makes it easier to add context to chats",
@@ -314,68 +258,79 @@
           ],
           "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/05/gemini-live-2.jpg?quality=82&strip=all&resize=1200,628",
           "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-27T02:45:00.000Z"
-        },
-        {
-          "id": "instagram-features-long-form-video-test",
-          "app": "Instagram",
-          "category": "consumer",
-          "date": "2026-10-27",
-          "published_at": "2026-10-26T17:25:00.000Z",
-          "beta": true,
-          "importance": 2,
-          "headline": "Instagram is testing Features, a horizontal long-form video format of up to 90 minutes.",
-          "what": "Instagram has started testing Features, a long-form horizontal video format, with selected creators in the US. Videos can run up to 90 minutes. There is no ad revenue share for creators yet.",
-          "why": "A vertical-first app adding a landscape player has to handle rotation and switching between orientations. Destination and hotel video in travel apps runs into the same question.",
-          "sources": [
-            {
-              "title": "Instagram takes on YouTube with new 90-minute horizontal video format",
-              "url": "https://9to5mac.com/2026/10/26/instagram-takes-on-youtube-with-new-90-minute-horizontal-video-format",
-              "publisher": "9to5Mac"
-            },
-            {
-              "title": "Instagram tests ‘Features’ long-form videos, but missing YouTube’s ad share for now",
-              "url": "https://9to5google.com/2026/10/26/instagram-features-long-form-video-test",
-              "publisher": "9to5Google"
-            }
-          ],
-          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/06/instagram-app-icon-new.jpg?quality=82&strip=all&resize=1200,628",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/44/b0/cc/44b0cc3a-e91f-2824-d98f-3e5e095a73f3/Prod-0-0-1x_U007epad-0-0-0-1-0-0-sRGB-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-27T02:45:00.000Z"
+          "collected_at": "2026-10-27T15:45:10.721Z",
+          "zh": {
+            "headline": "Google 在 Android 版 Gemini Live 中重新设计了加号按钮，添加照片和文件更方便。",
+            "what": "Google 正在为 Android 版 Gemini Live 推送一次小幅改版，调整了“加号”入口，用户在实时对话中添加照片和文件更顺手。这是本月 Gemini 一系列界面更新中的又一项。",
+            "why": "旅行 App 的在线客服对话也要决定附件入口的显眼程度。用户在对话中常常需要发送订单截图、发票或证件照片。"
+          }
         }
       ]
     },
     {
       "date": "2026-10-26",
-      "collected_at": "2026-10-26T02:45:00.000Z",
-      "quiet": true,
+      "collected_at": "2026-10-26T15:45:10.721Z",
+      "quiet": false,
       "pattern": null,
-      "items": []
+      "pattern_zh": null,
+      "items": [
+        {
+          "id": "apple-music-rebrand-2026",
+          "app": "Apple Music",
+          "category": "consumer",
+          "kind": "brand",
+          "date": "2026-10-26",
+          "published_at": "2026-10-26T09:00:00.000Z",
+          "beta": false,
+          "importance": 4,
+          "headline": "Apple Music gets its first rebrand since launching in 2015, with a new logo made from sound.",
+          "what": "Apple made the new Apple Music logo with musician Fred Again by passing sound waves through a pool of oil. The resulting mark has a wave-like form. This is the service's first rebrand since it launched in 2015.",
+          "why": "The logo comes from a physical process and has a story behind it, where most brand marks are drawn shapes. If you are refreshing a travel brand, you need to choose whether the mark should carry a story like this or stay a simple shape that still reads at app-icon size.",
+          "sources": [
+            {
+              "title": "Apple Music unveils logo that was physically \"made by sound\"",
+              "url": "https://dezeen.com/2026/10/26/apple-music-logo-physically-made-by-sound",
+              "publisher": "Dezeen"
+            }
+          ],
+          "image": "https://static-2026.dezeen.com/uploads/2026/10/apple-music-rebrand_dezeen_2364_hero_14-1536x864-2.jpg",
+          "icon": "https://www.google.com/s2/favicons?domain=music.apple.com&sz=64",
+          "collected_at": "2026-10-26T15:45:10.721Z",
+          "zh": {
+            "headline": "Apple Music 推出 2015 年上线以来的首次品牌焕新，新 logo 由声音“制作”而成。",
+            "what": "Apple 与音乐人 Fred Again 合作，让声波穿过一池油，由此生成新的 Apple Music logo，整体呈波浪形态。这是该服务自 2015 年上线以来的第一次品牌升级。",
+            "why": "大多数品牌标识是直接画出来的图形，这个 logo 则来自一个真实的物理过程，背后有一段故事。旅行品牌做焕新时需要做出取舍：标识要不要承载这样的来源故事，还是保持简单图形，确保在 App 图标尺寸下依然清晰可辨。"
+          }
+        }
+      ]
     },
     {
       "date": "2026-10-25",
-      "collected_at": "2026-10-25T02:45:00.000Z",
+      "collected_at": "2026-10-25T15:45:10.721Z",
       "quiet": true,
       "pattern": null,
+      "pattern_zh": null,
       "items": []
     },
     {
       "date": "2026-10-24",
-      "collected_at": "2026-10-24T02:45:00.000Z",
+      "collected_at": "2026-10-24T15:45:10.721Z",
       "quiet": false,
       "pattern": null,
+      "pattern_zh": null,
       "items": [
         {
           "id": "gemini-android-side-panel-settings-redesign",
           "app": "Google",
           "category": "platform",
+          "kind": "ui",
           "date": "2026-10-24",
           "published_at": "2026-10-23T22:02:00.000Z",
           "beta": false,
           "importance": 2,
-          "headline": "The Gemini app on Android gets a redesigned side panel and settings screen.",
-          "what": "Google has rolled out new designs for the Gemini app's side panel and its settings on Android. It follows the Spark-to-Task update, and the side panel is also where Gemini Notebooks live.",
-          "why": "Google is putting history, notebooks and tools in one side panel. Worth checking before deciding where an in-app travel assistant's past chats and saved trips should sit.",
+          "headline": "Google redesigns the side panel and settings in the Gemini app for Android.",
+          "what": "The Gemini app on Android has rolled out new designs for its side panel and its settings screens. The change follows the earlier Spark-to-Task update to the app.",
+          "why": "Travel apps use a side panel or account menu to hold past trips, saved items and preferences. Gemini's new grouping is a current Google reference to check when you reorganise your own account and settings screens.",
           "sources": [
             {
               "title": "Gemini for Android rolls out side panel and settings redesign",
@@ -385,66 +340,50 @@
           ],
           "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/05/gemini-app-2.jpg?quality=82&strip=all&resize=1200,628",
           "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
-          "collected_at": "2026-10-24T02:45:00.000Z"
+          "collected_at": "2026-10-24T15:45:10.721Z",
+          "zh": {
+            "headline": "Google 为 Android 版 Gemini 应用重新设计了侧边栏和设置页。",
+            "what": "Android 版 Gemini 应用已上线新的侧边栏和设置页设计。这次改版是在此前的 Spark-to-Task 更新之后推出的。",
+            "why": "出行应用通常把历史行程、收藏和偏好设置放在侧边栏或账户菜单里。重新梳理自家账户页和设置页时，可以参考 Gemini 这次的分组方式，它是 Google 当下的做法。"
+          }
+        },
+        {
+          "id": "oneplus-oxygenos-to-coloros",
+          "app": "OnePlus",
+          "category": "platform",
+          "kind": "ui",
+          "date": "2026-10-23",
+          "published_at": "2026-10-23T14:15:00.000Z",
+          "beta": false,
+          "importance": 2,
+          "headline": "OnePlus phones move from OxygenOS to ColorOS with the stable Android 17 update.",
+          "what": "OnePlus has started rolling out stable Android 17 to the OnePlus 15 and OnePlus Pad 4, and the update switches these devices from OxygenOS to ColorOS. They are the first OnePlus devices to make the change, which ends OxygenOS.",
+          "why": "On updated OnePlus devices, your booking app's notifications and widgets will now appear inside ColorOS system UI. Test those on ColorOS rather than OxygenOS.",
+          "sources": [
+            {
+              "title": "OnePlus starts rolling out stable Android 17 updates early, marking the end of OxygenOS",
+              "url": "https://9to5google.com/2026/10/23/oneplus-stable-android-17-rollout-begins",
+              "publisher": "9to5Google"
+            }
+          ],
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2025/11/oneplus-15-review-02.jpg?quality=82&strip=all&resize=1200,628",
+          "icon": "https://www.google.com/s2/favicons?domain=oneplus.com&sz=64",
+          "collected_at": "2026-10-24T15:45:10.721Z",
+          "zh": {
+            "headline": "OnePlus 随 Android 17 正式版从 OxygenOS 切换到 ColorOS。",
+            "what": "OnePlus 开始向 OnePlus 15 和 OnePlus Pad 4 推送 Android 17 正式版，系统随之从 OxygenOS 换成 ColorOS。这两款是首批切换的设备，OxygenOS 将就此停用。",
+            "why": "在升级后的 OnePlus 设备上，订票应用的通知和小组件会显示在 ColorOS 的系统界面中。测试时应改用 ColorOS 验证，不要再以 OxygenOS 为准。"
+          }
         }
       ]
     },
     {
       "date": "2026-10-23",
-      "collected_at": "2026-10-23T02:45:00.000Z",
-      "quiet": false,
+      "collected_at": "2026-10-23T15:45:10.721Z",
+      "quiet": true,
       "pattern": null,
-      "items": [
-        {
-          "id": "airbnb-checkout-chores-limit",
-          "app": "Airbnb",
-          "category": "ota",
-          "date": "2026-10-22",
-          "published_at": "2026-10-21T22:16:05.000Z",
-          "beta": false,
-          "importance": 3,
-          "headline": "Airbnb stops hosts from requiring guests to strip beds or do other heavy cleaning at checkout.",
-          "what": "Airbnb says hosts can no longer require guests to do time-consuming chores, such as stripping beds, before they leave. The checkout tasks a host lists are now limited by the platform, and some hosts say they will leave over it.",
-          "why": "Checkout expectations move from host free text to platform rules. On Trip.com homestay and apartment listings, checkout tasks are still found late in house rules; showing them before payment is the same fix.",
-          "sources": [
-            {
-              "title": "Airbnb limits chores for guests, sparking backlash from hosts",
-              "url": "https://techcrunch.com/2026/10/21/airbnb-limits-chores-for-guests-sparking-backlash-from-hosts",
-              "publisher": "TechCrunch Apps"
-            }
-          ],
-          "image": "https://techcrunch.com/wp-content/uploads/2018/09/GettyImages-733478305.jpg?resize=1200,713",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/e3/4e/c6/e34ec66c-5147-037c-282a-4ea295af5d36/AppIcon-0-0-1x_U007epad-0-1-0-0-0-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-23T02:45:00.000Z"
-        },
-        {
-          "id": "spotify-family-plan-qr-verification",
-          "app": "Spotify",
-          "category": "consumer",
-          "date": "2026-10-22",
-          "published_at": "2026-10-22T15:24:32.000Z",
-          "beta": false,
-          "importance": 2,
-          "headline": "Spotify is asking Family Plan members to confirm they live together by scanning a QR code.",
-          "what": "Spotify is rolling out a QR-code check that asks Family Plan members to confirm they share the plan owner's household. On its earnings call the company called it a routine improvement rather than a crackdown, and said the check has no end date.",
-          "why": "Re-verifying people who already pay is the same problem as re-checking saved travellers or railcards: a QR hand-off between devices instead of a form, and wording that does not read as an accusation.",
-          "sources": [
-            {
-              "title": "Spotify confirms Family Plan crackdown, but calls it a ‘routine improvement’",
-              "url": "https://techcrunch.com/2026/10/22/spotify-confirms-family-plan-crackdown-but-calls-it-a-routine-improvement",
-              "publisher": "TechCrunch Apps"
-            },
-            {
-              "title": "Spotify confirms it won’t stop Family Plan sharing verification, but it’s not a ‘crackdown’",
-              "url": "https://9to5google.com/2026/10/22/spotify-confirms-it-wont-stop-family-plan-sharing-verification-but-its-not-a-crackdown",
-              "publisher": "9to5Google"
-            }
-          ],
-          "image": "https://techcrunch.com/wp-content/uploads/2026/10/girl-wearing-headphones-teen-GettyImages-2155720072.jpg?resize=1200,675",
-          "icon": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/8b/f2/6a/8bf26ab9-3ced-cb5c-a2b3-19f65e7f5cc6/AppIcon-0-0-1x_U007epad-0-1-0-0-85-220.png/128x128bb.png",
-          "collected_at": "2026-10-23T02:45:00.000Z"
-        }
-      ]
+      "pattern_zh": null,
+      "items": []
     }
   ]
 }

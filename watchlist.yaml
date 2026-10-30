@@ -168,7 +168,9 @@ groups:
 
 # RSS/Atom feeds, read every run. These are the most trusted source.
 #   kind: company  the company's own feed; every item is about `app`
-#   kind: outlet   a news site; items are matched to apps by alias in the headline
+#   kind: outlet   a news site; items about a watchlist app, or with design words in the headline
+#                  (redesign, rebrand, new logo, interface, onboarding...), go to the model
+#   kind: design   a design or branding publication; every item goes to the model, which names the brand
 # `npm run check-feeds` tests every URL below.
 #
 # No working public feed was found (Oct 2026) for: Airbnb, Expedia Group, Agoda, Trainline and Omio
@@ -232,6 +234,39 @@ feeds:
   - name: Skift
     url: https://skift.com/feed/
     kind: outlet
+  - name: Apple Newsroom
+    url: https://www.apple.com/newsroom/rss-feed.rss
+    kind: company
+    app: Apple
+
+  # Design and branding publications (UI, UX and brand news about any app, site or brand).
+  # Not reachable from the laptop's network (Oct 2026): Brand New (underconsideration.com), Design Week,
+  # Creative Review, Creative Bloq, Fast Company Co.Design. Designboom and Wallpaper work but are mostly
+  # architecture and interiors, so they are left out.
+  - name: It's Nice That
+    url: https://www.itsnicethat.com/articles.rss
+    kind: design
+  - name: Dezeen
+    url: https://www.dezeen.com/feed/
+    kind: design
+  - name: Dezeen (logos)
+    url: https://www.dezeen.com/tag/logos/feed/
+    kind: design
+  - name: BP&O
+    url: https://bpando.org/feed/
+    kind: design
+  - name: Logo Design Love
+    url: https://www.logodesignlove.com/feed
+    kind: design
+  - name: PRINT
+    url: https://www.printmag.com/feed/
+    kind: design
+  - name: Sidebar
+    url: https://sidebar.io/feed.xml
+    kind: design
+  - name: Figma Blog
+    url: https://www.figma.com/blog/feed/atom.xml
+    kind: design
 
 # What counts as a reputable source.
 trust:
@@ -263,12 +298,19 @@ trust:
     - cnbc.com
     - theinformation.com
     - socialmediatoday.com
+    - itsnicethat.com
+    - dezeen.com
+    - bpando.org
+    - logodesignlove.com
+    - printmag.com
+    - sidebar.io
+    - underconsideration.com
   # Never kept, whatever the content.
   blocked_domains:
     - medium.com
     - dribbble.com
     - behance.net
-    - figma.com
+    - figma.com/community   # community redesign concepts; the Figma blog itself is fine
     - uxplanet.org
     - uxdesign.cc
     - wabetainfo.com

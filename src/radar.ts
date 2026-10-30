@@ -14,7 +14,7 @@ export interface MergeResult {
 
 const order = (a: Item, b: Item) => b.importance - a.importance || b.published_at.localeCompare(a.published_at);
 
-export function mergeDay(radar: Radar, input: { date: string; items: Item[]; pattern: string | null; now: Date }): MergeResult {
+export function mergeDay(radar: Radar, input: { date: string; items: Item[]; pattern: string | null; pattern_zh?: string | null; now: Date }): MergeResult {
   const latest = radar.days[0];
   if (latest && input.date < latest.date) {
     throw new Error(`refusing to write ${input.date}: radar.json already has a newer day (${latest.date}). Past days are never rewritten.`);
@@ -28,11 +28,19 @@ export function mergeDay(radar: Radar, input: { date: string; items: Item[]; pat
       items: [...latest.items, ...added].sort(order),
       quiet: latest.items.length + added.length === 0,
       pattern: latest.pattern ?? (added.length ? input.pattern : null),
+      pattern_zh: latest.pattern ? (latest.pattern_zh ?? null) : added.length ? (input.pattern_zh ?? null) : null,
     };
     return { radar: { ...radar, updated_at: now, days: [day, ...radar.days.slice(1)] }, added, day, created: false };
   }
   const items = [...input.items].sort(order);
-  const day: Day = { date: input.date, collected_at: now, quiet: items.length === 0, pattern: items.length ? input.pattern : null, items };
+  const day: Day = {
+    date: input.date,
+    collected_at: now,
+    quiet: items.length === 0,
+    pattern: items.length ? input.pattern : null,
+    pattern_zh: items.length ? (input.pattern_zh ?? null) : null,
+    items,
+  };
   return { radar: { ...radar, updated_at: now, days: [day, ...radar.days] }, added: items, day, created: true };
 }
 

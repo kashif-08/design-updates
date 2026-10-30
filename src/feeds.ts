@@ -112,6 +112,7 @@ export function feedCandidates(cfg: Config, results: FeedResult[]): Candidate[] 
         via: 'feed',
         trust: r.feed.kind === 'company' ? 'company' : 'outlet',
         app: r.feed.app,
+        ...(r.feed.kind === 'design' ? { design: true } : {}),
       });
     }
   }

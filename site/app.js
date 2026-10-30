@@ -1,6 +1,123 @@
 // Pixel Post front end. Reads data/radar.json and draws today's paper plus the archive. No framework, no build step.
 
-const CAT = { ota: 'OTA', rail: 'Rail', platform: 'Platform', consumer: 'Consumer' };
+/* ---------- language: English (default) or Simplified Chinese ---------- */
+
+// ?lang=zh or ?lang=en in the address picks a language (for sharing a Chinese link); otherwise the last choice.
+let lang = (() => {
+  const asked = new URLSearchParams(location.search).get('lang');
+  if (asked === 'zh' || asked === 'en') return asked;
+  try {
+    return localStorage.getItem('radar.lang') === 'zh' ? 'zh' : 'en';
+  } catch {
+    return 'en';
+  }
+})();
+
+const T = {
+  en: {
+    title: 'Pixel Post · app design changes worth your time',
+    skip: 'Skip to today',
+    cat: { ota: 'OTA', rail: 'Rail', platform: 'Platform', consumer: 'Consumer' },
+    kind: { ui: 'UI', ux: 'UX', brand: 'Brand' },
+    beta: 'Beta',
+    why: 'Why it matters',
+    whatChanged: 'What changed',
+    pattern: 'Pattern',
+    sources: (n) => `${n} source${n === 1 ? '' : 's'}`,
+    today: 'Today',
+    yesterday: 'Yesterday',
+    justNow: 'just now',
+    hoursAgo: (h) => `${h}h ago`,
+    daysAgo: (d) => `${d} days ago`,
+    agoYesterday: 'yesterday',
+    greet: { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening', late: 'Still up' },
+    greeting: (g, name) => `${g}${name ? `, ${name}` : ''}.`,
+    changes: (count, n) => `${count} change${n === 1 ? '' : 's'}`,
+    summaryToday: (changes, apps) => `${changes} today · <b>${apps}</b>`,
+    summaryQuiet: 'Quiet day, nothing worth your time.',
+    summaryNone: 'No editions yet. The first one arrives after the next daily run.',
+    summaryFrom: (when, changes, apps, stale) => `No edition yet today. From ${when}: ${changes} · <b>${apps}</b>.${stale}`,
+    summaryWasQuiet: (when, stale) => `No edition yet today. ${when[0].toUpperCase()}${when.slice(1)} was quiet.${stale}`,
+    stale: ' The daily run may have failed; check the log on the laptop.',
+    and: (shown, rest) => `${shown.join(', ')} and ${rest} more`,
+    list: (apps) => apps.join(', '),
+    quietTitle: 'Quiet day.',
+    quietBody: (isToday) => `Nothing worth your time${isToday ? ' today' : ''}. Every source was checked and nothing met the bar, which is the point.`,
+    quietRow: 'Quiet day. Nothing worth your time.',
+    earlier: 'Earlier',
+    unreadCount: (n) => `${n} unread`,
+    unread: 'Unread',
+    all: 'All',
+    noMatch: 'Nothing here with these filters.',
+    showAll: 'Show everything',
+    noArchive: 'Earlier days will collect here.',
+    issue: (n, date) => `${n ? `<b>No. ${n}</b> · ` : ''}${date}`,
+    footerName: 'Pixel Post · a morning paper for one',
+    footerRun: (when) => `Last run ${when} · `,
+    footerFeeds: (n, search, ai) => `${n} feeds${search ? ' and web search' : ''}, filtered by ${ai}`,
+    loadFailed: 'Could not load data/radar.json.',
+    toLight: 'Switch to light mode',
+    toDark: 'Switch to dark mode',
+    langButton: '中',
+    langLabel: '切换到中文',
+    home: 'Pixel Post, home',
+    filterLabel: 'Filter earlier changes',
+  },
+  zh: {
+    title: 'Pixel Post · 值得一看的应用设计变化',
+    skip: '跳到今天',
+    cat: { ota: 'OTA', rail: '铁路', platform: '平台', consumer: '消费' },
+    kind: { ui: 'UI', ux: 'UX', brand: '品牌' },
+    beta: '测试版',
+    why: '为什么重要',
+    whatChanged: '具体变化',
+    pattern: '趋势',
+    sources: (n) => `${n} 个来源`,
+    today: '今天',
+    yesterday: '昨天',
+    justNow: '刚刚',
+    hoursAgo: (h) => `${h}小时前`,
+    daysAgo: (d) => `${d}天前`,
+    agoYesterday: '昨天',
+    greet: { morning: '早上好', afternoon: '下午好', evening: '晚上好', late: '还没睡' },
+    greeting: (g, name) => `${g}${name ? `，${name}` : ''}。`,
+    changes: (count) => `${count} 项变化`,
+    summaryToday: (changes, apps) => `今天 ${changes} · <b>${apps}</b>`,
+    summaryQuiet: '今天很安静，没有值得看的内容。',
+    summaryNone: '还没有内容。下一次每日运行后会出现第一期。',
+    summaryFrom: (when, changes, apps, stale) => `今天的还没出。${when}：${changes} · <b>${apps}</b>。${stale}`,
+    summaryWasQuiet: (when, stale) => `今天的还没出。${when}很安静。${stale}`,
+    stale: '每日运行可能失败了，请查看笔记本上的日志。',
+    and: (shown, rest) => `${shown.join('、')} 等 ${shown.length + rest} 个`,
+    list: (apps) => apps.join('、'),
+    quietTitle: '安静的一天。',
+    quietBody: (isToday) => `${isToday ? '今天' : ''}没有值得你花时间的内容。所有来源都检查过了，没有达到标准的，这正是它的用意。`,
+    quietRow: '安静的一天，没有值得看的内容。',
+    earlier: '往期',
+    unreadCount: (n) => `${n} 条未读`,
+    unread: '未读',
+    all: '全部',
+    noMatch: '这些筛选条件下没有内容。',
+    showAll: '显示全部',
+    noArchive: '往期内容会出现在这里。',
+    issue: (n, date) => `${n ? `<b>第 ${n} 期</b> · ` : ''}${date}`,
+    footerName: 'Pixel Post · 一个人的早报',
+    footerRun: (when) => `上次运行 ${when} · `,
+    footerFeeds: (n, search, ai) => `${n} 个信息源${search ? '和网页搜索' : ''}，由 ${ai} 筛选`,
+    loadFailed: '无法加载 data/radar.json。',
+    toLight: '切换到浅色模式',
+    toDark: '切换到深色模式',
+    langButton: 'EN',
+    langLabel: 'Switch to English',
+    home: 'Pixel Post，首页',
+    filterLabel: '筛选往期变化',
+  },
+};
+const t = () => T[lang];
+
+/** The item's text in the current language; English when there is no Chinese write-up (older items). */
+const txt = (item, field) => (lang === 'zh' && item.zh?.[field]) || item[field];
+const patternOf = (day) => (lang === 'zh' && day.pattern_zh) || day.pattern;
 // ?still turns motion off, for screenshots.
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('still');
 if (reduced) document.documentElement.classList.add('still');
@@ -157,27 +274,27 @@ const trend = () => pixels(TREND, { a: 'var(--accent)', i: 'var(--ink-2)', o: 'v
 
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const fromYmd = (s) => new Date(`${s}T12:00:00`);
-const fmt = (d, o) => new Intl.DateTimeFormat('en-GB', o).format(d);
+const fmt = (d, o) => new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en-GB', o).format(d);
 const today = new Date();
 const todayYmd = ymd(today);
 const yesterdayYmd = ymd(new Date(today.getTime() - 86_400_000));
 
 function dayName(date) {
-  if (date === todayYmd) return 'Today';
-  if (date === yesterdayYmd) return 'Yesterday';
+  if (date === todayYmd) return t().today;
+  if (date === yesterdayYmd) return t().yesterday;
   return fmt(fromYmd(date), { weekday: 'long' });
 }
 
 function ago(iso) {
-  const t = new Date(iso).getTime();
-  if (!t) return '';
-  const h = (Date.now() - t) / 3_600_000;
-  if (h < 1) return 'just now';
-  if (h < 24) return `${Math.round(h)}h ago`;
+  const at = new Date(iso).getTime();
+  if (!at) return '';
+  const h = (Date.now() - at) / 3_600_000;
+  if (h < 1) return t().justNow;
+  if (h < 24) return t().hoursAgo(Math.round(h));
   const d = Math.round(h / 24);
-  if (d === 1) return 'yesterday';
-  if (d < 7) return `${d} days ago`;
-  return fmt(new Date(t), { day: 'numeric', month: 'short' });
+  if (d === 1) return t().agoYesterday;
+  if (d < 7) return t().daysAgo(d);
+  return fmt(new Date(at), { day: 'numeric', month: 'short' });
 }
 
 /* ---------- read state ---------- */
@@ -209,21 +326,25 @@ function appIcon(item, big = false) {
 function metaRow(item, big = false) {
   return `<div class="meta">
     <span class="app">${appIcon(item, big)}${esc(item.app)}</span>
-    <span class="tag" data-cat="${esc(item.category)}">${CAT[item.category] ?? esc(item.category)}</span>
-    ${item.beta ? '<span class="beta">Beta</span>' : ''}
+    <span class="tag" data-cat="${esc(item.category)}">${t().cat[item.category] ?? esc(item.category)}</span>
+    ${kindTag(item)}
+    ${item.beta ? `<span class="beta">${t().beta}</span>` : ''}
     <span class="when"><time datetime="${esc(item.published_at)}">${ago(item.published_at)}</time></span>
   </div>`;
 }
+
+/** UI, UX or Brand, as a small outlined label. Older items have none. */
+const kindTag = (item) => (item.kind && t().kind[item.kind] ? `<span class="kind" data-kind="${esc(item.kind)}">${t().kind[item.kind]}</span>` : '');
 
 function sources(item) {
   const list = item.sources ?? [];
   const icons = list.map((s) => `<img src="${esc(s.favicon || favicon(domainOf(s.url)))}" alt="" width="16" height="16" loading="lazy" referrerpolicy="no-referrer">`).join('');
   const links = list.map((s) => `<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(s.publisher || domainOf(s.url))}</a>`).join(', ');
-  return `<div class="sources"><span class="stack" aria-hidden="true">${icons}</span><span>${list.length} source${list.length === 1 ? '' : 's'}</span><span aria-hidden="true">·</span><span>${links}</span></div>`;
+  return `<div class="sources"><span class="stack" aria-hidden="true">${icons}</span><span>${t().sources(list.length)}</span><span aria-hidden="true">·</span><span>${links}</span></div>`;
 }
 
 function why(item) {
-  return `<p class="why"><b>Why it matters</b>${esc(item.why)}</p>`;
+  return `<p class="why"><b>${t().why}</b>${esc(txt(item, 'why'))}</p>`;
 }
 
 /** A photo if there is one; otherwise the app icon blown up into a pixel mosaic. */
@@ -247,8 +368,8 @@ function leadHtml(item) {
     ${media(item, { reveal: true })}
     <div class="lead-text">
       ${metaRow(item, true)}
-      <h2 class="lead-headline"><a href="${esc(safeUrl(item.sources?.[0]?.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(item.headline)}</a></h2>
-      <p class="lead-what">${esc(item.what)}</p>
+      <h2 class="lead-headline"><a href="${esc(safeUrl(item.sources?.[0]?.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(txt(item, 'headline'))}</a></h2>
+      <p class="lead-what">${esc(txt(item, 'what'))}</p>
       ${why(item)}
       ${sources(item)}
     </div>
@@ -259,20 +380,20 @@ function cardHtml(item, i, withMedia) {
   return `<article class="card reveal" data-id="${esc(item.id)}">
     ${withMedia ? media(item, { reveal: true }) : ''}
     ${metaRow(item)}
-    <h3 class="headline"><a href="${esc(safeUrl(item.sources?.[0]?.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(item.headline)}</a></h3>
+    <h3 class="headline"><a href="${esc(safeUrl(item.sources?.[0]?.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(txt(item, 'headline'))}</a></h3>
     ${why(item)}
-    <button class="more" type="button" aria-expanded="false" aria-controls="what-${esc(item.id)}">What changed</button>
-    <p class="what" id="what-${esc(item.id)}" hidden>${esc(item.what)}</p>
+    <button class="more" type="button" aria-expanded="false" aria-controls="what-${esc(item.id)}">${t().whatChanged}</button>
+    <p class="what" id="what-${esc(item.id)}" hidden>${esc(txt(item, 'what'))}</p>
     ${sources(item)}
   </article>`;
 }
 
 function patternHtml(text) {
-  return `<aside class="pattern reveal">${trend()}<p><span class="label">Pattern</span>${esc(text)}</p></aside>`;
+  return `<aside class="pattern reveal">${trend()}<p><span class="label">${t().pattern}</span>${esc(text)}</p></aside>`;
 }
 
 function quietHtml(day) {
-  return `<div class="quiet reveal">${cup()}<p><strong>Quiet day.</strong>Nothing worth your time${day.date === todayYmd ? ' today' : ''}. Every source was checked and nothing met the bar, which is the point.</p></div>`;
+  return `<div class="quiet reveal">${cup()}<p><strong>${t().quietTitle}</strong>${t().quietBody(day.date === todayYmd)}</p></div>`;
 }
 
 function renderToday(day) {
@@ -294,14 +415,14 @@ function renderToday(day) {
   el.innerHTML = [
     leadHtml(lead),
     side.length ? `<div class="side">${side.map((it, i) => cardHtml(it, i + 1, false)).join('')}</div>` : '',
-    day.pattern ? patternHtml(day.pattern) : '',
+    day.pattern ? patternHtml(patternOf(day)) : '',
     cards.length ? `<div class="cards">${cards.map((it, i) => cardHtml(it, i + sideCount + 1, true)).join('')}</div>` : '',
   ].join('');
 }
 
 /* ---------- archive ---------- */
 
-const filter = { cat: 'all', unread: false };
+const filter = { cat: 'all', kind: null, unread: false };
 
 function rowHtml(item) {
   const unread = isUnread(item);
@@ -309,19 +430,19 @@ function rowHtml(item) {
   const thumb = item.image
     ? `<span class="row-thumb notch${reduced ? '' : ' pending'}" aria-hidden="true" data-mosaic="${esc(iconAt(iconFor(item), 16))}"><img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
     : `<span class="row-thumb notch mosaic" aria-hidden="true" style="--c: var(--${esc(item.category)})"><img src="${esc(iconAt(iconFor(item), 16))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
-  return `<li class="row reveal ${unread ? 'unread' : 'read'}" data-cat="${esc(item.category)}" data-id="${esc(item.id)}">
+  return `<li class="row reveal ${unread ? 'unread' : 'read'}" data-cat="${esc(item.category)}" data-kind="${esc(item.kind ?? '')}" data-id="${esc(item.id)}">
     <button class="row-btn" type="button" aria-expanded="false" aria-controls="row-${esc(item.id)}">
       <span class="dot" aria-hidden="true"></span>
       ${appIcon(item).replace('class="icon', 'class="icon row-icon')}
       <span class="row-main">
-        <span class="row-top"><span class="app">${esc(item.app)}</span><span class="tag" data-cat="${esc(item.category)}"><span class="tag-label">${CAT[item.category] ?? ''}</span></span>${item.beta ? '<span class="beta">Beta</span>' : ''}<span class="when">${ago(item.published_at)}</span>${unread ? '<span class="sr-only">Unread</span>' : ''}</span>
-        <span class="row-title">${esc(item.headline)}</span>
-        <span class="row-sub">${esc(item.why)}</span>
+        <span class="row-top"><span class="app">${esc(item.app)}</span><span class="tag" data-cat="${esc(item.category)}"><span class="tag-label">${t().cat[item.category] ?? ''}</span></span>${kindTag(item)}${item.beta ? `<span class="beta">${t().beta}</span>` : ''}<span class="when">${ago(item.published_at)}</span>${unread ? `<span class="sr-only">${t().unread}</span>` : ''}</span>
+        <span class="row-title">${esc(txt(item, 'headline'))}</span>
+        <span class="row-sub">${esc(txt(item, 'why'))}</span>
       </span>
     </button>
     ${thumb}
     <div class="row-body" id="row-${esc(item.id)}" hidden>
-      <p class="what">${esc(item.what)}</p>
+      <p class="what">${esc(txt(item, 'what'))}</p>
       ${why(item)}
       ${sources(item)}
     </div>
@@ -332,12 +453,12 @@ function dayHtml(day) {
   const d = fromYmd(day.date);
   const rail = `<div class="rail"><span class="rail-fill" aria-hidden="true"></span><div class="rail-inner reveal"><span class="rail-day">${dayName(day.date)}</span><span class="rail-date">${fmt(d, { day: 'numeric', month: 'short' })}</span></div></div>`;
   if (day.quiet || !day.items.length) {
-    return `<section class="day quiet-day" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}<div class="rows reveal">Quiet day. Nothing worth your time.</div></section>`;
+    return `<section class="day quiet-day" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}<div class="rows reveal">${t().quietRow}</div></section>`;
   }
   const unread = day.items.some(isUnread);
   return `<section class="day${unread ? ' has-unread' : ''}" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}
     <div>
-      ${day.pattern ? `<p class="day-pattern reveal"><b>Pattern</b>${esc(day.pattern)}</p>` : ''}
+      ${day.pattern ? `<p class="day-pattern reveal"><b>${t().pattern}</b>${esc(patternOf(day))}</p>` : ''}
       <ul class="rows">${day.items.map(rowHtml).join('')}</ul>
     </div>
   </section>`;
@@ -345,15 +466,21 @@ function dayHtml(day) {
 
 function renderFilters(days) {
   const items = days.flatMap((d) => d.items);
-  const counts = Object.fromEntries(Object.keys(CAT).map((c) => [c, items.filter((i) => i.category === c).length]));
+  const counts = Object.fromEntries(Object.keys(t().cat).map((c) => [c, items.filter((i) => i.category === c).length]));
+  const kinds = Object.fromEntries(Object.keys(t().kind).map((k) => [k, items.filter((i) => i.kind === k).length]));
   const unread = items.filter(isUnread).length;
-  $('#archive-title').innerHTML = `Earlier${unread ? `<span class="count">${unread} unread</span>` : ''}`;
+  $('#archive-title').innerHTML = `${t().earlier}${unread ? `<span class="count">${t().unreadCount(unread)}</span>` : ''}`;
+  $('#filters').setAttribute('aria-label', t().filterLabel);
+  const kindChips = Object.entries(t().kind)
+    .filter(([k]) => kinds[k])
+    .map(([k, label]) => `<button class="chip kind-chip" type="button" data-filter="kind:${k}" aria-pressed="${filter.kind === k}">${label} <span class="n">${kinds[k]}</span></button>`);
   $('#filters').innerHTML = [
-    `<button class="chip" type="button" data-filter="all" aria-pressed="${filter.cat === 'all'}">All <span class="n">${items.length}</span></button>`,
-    ...Object.entries(CAT)
+    `<button class="chip" type="button" data-filter="all" aria-pressed="${filter.cat === 'all' && !filter.kind}">${t().all} <span class="n">${items.length}</span></button>`,
+    ...Object.entries(t().cat)
       .filter(([c]) => counts[c])
       .map(([c, label]) => `<button class="chip" type="button" data-filter="${c}" data-cat="${c}" aria-pressed="${filter.cat === c}">${label} <span class="n">${counts[c]}</span></button>`),
-    unread || filter.unread ? `<button class="chip unread-chip" type="button" data-filter="unread" aria-pressed="${filter.unread}">Unread <span class="n">${unread}</span></button>` : '',
+    kindChips.length ? `<span class="chip-gap" aria-hidden="true"></span>${kindChips.join('')}` : '',
+    unread || filter.unread ? `<button class="chip unread-chip" type="button" data-filter="unread" aria-pressed="${filter.unread}">${t().unread} <span class="n">${unread}</span></button>` : '',
   ].join('');
 }
 
@@ -363,12 +490,13 @@ function applyFilters() {
     const rows = [...day.querySelectorAll('.row')];
     let visible = 0;
     for (const r of rows) {
-      const ok = (filter.cat === 'all' || r.dataset.cat === filter.cat) && (!filter.unread || r.classList.contains('unread'));
+      const ok =
+        (filter.cat === 'all' || r.dataset.cat === filter.cat) && (!filter.kind || r.dataset.kind === filter.kind) && (!filter.unread || r.classList.contains('unread'));
       r.hidden = !ok;
       if (ok) visible++;
     }
     const quiet = day.classList.contains('quiet-day');
-    day.hidden = quiet ? filter.cat !== 'all' || filter.unread : visible === 0;
+    day.hidden = quiet ? filter.cat !== 'all' || !!filter.kind || filter.unread : visible === 0;
     if (!day.hidden) shown++;
   }
   let empty = $('#archive .empty');
@@ -378,14 +506,14 @@ function applyFilters() {
       empty.className = 'empty';
       $('#archive').append(empty);
     }
-    empty.innerHTML = `Nothing here with these filters.<button type="button" data-filter="reset">Show everything</button>`;
+    empty.innerHTML = `${t().noMatch}<button type="button" data-filter="reset">${t().showAll}</button>`;
   } else empty?.remove();
 }
 
 function renderArchive(days) {
   const el = $('#archive');
   if (!days.length) {
-    el.innerHTML = '<p class="empty">Earlier days will collect here.</p>';
+    el.innerHTML = `<p class="empty">${t().noArchive}</p>`;
     $('#filters').innerHTML = '';
     return;
   }
@@ -398,32 +526,31 @@ function renderArchive(days) {
 
 function greeting() {
   const h = today.getHours();
-  if (h >= 4 && h < 12) return 'Good morning';
-  if (h >= 12 && h < 18) return 'Good afternoon';
-  if (h >= 18 && h < 23) return 'Good evening';
-  return 'Still up';
+  const g = t().greet;
+  if (h >= 4 && h < 12) return g.morning;
+  if (h >= 12 && h < 18) return g.afternoon;
+  if (h >= 18 && h < 23) return g.evening;
+  return g.late;
 }
 
 function appList(items) {
   const apps = [...new Set(items.map((i) => i.app))];
-  return apps.length > 5 ? `${apps.slice(0, 5).join(', ')} and ${apps.length - 5} more` : apps.join(', ');
+  return apps.length > 5 ? t().and(apps.slice(0, 5), apps.length - 5) : t().list(apps);
 }
 
 function summaryHtml(latest) {
-  if (!latest) return 'No editions yet. The first one arrives after the next daily run.';
+  if (!latest) return t().summaryNone;
   const n = latest.items.length;
-  const changes = (k) => `<span class="count">${k}</span> change${k === 1 ? '' : 's'}`;
-  if (latest.date === todayYmd) {
-    return n ? `${changes(n)} today · <b>${esc(appList(latest.items))}</b>` : 'Quiet day, nothing worth your time.';
-  }
-  const when = latest.date === yesterdayYmd ? 'yesterday' : fmt(fromYmd(latest.date), { weekday: 'long', day: 'numeric', month: 'short' });
-  const stale = latest.date < yesterdayYmd ? ' The daily run may have failed; check the Actions tab on GitHub.' : '';
-  return n
-    ? `No edition yet today. From ${when}: ${changes(n)} · <b>${esc(appList(latest.items))}</b>.${stale}`
-    : `No edition yet today. ${when[0].toUpperCase()}${when.slice(1)} was quiet.${stale}`;
+  const changes = (k) => t().changes(`<span class="count">${k}</span>`, k);
+  if (latest.date === todayYmd) return n ? t().summaryToday(changes(n), esc(appList(latest.items))) : t().summaryQuiet;
+  const when = latest.date === yesterdayYmd ? t().agoYesterday : fmt(fromYmd(latest.date), { weekday: 'long', day: 'numeric', month: 'short' });
+  const stale = latest.date < yesterdayYmd ? t().stale : '';
+  return n ? t().summaryFrom(when, changes(n), esc(appList(latest.items)), stale) : t().summaryWasQuiet(when, stale);
 }
 
+let typing = 0;
 function typeInto(el, html) {
+  const run = ++typing; // a newer call (language switch) stops an older one mid-line
   if (reduced) {
     el.innerHTML = `${html}<span class="cursor" aria-hidden="true"></span>`;
     return;
@@ -434,6 +561,7 @@ function typeInto(el, html) {
   el.setAttribute('aria-label', text);
   let i = 0;
   const tick = () => {
+    if (run !== typing) return;
     i = Math.min(text.length, i + 2);
     el.innerHTML = `${esc(text.slice(0, i))}<span class="cursor typing" aria-hidden="true"></span>`;
     if (i < text.length) setTimeout(tick, 22);
@@ -449,14 +577,13 @@ function renderTop(radar, meta, latest) {
   const name = (meta.reader || '').trim();
   const h = today.getHours();
   const sky = h >= 5 && h < 18 ? sun('sky') : moon('sky');
-  $('#greeting').innerHTML = `${sky}<span>${esc(greeting())}${name ? `, ${esc(name)}` : ''}.</span>`;
+  $('#greeting').innerHTML = `${sky}<span>${esc(t().greeting(greeting(), name))}</span>`;
   typeInto($('#summary'), summaryHtml(latest));
-  const issue = radar.days.length;
-  $('#issue').innerHTML = `${issue ? `<b>No. ${issue}</b> · ` : ''}${fmt(today, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+  $('#issue').innerHTML = t().issue(radar.days.length, fmt(today, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
   const updated = radar.updated_at && radar.days.length ? new Date(radar.updated_at) : null;
-  $('#footer').innerHTML = `<span>Pixel Post · a morning paper for one</span><span>${
-    updated ? `Last run ${fmt(updated, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ` : ''
-  }${meta.feeds ?? 'Several'} feeds${meta.search ? ' and web search' : ''}, filtered by ${esc(meta.ai || 'Claude')}</span>`;
+  $('#footer').innerHTML = `<span>${t().footerName}</span><span>${
+    updated ? t().footerRun(fmt(updated, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) : ''
+  }${t().footerFeeds(meta.feeds ?? '?', meta.search, esc(meta.ai || 'Claude'))}</span>`;
 }
 
 /* ---------- motion ---------- */
@@ -517,7 +644,9 @@ function pixelate(box) {
 }
 
 /** Cards, dates and rows print in, left to right, as they scroll into view. Images inside then sharpen. */
+let revealer = null;
 function wireReveal() {
+  revealer?.disconnect(); // re-drawn after a language switch
   const all = document.querySelectorAll('.reveal');
   if (reduced || !('IntersectionObserver' in window)) {
     for (const el of all) el.classList.remove('reveal');
@@ -553,6 +682,7 @@ function wireReveal() {
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
   );
+  revealer = io;
   for (const el of all) io.observe(el);
 }
 
@@ -633,28 +763,54 @@ function wireRail() {
 
 /* ---------- theme ---------- */
 
-function wireTheme() {
+function paintTheme() {
   const btn = $('#theme');
-  const paint = () => {
-    const dark = document.documentElement.dataset.theme === 'dark';
-    btn.innerHTML = dark ? sun() : moon();
-    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-    $('meta[name="theme-color"]').content = dark ? '#16140f' : '#f3efe6';
-  };
-  btn.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  btn.innerHTML = dark ? sun() : moon();
+  btn.setAttribute('aria-label', dark ? t().toLight : t().toDark);
+  $('meta[name="theme-color"]').content = dark ? '#16140f' : '#f3efe6';
+}
+
+function wireTheme() {
+  $('#theme').addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem('radar.theme', next);
     } catch {}
-    paint();
+    paintTheme();
   });
-  paint();
+  paintTheme();
+}
+
+/* ---------- language switch ---------- */
+
+/** Static text in index.html, the switch's own label, and the page language for fonts and screen readers. */
+function paintLanguage() {
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  document.title = t().title;
+  $('.skip').textContent = t().skip;
+  $('.wordmark').setAttribute('aria-label', t().home);
+  const btn = $('#lang');
+  btn.textContent = t().langButton;
+  btn.setAttribute('aria-label', t().langLabel);
+  btn.setAttribute('lang', lang === 'zh' ? 'en' : 'zh-CN');
+  paintTheme();
+}
+
+function wireLanguage() {
+  $('#lang').addEventListener('click', () => {
+    lang = lang === 'zh' ? 'en' : 'zh';
+    try {
+      localStorage.setItem('radar.lang', lang);
+    } catch {}
+    render();
+  });
 }
 
 /* ---------- events ---------- */
 
-function wireEvents(archiveDays) {
+function wireEvents() {
   document.addEventListener('click', (e) => {
     // The thumbnail beside a row opens it too.
     const thumb = e.target.closest('.row-thumb');
@@ -695,7 +851,9 @@ function wireEvents(archiveDays) {
     const f = t.dataset.filter;
     if (f) {
       if (f === 'unread') filter.unread = !filter.unread;
-      else if (f === 'reset') Object.assign(filter, { cat: 'all', unread: false });
+      else if (f === 'reset') Object.assign(filter, { cat: 'all', kind: null, unread: false });
+      else if (f === 'all') Object.assign(filter, { cat: 'all', kind: null });
+      else if (f.startsWith('kind:')) filter.kind = filter.kind === f.slice(5) ? null : f.slice(5);
       else filter.cat = f;
       renderFilters(archiveDays);
       applyFilters();
@@ -705,30 +863,40 @@ function wireEvents(archiveDays) {
 
 /* ---------- start ---------- */
 
+let radar = { days: [] };
+let meta = {};
+let archiveDays = [];
+
+/** Draws everything in the current language. Runs at start and again after the 中/EN switch. */
+function render() {
+  paintLanguage();
+  const days = radar.days ?? [];
+  const latest = days[0];
+  // Today's paper is the newest day; the archive is everything before it.
+  archiveDays = days.slice(1);
+  renderTop(radar, meta, latest);
+  renderToday(latest);
+  renderArchive(archiveDays);
+  wireImages();
+  wireReveal();
+}
+
 async function main() {
   wireLogo();
   wireTheme();
-  let radar = { days: [] };
-  let meta = {};
+  wireLanguage();
+  paintLanguage();
   try {
     const [r, m] = await Promise.all([fetch('data/radar.json', { cache: 'no-store' }), fetch('data/meta.json', { cache: 'no-store' })]);
     if (r.ok) radar = await r.json();
     if (m.ok) meta = await m.json();
   } catch {
-    $('#summary').textContent = 'Could not load data/radar.json.';
+    $('#summary').textContent = t().loadFailed;
     return;
   }
-  const days = radar.days ?? [];
-  const latest = days[0];
-  // Today's paper is the newest day; the archive is everything before it.
-  renderTop(radar, meta, latest);
-  renderToday(latest);
-  const archiveDays = days.slice(1);
-  renderArchive(archiveDays);
-  wireImages();
-  wireReveal();
+  render();
   wireRail();
-  wireEvents(archiveDays);
+  wireEvents();
 }
 
 main();

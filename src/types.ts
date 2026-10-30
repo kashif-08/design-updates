@@ -1,6 +1,17 @@
 export const CATEGORIES = ['ota', 'rail', 'platform', 'consumer'] as const;
 export type Category = (typeof CATEGORIES)[number];
 
+/** What kind of design change an item is. */
+export const KINDS = ['ui', 'ux', 'brand'] as const;
+export type Kind = (typeof KINDS)[number];
+
+/** The Simplified Chinese write-up of an item, shown when the page is switched to 中文. */
+export interface ItemZh {
+  headline: string;
+  what: string;
+  why: string;
+}
+
 /** A news item collected from a feed or a web search, before the model has looked at it. */
 export interface Candidate {
   cid: string;
@@ -16,6 +27,8 @@ export interface Candidate {
   trust: 'company' | 'outlet';
   /** App the item is about, when the feed or search already knows. */
   app: string | null;
+  /** From a design or branding publication: kept without a watchlist match, the model names the brand. */
+  design?: boolean;
 }
 
 export interface Dropped {
@@ -38,8 +51,11 @@ export interface Source {
 /** One reported change, as stored in radar.json and shown on the page. */
 export interface Item {
   id: string;
+  /** A watchlist app, or another brand named by the model (design news is not limited to the watchlist). */
   app: string;
   category: Category;
+  /** UI, UX or Brand. Missing on items written before the design focus (October 2026). */
+  kind?: Kind | null;
   /** Publish date in the reader's timezone, YYYY-MM-DD. */
   date: string;
   published_at: string;
@@ -52,6 +68,7 @@ export interface Item {
   image: string | null;
   icon: string | null;
   collected_at: string;
+  zh?: ItemZh | null;
 }
 
 export interface Day {
@@ -60,6 +77,7 @@ export interface Day {
   collected_at: string;
   quiet: boolean;
   pattern: string | null;
+  pattern_zh?: string | null;
   items: Item[];
 }
 

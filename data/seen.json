@@ -1,137 +1,92 @@
 {
   "events": {
-    "airbnb-checkout-chores-limit": {
-      "app": "Airbnb",
-      "headline": "Airbnb stops hosts from requiring guests to strip beds or do other heavy cleaning at checkout.",
-      "date": "2026-10-22",
-      "urls": [
-        "https://techcrunch.com/2026/10/21/airbnb-limits-chores-for-guests-sparking-backlash-from-hosts"
-      ]
-    },
-    "spotify-family-plan-qr-verification": {
-      "app": "Spotify",
-      "headline": "Spotify is asking Family Plan members to confirm they live together by scanning a QR code.",
-      "date": "2026-10-22",
-      "urls": [
-        "https://techcrunch.com/2026/10/22/spotify-confirms-family-plan-crackdown-but-calls-it-a-routine-improvement",
-        "https://9to5google.com/2026/10/22/spotify-confirms-it-wont-stop-family-plan-sharing-verification-but-its-not-a-crackdown"
-      ]
-    },
     "gemini-android-side-panel-settings-redesign": {
       "app": "Google",
-      "headline": "The Gemini app on Android gets a redesigned side panel and settings screen.",
+      "headline": "Google redesigns the side panel and settings in the Gemini app for Android.",
       "date": "2026-10-24",
       "urls": [
         "https://9to5google.com/2026/10/23/gemini-settings-redesign-android"
       ]
     },
-    "apple-ios-27-2-release": {
-      "app": "Apple",
-      "headline": "Apple releases iOS 27.2 with a new look for Apple Music and Siri AI in five more languages.",
-      "date": "2026-10-27",
+    "oneplus-oxygenos-to-coloros": {
+      "app": "OnePlus",
+      "headline": "OnePlus phones move from OxygenOS to ColorOS with the stable Android 17 update.",
+      "date": "2026-10-23",
       "urls": [
-        "https://9to5mac.com/2026/10/26/apple-releases-ios-27-2-heres-whats-new",
-        "https://9to5mac.com/2026/10/26/siri-ai-keeps-getting-better-heres-whats-new-in-ios-27-2"
+        "https://9to5google.com/2026/10/23/oneplus-stable-android-17-rollout-begins"
       ]
     },
-    "gemini-live-plus-menu-attachments": {
-      "app": "Google",
-      "headline": "Gemini Live on Android gets a plus button for adding photos and files to a conversation.",
-      "date": "2026-10-27",
+    "apple-music-rebrand-2026": {
+      "app": "Apple Music",
+      "headline": "Apple Music gets its first rebrand since launching in 2015, with a new logo made from sound.",
+      "date": "2026-10-26",
       "urls": [
-        "https://9to5google.com/2026/10/26/gemini-live-plus-redesign"
-      ]
-    },
-    "instagram-features-long-form-video-test": {
-      "app": "Instagram",
-      "headline": "Instagram is testing Features, a horizontal long-form video format of up to 90 minutes.",
-      "date": "2026-10-27",
-      "urls": [
-        "https://9to5mac.com/2026/10/26/instagram-takes-on-youtube-with-new-90-minute-horizontal-video-format",
-        "https://9to5google.com/2026/10/26/instagram-features-long-form-video-test"
+        "https://dezeen.com/2026/10/26/apple-music-logo-physically-made-by-sound"
       ]
     },
     "apple-ios-27-2-selfie-age-verification": {
       "app": "Apple",
-      "headline": "iOS 27.2 adds age verification using a selfie.",
+      "headline": "iOS 27.2 adds age verification by selfie.",
       "date": "2026-10-27",
       "urls": [
         "https://9to5mac.com/2026/10/27/ios-27-2-introduces-new-age-verification-feature-using-selfie"
       ]
     },
-    "apple-macbook-pro-touch-screen": {
+    "google-gemini-live-plus-menu-redesign": {
+      "app": "Google",
+      "headline": "Google redesigns the plus button in Gemini Live on Android to make adding photos and files easier.",
+      "date": "2026-10-27",
+      "urls": [
+        "https://9to5google.com/2026/10/26/gemini-live-plus-redesign"
+      ]
+    },
+    "google-photos-collections-tab-redesign": {
+      "app": "Google Photos",
+      "headline": "Google Photos redesigns its Collections tab so users can customise it.",
+      "date": "2026-10-28",
+      "urls": [
+        "https://9to5google.com/2026/10/26/google-photos-collections-redesign"
+      ]
+    },
+    "apple-macos-touch-macbook-pro": {
       "app": "Apple",
-      "headline": "Apple's new MacBook Pro has a touch screen, and Apple has published guidance on designing Mac apps for touch.",
+      "headline": "Apple brings touch input to the Mac and publishes guidance for adapting apps to it.",
       "date": "2026-10-29",
       "urls": [
         "https://developer.apple.com/news?id=i9boeiqc",
         "https://9to5mac.com/2026/10/28/apple-releases-touchscreen-mac-developer-videos-with-live-sessions-coming-in-november"
       ]
     },
-    "vrbo-reserve-now-pay-later": {
-      "app": "Expedia",
-      "headline": "Vrbo launches Reserve Now, Pay Later, with less cancellation flexibility than Airbnb's version.",
-      "date": "2026-10-29",
-      "urls": [
-        "https://skift.com/2026/10/28/vrbo-launches-reserve-now-pay-later-with-a-twist-on-airbnbs-approach"
-      ]
-    },
-    "apple-mac-dynamic-island": {
-      "app": "Apple",
-      "headline": "The Dynamic Island comes to the Mac, bringing Live Activities to the laptop screen.",
-      "date": "2026-10-29",
-      "urls": [
-        "https://macrumors.com/2026/10/28/apple-brings-dynamic-island-to-mac"
-      ]
-    },
     "chrome-suggested-by-gemini-autofill": {
-      "app": "Google",
-      "headline": "Chrome starts filling in much more of a web form with Gemini, under the name Suggested by Gemini.",
+      "app": "Chrome",
+      "headline": "Chrome rolls out \"Suggested by Gemini\" autofill, which fills in more information on web forms.",
       "date": "2026-10-29",
       "urls": [
         "https://9to5google.com/2026/10/28/chrome-autofill-gemini"
       ]
     },
-    "google-connected-apps-platform": {
-      "app": "Google",
-      "headline": "Google opens Gemini and Search to outside apps through a new Connected Apps Platform.",
+    "microsoft-copilot-identity": {
+      "app": "Copilot",
+      "headline": "Microsoft gives Copilot a new identity that positions it as a work tool.",
       "date": "2026-10-29",
       "urls": [
-        "https://9to5google.com/2026/10/28/gemini-google-connected-apps-platform",
-        "https://techcrunch.com/2026/10/28/as-ai-agents-reshape-the-web-google-opens-gemini-and-search-to-more-apps"
+        "https://the-brandidentity.com/project/microsofts-identity-for-copilot-positions-it-as-a-tool-for-work"
       ]
     },
-    "agoda-meta-muse-hotels": {
-      "app": "Agoda",
-      "headline": "Agoda now supplies hotels to Meta's Muse in Singapore and Japan.",
-      "date": "2026-10-28",
-      "urls": [
-        "https://skift.com/2026/10/28/agoda-plugs-into-metas-muse-in-singapore-and-japan"
-      ]
-    },
-    "tiktok-must-eat-restaurant-guides": {
-      "app": "TikTok",
-      "headline": "TikTok adds Must Eat, a restaurant guide feature.",
-      "date": "2026-10-28",
-      "urls": [
-        "https://techcrunch.com/2026/10/28/tiktok-expands-into-restaurant-guides-with-must-eat-feature"
-      ]
-    },
-    "gemini-notebook-audio-recorder": {
-      "app": "Google",
-      "headline": "Gemini Notebook on Android and iOS adds a built-in audio recorder.",
-      "date": "2026-10-28",
-      "urls": [
-        "https://9to5google.com/2026/10/27/gemini-notebook-recorder"
-      ]
-    },
-    "gemini-file-generation-editing": {
-      "app": "Google",
-      "headline": "Gemini can now generate, preview and edit PDFs, Docs, Sheets and slide decks directly inside a chat.",
+    "nytimes-175-identity": {
+      "app": "The New York Times",
+      "headline": "The New York Times marks its 175th anniversary with a custom 175 mark and identity system.",
       "date": "2026-10-30",
       "urls": [
-        "https://theverge.com/ai-artificial-intelligence/1022519/google-gemini-file-editing-documents-pdfs",
-        "https://9to5google.com/2026/10/29/gemini-design-file-generation"
+        "https://the-brandidentity.com/project/the-new-york-times-turns-175-with-an-identity-events-and-a-campaign"
+      ]
+    },
+    "youtube-google-tv-youtube-music-red-logo": {
+      "app": "YouTube",
+      "headline": "YouTube on Google TV starts showing YouTube Music with a red logo.",
+      "date": "2026-10-30",
+      "urls": [
+        "https://9to5google.com/2026/10/30/youtube-google-tv-music-update-change"
       ]
     }
   }

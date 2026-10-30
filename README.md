@@ -1,6 +1,6 @@
 # Pixel Post
 
-A morning paper for one: what popular apps changed in design, flows and features, filtered so only real changes get through.
+A morning paper for one: what apps, sites and brands changed in **UI design, UX and brand identity**, filtered so only real design changes get through. In English or Chinese.
 
 Every morning at 07:00 a job on the laptop reads news feeds, applies strict rules, asks the company Claude (Opus 5.5) to pick what is worth your time and write it up, and uploads the result. GitHub then publishes it as a static page at https://kashif-08.github.io/design-updates/. Today's changes are on top; older days are listed below with a date rail, category filters and unread dots.
 
@@ -10,10 +10,10 @@ Every morning at 07:00 a job on the laptop reads news feeds, applies strict rule
 
 ## How a run works
 
-1. **Feeds.** Every RSS/Atom feed in `watchlist.yaml` is read.
+1. **Feeds.** Every RSS/Atom feed in `watchlist.yaml` is read: company newsrooms, tech news sites, and design and branding publications (It's Nice That, Dezeen, BP&O, PRINT and others).
 2. **Search (Anthropic API only).** One call per app group (OTAs, rail, platforms, consumer) with the web search tool, limited to the apps' own sites and the trusted outlets list. This catches newsrooms that have no feed. The company plan and Gemini have no working web search, so with those the run uses feeds only.
-3. **Rules (no model).** Each item is dropped, with a reason, if it comes from a blocked or unknown site, has no real publish date or is older than 48 hours, is not about a watchlist app, has a drop word in the headline ("funding", "deals", "rumor"...), or was already reported. Search results are dated by the article page itself, not by the search engine.
-4. **One curate call.** The model gets everything that passed, plus what was reported in the last two weeks. It merges syndicated copies of one launch into one item (keeping the two best sources), drops the rest with a reason, and writes `headline`, `what` and `why` for each item it keeps. It adds a `pattern` note only when three or more apps moved the same way.
+3. **Rules (no model).** Each item is dropped, with a reason, if it comes from a blocked or unknown site, has no real publish date or is older than 48 hours, has a drop word in the headline ("funding", "deals", "rumor"...), or was already reported. From news sites, an item must be about a watchlist app or have a design word in its headline (redesign, rebrand, new logo, interface, onboarding...). Everything from a design publication goes through. Search results are dated by the article page itself, not by the search engine.
+4. **One curate call.** The model gets everything that passed, plus what was reported in the last two weeks. It keeps only design changes of three kinds: **UI** (the interface: redesigns, layout, visual style, icons, platform design rules), **UX** (how a flow works: navigation, onboarding, search, checkout, sign-in) and **Brand** (logos, identity, type, colour, app icons). Feature news with no visible design angle is dropped. Watchlist apps come first, but any well-known app, site or brand counts. It merges syndicated copies of one launch into one item (keeping the two best sources), drops the rest with a reason, and writes `headline`, `what` and `why` for each item in English and in Simplified Chinese (`zh`). It adds a `pattern` note (and `pattern_zh`) only when three or more apps moved the same way.
 5. **Checks.** The answer is validated in code: unknown apps, missing sources and incomplete write-ups are dropped; emojis and exclamation marks are removed; hype words are flagged in the log. Each kept page is re-read for its `og:image` and to make sure it is not an old story with a new date.
 6. **Write.** `data/radar.json` gets a new day at the top. A quiet day is recorded as `"quiet": true` with no items. `data/seen.json` remembers every reported event, so a launch never shows up again on a later day. `data/runs.json` logs token use and estimated cost per run.
 
@@ -89,6 +89,8 @@ Then run `npm run icons` to fetch its icon. An app can only be in one group. The
 
 **Your name in the greeting.** Set `reader:`.
 
+**Add a design source.** Add a feed with `kind: design`. Every item from it goes to the model, which names the brand, so use it only for publications that are mostly about design. Also add its domain to `trust.outlets`.
+
 ## Adding a source
 
 Add a feed under `feeds:`:
@@ -102,7 +104,7 @@ Add a feed under `feeds:`:
 
 Run `npm run check-feeds` to confirm it works. If a site has no feed, add its domain to the app's `domains` (for a company) or to `trust.outlets` (for a news site) so the search step covers it instead.
 
-When this was set up (October 2026) there was no working public feed for the Airbnb, Expedia Group, Agoda, Trainline and Omio newsrooms, Google Design / Material Design, or PhocusWire (it blocks automated readers). Those are covered by search.
+When this was set up (October 2026) there was no working public feed for the Airbnb, Expedia Group, Agoda, Trainline and Omio newsrooms, Google Design / Material Design, or PhocusWire (it blocks automated readers). From the laptop's network, Brand New, Design Week, Creative Review, Creative Bloq and Fast Company Co.Design could not be reached either.
 
 ## The morning job (this Mac)
 
@@ -157,4 +159,4 @@ data/icons.json       cached app icons
 
 ## The page
 
-Light by default, with a dark mode toggle (top right). Pixelify Sans for headlines, Geist for reading. One coral-red accent (#D6614F); each category has its own square dot (OTA blue, rail green, platform violet, consumer pink). The timeline fills with the accent as you scroll. The logo is a pixel newspaper whose lines print in. Cards, dates and archive rows print in as they scroll into view, and images arrive blocky and sharpen in a few steps; items without an image show their app icon as a pixel mosaic. Unread dots mark items collected since your previous visit (kept in your browser's localStorage) and clear when you open an item. Motion is switched off when your system asks for reduced motion.
+English by default, with a **中 / EN** switch (top right) that changes everything on the page, including dates and each item's write-up, and is remembered in your browser. Items written before the Chinese write-ups were added (before 30 Oct 2026) stay in English. Light by default, with a dark mode toggle next to it. Each item has a **UI**, **UX** or **Brand** label, and the archive can be filtered by it. Pixelify Sans for headlines, Geist for reading. One coral-red accent (#D6614F); each category has its own square dot (OTA blue, rail green, platform violet, consumer pink). The timeline fills with the accent as you scroll. The logo is a pixel newspaper whose lines print in. Cards, dates and archive rows print in as they scroll into view, and images arrive blocky and sharpen in a few steps; items without an image show their app icon as a pixel mosaic. Unread dots mark items collected since your previous visit (kept in your browser's localStorage) and clear when you open an item. Motion is switched off when your system asks for reduced motion.

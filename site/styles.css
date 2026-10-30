@@ -18,8 +18,10 @@
   --consumer: #e0446e;
   --shadow: #1d1a16;
 
-  --display: 'Pixelify Sans', ui-monospace, 'SF Mono', Menlo, monospace;
-  --body: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Pixelify Sans and Geist have no Chinese characters; Chinese text falls back to the system's Chinese font. */
+  --cjk: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --display: 'Pixelify Sans', var(--cjk), ui-monospace, 'SF Mono', Menlo, monospace;
+  --body: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', var(--cjk), sans-serif;
   --px: 4px; /* one "pixel" of the pixel art */
   --page: 1180px;
   --gutter: clamp(20px, 5vw, 48px);
@@ -203,6 +205,22 @@ button {
   box-shadow: inset 0 0 0 1px var(--ink-3);
 }
 
+/* UI / UX / Brand: what kind of design change it is. */
+.kind {
+  font: 600 11px/1 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink-2);
+  padding: 3px 5px 2px;
+}
+.chip-gap {
+  width: 2px;
+  align-self: stretch;
+  margin: 4px 4px;
+  background: var(--line);
+}
+
 .meta {
   display: flex;
   align-items: center;
@@ -273,6 +291,23 @@ button {
 .masthead-meta b {
   font-weight: 600;
   color: var(--ink);
+}
+.lang-toggle {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: 600 14px/1 var(--display);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--line);
+  transition: box-shadow 0.15s var(--step);
+}
+.lang-toggle:hover {
+  box-shadow: inset 0 0 0 2px var(--ink);
 }
 .theme-toggle {
   display: grid;
@@ -1075,6 +1110,29 @@ button {
 
 /* ---------- smaller screens ---------- */
 
+/* Chinese: no capitals to transform, no wide letter-spacing, a little more line height. */
+html:lang(zh-CN) .tag,
+html:lang(zh-CN) .beta,
+html:lang(zh-CN) .kind,
+html:lang(zh-CN) .why b,
+html:lang(zh-CN) .pattern .label,
+html:lang(zh-CN) .more,
+html:lang(zh-CN) .day-pattern b,
+html:lang(zh-CN) .chip {
+  letter-spacing: 0;
+}
+html:lang(zh-CN) .lead-headline,
+html:lang(zh-CN) .headline {
+  line-height: 1.32;
+  letter-spacing: 0;
+}
+html:lang(zh-CN) .hello-title {
+  letter-spacing: 0;
+}
+html:lang(zh-CN) .row-title {
+  line-height: 1.5;
+}
+
 @media (max-width: 960px) {
   .lead,
   .side {
@@ -1112,7 +1170,7 @@ button {
     text-align: left;
     font-size: 13px;
   }
-  .theme-toggle {
+  .lang-toggle {
     margin-left: auto;
   }
   .hello-title {

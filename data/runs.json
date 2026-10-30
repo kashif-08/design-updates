@@ -231,5 +231,213 @@
       }
     ],
     "cost_usd": 0
+  },
+  {
+    "at": "2026-10-23T15:45:10.721Z",
+    "date": "2026-10-23",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 16,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 8408,
+        "output_tokens": 315,
+        "web_searches": 0,
+        "credits": 0.33076291343283576
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-24T15:45:10.721Z",
+    "date": "2026-10-24",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 14,
+    "kept": 2,
+    "added": 2,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 9298,
+        "output_tokens": 829,
+        "web_searches": 0,
+        "credits": 0.7065325472636815
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-25T15:45:10.721Z",
+    "date": "2026-10-25",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 9,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 7538,
+        "output_tokens": 223,
+        "web_searches": 0,
+        "credits": 0.31436611940298503
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-26T15:45:10.721Z",
+    "date": "2026-10-26",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 17,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 9217,
+        "output_tokens": 751,
+        "web_searches": 0,
+        "credits": 0.4455861203980099
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-27T15:45:10.721Z",
+    "date": "2026-10-27",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 74,
+    "kept": 2,
+    "added": 2,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 23139,
+        "output_tokens": 1610,
+        "web_searches": 0,
+        "credits": 1.2918609601990048
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-28T15:45:10.721Z",
+    "date": "2026-10-28",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 98,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 27407,
+        "output_tokens": 1480,
+        "web_searches": 0,
+        "credits": 1.1940681694859037
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-29T15:45:10.721Z",
+    "date": "2026-10-29",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 82,
+    "kept": 3,
+    "added": 3,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 25590,
+        "output_tokens": 1956,
+        "web_searches": 0,
+        "credits": 1.6089591144278603
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
+  },
+  {
+    "at": "2026-10-30T15:45:10.721Z",
+    "date": "2026-10-30",
+    "mode": "company, saved sources",
+    "feeds_ok": 23,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom"
+    ],
+    "candidates": 1895,
+    "sent_to_model": 85,
+    "kept": 2,
+    "added": 2,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 26572,
+        "output_tokens": 1845,
+        "web_searches": 0,
+        "credits": 1.5376455419568822
+      }
+    ],
+    "cost_usd": 0,
+    "note": "design-focus redo"
   }
 ]

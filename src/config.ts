@@ -23,7 +23,9 @@ export interface Group {
 export interface Feed {
   name: string;
   url: string;
-  kind: 'company' | 'outlet';
+  /** company: every item is about `app`. outlet: news site, matched to apps by name or design words.
+   *  design: design or branding publication, every item goes to the model, which names the brand. */
+  kind: 'company' | 'outlet' | 'design';
   app: string | null;
 }
 
@@ -99,7 +101,7 @@ export function parseConfig(src: string, env: Record<string, string | undefined>
 
   const feeds = (Array.isArray(y.feeds) ? y.feeds : []).map((f, i): Feed => {
     if (!isObj(f) || !f.url) throw new ConfigError(`feeds[${i}] needs a url`);
-    const kind = f.kind === 'company' ? 'company' : 'outlet';
+    const kind = f.kind === 'company' ? 'company' : f.kind === 'design' ? 'design' : 'outlet';
     const app = f.app ? String(f.app) : null;
     if (kind === 'company' && !app) throw new ConfigError(`feed "${f.name ?? f.url}" is kind: company, so it needs app:`);
     if (app && !seen.has(app)) throw new ConfigError(`feed "${f.name ?? f.url}" names app "${app}", which is not in groups`);

@@ -239,6 +239,7 @@ export async function collect(opts: CollectOptions): Promise<Report> {
 
   let items: Item[] = [];
   let pattern: string | null = null;
+  let pattern_zh: string | null = null;
   if (snap.candidates.length) {
     const icons = offline ? readJson<Record<string, string | null>>(paths.icons, {}) : await ensureIcons(cfg, paths.icons, { fetchImpl });
     const result = await curate(cfg, llm, snap.candidates, { now, recent: recentItems(radar, date), seen, icons });
@@ -248,10 +249,11 @@ export async function collect(opts: CollectOptions): Promise<Report> {
     const post = await postCheck(cfg, result.items, now, getMeta);
     items = post.items;
     pattern = result.pattern;
+    pattern_zh = result.pattern_zh;
     report.modelDropped = [...result.dropped, ...post.dropped];
   }
 
-  const merged = mergeDay(radar, { date, items, pattern, now });
+  const merged = mergeDay(radar, { date, items, pattern, pattern_zh, now });
   writeJson(paths.radar, merged.radar);
   writeJson(paths.seen, recordSeen(seen, merged.added));
   report.kept = items;
