@@ -1,0 +1,23 @@
+README.md
+  s_54fc1ca7bb74fe::t_9e36d086b16ddd 160
+site/favicon.svg
+  s_54fc1ca7bb74fe::t_9e36d086b16ddd 1
+site/styles.css
+  s_54fc1ca7bb74fe::t_9e36d086b16ddd 2,12-13,40-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "e10f7ccd1b2558a901cfddceb10c3143d78cea72",
+  "prompts": {},
+  "sessions": {
+    "s_54fc1ca7bb74fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "752feab2-5b26-4e2c-8c5b-8e100159791a",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "kashif-08 <kashif-08@users.noreply.github.com>"
+    }
+  }
+}
