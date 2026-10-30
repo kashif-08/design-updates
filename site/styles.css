@@ -1,5 +1,5 @@
 /* Pixel Post: a morning paper for one, set in pixels.
-   Pixelify Sans for display, Geist for reading. Muted paper, one ultramarine accent, one dot colour per category. */
+   Pixelify Sans for display, Geist for reading. Muted paper, one deep green accent, one dot colour per category. */
 
 :root {
   --paper: #f3efe6;
@@ -9,10 +9,10 @@
   --ink-2: #4a443b;
   --ink-3: #6e675c;
   --line: #d9d1c1;
-  --accent: #2e3fe0;
-  --accent-ink: #2433c4;
+  --accent: #1d7a4a;
+  --accent-ink: #17633c;
   --sun: #f2b705;
-  --ota: #0e9384;
+  --ota: #3567d6;
   --rail: #c98a00;
   --platform: #9a4fd6;
   --consumer: #e0446e;
@@ -37,10 +37,10 @@
   --ink-2: #c9c1b1;
   --ink-3: #9c9384;
   --line: #3a352b;
-  --accent: #7d8bff;
-  --accent-ink: #9aa5ff;
+  --accent: #5fd08f;
+  --accent-ink: #7fdca5;
   --sun: #ffcc33;
-  --ota: #2cc9b5;
+  --ota: #7ea3ff;
   --rail: #f0b429;
   --platform: #c08bff;
   --consumer: #ff7a9c;
@@ -739,9 +739,31 @@ button {
   width: 2px;
   background: repeating-linear-gradient(var(--line) 0 var(--px), transparent var(--px) calc(var(--px) * 2));
 }
+/* The fill: solid green over the dotted line, down to how far you have read, like a loading bar.
+   --fill is set by scroll (site/app.js wireRail), in whole 4px steps so it moves like pixels. */
+.rail-fill {
+  position: absolute;
+  top: 0;
+  right: -16px;
+  width: 2px;
+  height: var(--fill, 0px);
+  background: var(--accent);
+  pointer-events: none;
+}
+.rail-fill::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  opacity: var(--tip, 0);
+}
 .rail-inner {
   position: sticky;
   top: 20px;
+  z-index: 1;
 }
 .rail-inner::after {
   content: '';
@@ -755,6 +777,11 @@ button {
 }
 .day.has-unread .rail-inner::after {
   background: var(--ink);
+}
+/* A date turns green once the fill reaches it. */
+.day.reached .rail-inner::after {
+  background: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
 }
 .rail-day {
   display: block;
@@ -1175,6 +1202,17 @@ button {
   }
   .rail::before,
   .rail-inner::after {
+    display: none;
+  }
+  .rail-fill {
+    top: auto;
+    bottom: -1px;
+    left: 0;
+    right: auto;
+    width: var(--fill-x, 0%);
+    height: 2px;
+  }
+  .rail-fill::after {
     display: none;
   }
   .rail-inner {

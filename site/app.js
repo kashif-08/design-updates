@@ -330,7 +330,7 @@ function rowHtml(item) {
 
 function dayHtml(day) {
   const d = fromYmd(day.date);
-  const rail = `<div class="rail"><div class="rail-inner reveal"><span class="rail-day">${dayName(day.date)}</span><span class="rail-date">${fmt(d, { day: 'numeric', month: 'short' })}</span></div></div>`;
+  const rail = `<div class="rail"><span class="rail-fill" aria-hidden="true"></span><div class="rail-inner reveal"><span class="rail-day">${dayName(day.date)}</span><span class="rail-date">${fmt(d, { day: 'numeric', month: 'short' })}</span></div></div>`;
   if (day.quiet || !day.items.length) {
     return `<section class="day quiet-day" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}<div class="rows reveal">Quiet day. Nothing worth your time.</div></section>`;
   }
@@ -593,6 +593,44 @@ function wireLogo() {
   $('.wordmark').addEventListener('mouseenter', print);
 }
 
+/**
+ * The timeline fills with green as you scroll, like a loading bar. The "reading line" sits 45% down the screen
+ * and slides to the bottom as you reach the end of the page, so the last day fills completely.
+ * Each date turns green when the fill passes its square. On a phone the sticky date header fills left to right.
+ */
+function wireRail() {
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const days = [...document.querySelectorAll('#archive .day:not([hidden])')];
+    if (!days.length) return;
+    const maxScroll = document.documentElement.scrollHeight - innerHeight;
+    const nearEnd = maxScroll > 0 ? Math.max(0, (scrollY - (maxScroll - innerHeight)) / innerHeight) : 1;
+    const line = innerHeight * (0.45 + 0.55 * Math.min(1, nearEnd));
+    for (const day of days) {
+      const fill = day.querySelector('.rail-fill');
+      const r = day.getBoundingClientRect();
+      const px = Math.max(0, Math.min(r.height, line - r.top));
+      const stepped = Math.floor(px / 4) * 4;
+      fill.style.setProperty('--fill', `${stepped}px`);
+      fill.style.setProperty('--tip', stepped > 0 && stepped < r.height - 4 ? '1' : '0');
+      fill.style.setProperty('--fill-x', `${Math.round((px / Math.max(1, r.height)) * 100)}%`);
+      const node = day.querySelector('.rail-inner').getBoundingClientRect();
+      day.classList.toggle('reached', line >= node.top + 12 && px > 0);
+    }
+  };
+  const queue = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(update);
+  };
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue);
+  // Rows opening and filters changing move the days; redraw then too.
+  new ResizeObserver(queue).observe($('#archive'));
+  update();
+}
+
 /* ---------- theme ---------- */
 
 function wireTheme() {
@@ -689,6 +727,7 @@ async function main() {
   renderArchive(archiveDays);
   wireImages();
   wireReveal();
+  wireRail();
   wireEvents(archiveDays);
 }
 
