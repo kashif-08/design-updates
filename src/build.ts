@@ -1,6 +1,7 @@
 // npm run build: copies the static site and today's data into dist/ for GitHub Pages.
 
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { loadConfig } from './config.ts';
 import { mirrorAssets } from './mirror.ts';
 import { emptyRadar } from './radar.ts';
@@ -22,5 +23,14 @@ writeJson('dist/data/meta.json', {
   ai: cfg.provider === 'gemini' ? 'Gemini' : 'Claude',
   categories: Object.fromEntries(cfg.groups.map((g) => [g.category, g.label])),
 });
+// Browsers keep styles.css and app.js for up to 10 minutes. A version tag that changes with the file makes them
+// fetch the new one straight after a publish.
+const version = (file: string) => createHash('sha1').update(readFileSync(`site/${file}`)).digest('hex').slice(0, 10);
+writeFileSync(
+  'dist/index.html',
+  readFileSync('site/index.html', 'utf8')
+    .replace('href="styles.css"', `href="styles.css?v=${version('styles.css')}"`)
+    .replace('src="app.js"', `src="app.js?v=${version('app.js')}"`),
+);
 writeFileSync('dist/.nojekyll', '');
 console.log('Built dist/');
