@@ -1,5 +1,5 @@
 /* Pixel Post: a morning paper for one, set in pixels.
-   Pixelify Sans for display, Geist for reading. Muted paper, one copper accent, one dot colour per category. */
+   Pixelify Sans for display, Geist for reading. Muted paper, one coral-red accent, one dot colour per category. */
 
 :root {
   --paper: #f3efe6;
@@ -9,8 +9,8 @@
   --ink-2: #4a443b;
   --ink-3: #6e675c;
   --line: #d9d1c1;
-  --accent: #ad4e0a;
-  --accent-ink: var(--accent); /* one copper everywhere: text, cursor, timeline */
+  --accent: #d6614f;
+  --accent-ink: var(--accent); /* one accent everywhere: text, cursor, timeline */
   --sun: #f2b705;
   --ota: #2f6fe0;
   --rail: #1d9a5b;
@@ -37,7 +37,7 @@
   --ink-2: #c9c1b1;
   --ink-3: #9c9384;
   --line: #3a352b;
-  --accent: #f0913a;
+  --accent: #d6614f;
   --accent-ink: var(--accent);
   --sun: #ffcc33;
   --ota: #6b9cff;
