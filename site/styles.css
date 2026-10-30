@@ -1,5 +1,5 @@
 /* Pixel Post: a morning paper for one, set in pixels.
-   Pixelify Sans for display, Geist for reading. Muted paper, one deep green accent, one dot colour per category. */
+   Pixelify Sans for display, Geist for reading. Muted paper, one signal-orange accent, one dot colour per category. */
 
 :root {
   --paper: #f3efe6;
@@ -9,12 +9,12 @@
   --ink-2: #4a443b;
   --ink-3: #6e675c;
   --line: #d9d1c1;
-  --accent: #1d7a4a;
-  --accent-ink: #17633c;
+  --accent: #ff5a1f;
+  --accent-ink: #c63d0b;
   --sun: #f2b705;
-  --ota: #3567d6;
-  --rail: #c98a00;
-  --platform: #9a4fd6;
+  --ota: #2f6fe0;
+  --rail: #1d9a5b;
+  --platform: #7b4fd6;
   --consumer: #e0446e;
   --shadow: #1d1a16;
 
@@ -37,12 +37,12 @@
   --ink-2: #c9c1b1;
   --ink-3: #9c9384;
   --line: #3a352b;
-  --accent: #5fd08f;
-  --accent-ink: #7fdca5;
+  --accent: #ff7a45;
+  --accent-ink: #ff9063;
   --sun: #ffcc33;
-  --ota: #7ea3ff;
-  --rail: #f0b429;
-  --platform: #c08bff;
+  --ota: #6b9cff;
+  --rail: #3fcf8a;
+  --platform: #a98bff;
   --consumer: #ff7a9c;
   --shadow: #000;
   color-scheme: dark;
@@ -739,7 +739,7 @@ button {
   width: 2px;
   background: repeating-linear-gradient(var(--line) 0 var(--px), transparent var(--px) calc(var(--px) * 2));
 }
-/* The fill: solid green over the dotted line, down to how far you have read, like a loading bar.
+/* The fill: solid accent colour over the dotted line, down to how far you have read, like a loading bar.
    --fill is set by scroll (site/app.js wireRail), in whole 4px steps so it moves like pixels. */
 .rail-fill {
   position: absolute;
@@ -778,7 +778,7 @@ button {
 .day.has-unread .rail-inner::after {
   background: var(--ink);
 }
-/* A date turns green once the fill reaches it. */
+/* A date turns orange once the fill reaches it. */
 .day.reached .rail-inner::after {
   background: var(--accent);
   box-shadow: inset 0 0 0 2px var(--accent);

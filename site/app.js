@@ -594,9 +594,9 @@ function wireLogo() {
 }
 
 /**
- * The timeline fills with green as you scroll, like a loading bar. The "reading line" sits 45% down the screen
+ * The timeline fills with the accent colour as you scroll, like a loading bar. The "reading line" sits 45% down the screen
  * and slides to the bottom as you reach the end of the page, so the last day fills completely.
- * Each date turns green when the fill passes its square. On a phone the sticky date header fills left to right.
+ * Each date turns the accent colour when the fill passes its square. On a phone the sticky date header fills left to right.
  */
 function wireRail() {
   let queued = false;
