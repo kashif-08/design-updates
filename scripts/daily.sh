@@ -12,7 +12,7 @@ NODE="${RADAR_NODE:-node}"
 TODAY=$(date +%F)
 
 notify() {
-  /usr/bin/osascript -e "display notification \"$1\" with title \"Radar\"" >/dev/null 2>&1
+  /usr/bin/osascript -e "display notification \"$1\" with title \"Pixel Post\"" >/dev/null 2>&1
 }
 
 exec >>"$LOG" 2>&1

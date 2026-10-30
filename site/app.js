@@ -1,4 +1,4 @@
-// Radar front end. Reads data/radar.json and draws today's paper plus the archive. No framework, no build step.
+// Pixel Post front end. Reads data/radar.json and draws today's paper plus the archive. No framework, no build step.
 
 const CAT = { ota: 'OTA', rail: 'Rail', platform: 'Platform', consumer: 'Consumer' };
 // ?still turns motion off, for screenshots.
@@ -68,47 +68,28 @@ function grid(n, fn) {
   return Array.from({ length: n }, (_, y) => Array.from({ length: n }, (_, x) => fn(x, y)).join(''));
 }
 
-function radarLogo() {
-  const n = 15;
-  const c = 7;
-  const base = grid(n, (x, y) => {
-    const d = Math.hypot(x - c, y - c);
-    if (Math.abs(d - 6.6) < 0.55) return 'o';
-    if (Math.abs(d - 3.4) < 0.42) return 'i';
-    if (x === c && y === c) return 'o';
-    return '.';
-  });
-  let svg = pixels(base, { o: 'var(--ink)', i: 'color-mix(in srgb, var(--ink) 45%, transparent)' });
-  // Twelve beams, drawn with Bresenham lines from the centre, shown one at a time by CSS.
-  const beams = [];
-  for (let i = 0; i < 12; i++) {
-    const a = ((i * 30 - 45) * Math.PI) / 180;
-    const ex = Math.round(c + 5.6 * Math.cos(a));
-    const ey = Math.round(c + 5.6 * Math.sin(a));
-    let x = c;
-    let y = c;
-    const dx = Math.abs(ex - c);
-    const dy = -Math.abs(ey - c);
-    const sx = c < ex ? 1 : -1;
-    const sy = c < ey ? 1 : -1;
-    let err = dx + dy;
-    let rects = '';
-    while (!(x === ex && y === ey)) {
-      const e2 = 2 * err;
-      if (e2 >= dy) {
-        err += dy;
-        x += sx;
-      }
-      if (e2 <= dx) {
-        err += dx;
-        y += sy;
-      }
-      rects += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
-    }
-    beams.push(`<g class="beam${i === 0 ? ' rest' : ''}" fill="var(--accent)" style="animation-delay:${(i * 0.2).toFixed(1)}s">${rects}</g>`);
-  }
-  const blip = '<rect class="blip" x="10" y="9" width="2" height="2" fill="var(--accent)"/>';
-  return svg.replace('</svg>', `${beams.join('')}${blip}</svg>`);
+/** A folded pixel newspaper. Its lines (digits 1–5) print in one after another when the page opens. */
+const PAPER = [
+  'oooooooooooooo..',
+  'o............ooo',
+  'o.mmmmmmmmmm.o.o',
+  'o.mmmmmmmmmm.o.o',
+  'o............o.o',
+  'o.pppp.111111o.o',
+  'o.pppp.......o.o',
+  'o.pppp.222222o.o',
+  'o.pppp.......o.o',
+  'o.333333333..o.o',
+  'o............o.o',
+  'o.44444444444o.o',
+  'o............o.o',
+  'o.5555555....o.o',
+  'o............ooo',
+  'oooooooooooooo..',
+];
+function paperLogo() {
+  const line = (n) => ['var(--ink-3)', `line l${n}`];
+  return pixels(PAPER, { o: 'var(--ink)', m: 'var(--ink)', p: 'var(--accent)', 1: line(1), 2: line(2), 3: line(3), 4: line(4), 5: line(5) });
 }
 
 const SUN = [
@@ -125,7 +106,7 @@ const SUN = [
   '.a........a.',
   '....a..a....',
 ];
-const sun = (cls) => pixels(SUN, { o: 'var(--accent)', a: 'var(--ink-3)' }, cls);
+const sun = (cls) => pixels(SUN, { o: 'var(--sun)', a: 'var(--ink-3)' }, cls);
 
 function moon(cls) {
   const rows = grid(12, (x, y) => {
@@ -262,7 +243,7 @@ function media(item, { reveal = false, ratio } = {}) {
 /* ---------- today ---------- */
 
 function leadHtml(item) {
-  return `<article class="lead rise" style="--i:0" data-id="${esc(item.id)}">
+  return `<article class="lead reveal" data-id="${esc(item.id)}">
     ${media(item, { reveal: true })}
     <div class="lead-text">
       ${metaRow(item, true)}
@@ -275,7 +256,7 @@ function leadHtml(item) {
 }
 
 function cardHtml(item, i, withMedia) {
-  return `<article class="card rise" style="--i:${i}" data-id="${esc(item.id)}">
+  return `<article class="card reveal" data-id="${esc(item.id)}">
     ${withMedia ? media(item, { reveal: true }) : ''}
     ${metaRow(item)}
     <h3 class="headline"><a href="${esc(safeUrl(item.sources?.[0]?.url))}" target="_blank" rel="noopener" data-read="${esc(item.id)}">${esc(item.headline)}</a></h3>
@@ -287,11 +268,11 @@ function cardHtml(item, i, withMedia) {
 }
 
 function patternHtml(text) {
-  return `<aside class="pattern rise" style="--i:3">${trend()}<p><span class="label">Pattern</span>${esc(text)}</p></aside>`;
+  return `<aside class="pattern reveal">${trend()}<p><span class="label">Pattern</span>${esc(text)}</p></aside>`;
 }
 
 function quietHtml(day) {
-  return `<div class="quiet rise">${cup()}<p><strong>Quiet day.</strong>Nothing worth your time${day.date === todayYmd ? ' today' : ''}. The radar checked every source and nothing met the bar, which is the point.</p></div>`;
+  return `<div class="quiet reveal">${cup()}<p><strong>Quiet day.</strong>Nothing worth your time${day.date === todayYmd ? ' today' : ''}. Every source was checked and nothing met the bar, which is the point.</p></div>`;
 }
 
 function renderToday(day) {
@@ -324,10 +305,11 @@ const filter = { cat: 'all', unread: false };
 
 function rowHtml(item) {
   const unread = isUnread(item);
+  // The thumbnail sits beside the headline and the opened text, so opening a row adds no gap.
   const thumb = item.image
-    ? `<span class="row-thumb notch"><img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-mosaic="${esc(iconAt(iconFor(item), 16))}"></span>`
-    : `<span class="row-thumb notch mosaic" style="--c: var(--${esc(item.category)})"><img src="${esc(iconAt(iconFor(item), 16))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
-  return `<li class="row ${unread ? 'unread' : 'read'}" data-cat="${esc(item.category)}" data-id="${esc(item.id)}">
+    ? `<span class="row-thumb notch${reduced ? '' : ' pending'}" aria-hidden="true" data-mosaic="${esc(iconAt(iconFor(item), 16))}"><img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
+    : `<span class="row-thumb notch mosaic" aria-hidden="true" style="--c: var(--${esc(item.category)})"><img src="${esc(iconAt(iconFor(item), 16))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
+  return `<li class="row reveal ${unread ? 'unread' : 'read'}" data-cat="${esc(item.category)}" data-id="${esc(item.id)}">
     <button class="row-btn" type="button" aria-expanded="false" aria-controls="row-${esc(item.id)}">
       <span class="dot" aria-hidden="true"></span>
       ${appIcon(item).replace('class="icon', 'class="icon row-icon')}
@@ -336,8 +318,8 @@ function rowHtml(item) {
         <span class="row-title">${esc(item.headline)}</span>
         <span class="row-sub">${esc(item.why)}</span>
       </span>
-      ${thumb}
     </button>
+    ${thumb}
     <div class="row-body" id="row-${esc(item.id)}" hidden>
       <p class="what">${esc(item.what)}</p>
       ${why(item)}
@@ -348,14 +330,14 @@ function rowHtml(item) {
 
 function dayHtml(day) {
   const d = fromYmd(day.date);
-  const rail = `<div class="rail"><div class="rail-inner"><span class="rail-day">${dayName(day.date)}</span><span class="rail-date">${fmt(d, { day: 'numeric', month: 'short' })}</span></div></div>`;
+  const rail = `<div class="rail"><div class="rail-inner reveal"><span class="rail-day">${dayName(day.date)}</span><span class="rail-date">${fmt(d, { day: 'numeric', month: 'short' })}</span></div></div>`;
   if (day.quiet || !day.items.length) {
-    return `<section class="day quiet-day" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}<div class="rows">Quiet day. Nothing worth your time.</div></section>`;
+    return `<section class="day quiet-day" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}<div class="rows reveal">Quiet day. Nothing worth your time.</div></section>`;
   }
   const unread = day.items.some(isUnread);
   return `<section class="day${unread ? ' has-unread' : ''}" data-date="${day.date}" aria-label="${fmt(d, { dateStyle: 'full' })}">${rail}
     <div>
-      ${day.pattern ? `<p class="day-pattern"><b>Pattern</b>${esc(day.pattern)}</p>` : ''}
+      ${day.pattern ? `<p class="day-pattern reveal"><b>Pattern</b>${esc(day.pattern)}</p>` : ''}
       <ul class="rows">${day.items.map(rowHtml).join('')}</ul>
     </div>
   </section>`;
@@ -443,7 +425,7 @@ function summaryHtml(latest) {
 
 function typeInto(el, html) {
   if (reduced) {
-    el.innerHTML = html;
+    el.innerHTML = `${html}<span class="cursor" aria-hidden="true"></span>`;
     return;
   }
   const tmp = document.createElement('div');
@@ -453,7 +435,7 @@ function typeInto(el, html) {
   let i = 0;
   const tick = () => {
     i = Math.min(text.length, i + 2);
-    el.textContent = text.slice(0, i);
+    el.innerHTML = `${esc(text.slice(0, i))}<span class="cursor typing" aria-hidden="true"></span>`;
     if (i < text.length) setTimeout(tick, 22);
     else {
       el.innerHTML = `${html}<span class="cursor" aria-hidden="true"></span>`;
@@ -472,7 +454,7 @@ function renderTop(radar, meta, latest) {
   const issue = radar.days.length;
   $('#issue').innerHTML = `${issue ? `<b>No. ${issue}</b> · ` : ''}${fmt(today, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
   const updated = radar.updated_at && radar.days.length ? new Date(radar.updated_at) : null;
-  $('#footer').innerHTML = `<span>Radar · a morning paper for one</span><span>${
+  $('#footer').innerHTML = `<span>Pixel Post · a morning paper for one</span><span>${
     updated ? `Last run ${fmt(updated, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ` : ''
   }${meta.feeds ?? 'Several'} feeds${meta.search ? ' and web search' : ''}, filtered by ${esc(meta.ai || 'Claude')}</span>`;
 }
@@ -496,17 +478,20 @@ function drawCover(ctx, img, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
 }
 
-/** Images arrive blocky and sharpen in a few steps, like a slow modem. */
-function pixelReveal(box) {
+/** Images arrive blocky and sharpen in a few steps, like a slow modem. Started when their card scrolls in. */
+function pixelate(box) {
+  if (box.dataset.pixelated) return;
+  box.dataset.pixelated = '1';
   const img = box.querySelector('img');
   const done = () => box.classList.remove('pending');
   const run = () => {
-    if (!img.naturalWidth) return done();
+    if (!img?.naturalWidth) return done();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     box.append(canvas);
     done();
-    const steps = [5, 10, 20, 40, 80];
+    // Small thumbnails need fewer, smaller steps than the lead photo.
+    const steps = box.clientWidth < 200 ? [4, 8, 16, 32] : [5, 10, 20, 40, 80];
     let i = 0;
     const tick = () => {
       if (i === steps.length) return canvas.remove();
@@ -523,14 +508,52 @@ function pixelReveal(box) {
     };
     tick();
   };
-  const io = new IntersectionObserver((entries) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    io.disconnect();
-    if (img.complete) run();
-    else img.addEventListener('load', run, { once: true });
-  });
-  io.observe(box);
-  setTimeout(done, 3000); // never leave an image hidden
+  if (!img) return done();
+  if (img.complete) run();
+  else {
+    img.addEventListener('load', run, { once: true });
+    setTimeout(done, 3000); // never leave an image hidden
+  }
+}
+
+/** Cards, dates and rows print in, left to right, as they scroll into view. Images inside then sharpen. */
+function wireReveal() {
+  const all = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    for (const el of all) el.classList.remove('reveal');
+    for (const box of document.querySelectorAll('.pending')) box.classList.remove('pending');
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      const shown = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left);
+      shown.forEach((e, n) => {
+        const el = e.target;
+        io.unobserve(el);
+        el.style.animationDelay = `${Math.min(n, 6) * 90}ms`;
+        el.classList.add('in');
+        // If the animation never runs (a background tab, a browser setting), show the card anyway.
+        setTimeout(() => {
+          el.classList.remove('reveal', 'in');
+          el.style.animationDelay = '';
+        }, Math.min(n, 6) * 90 + 1200);
+        const pending = el.matches('.row') ? el.querySelector('.row-thumb.pending') : el.querySelector('.media.pending');
+        if (pending) setTimeout(() => pixelate(pending), Math.min(n, 6) * 90 + 200);
+        el.addEventListener(
+          'animationend',
+          (ev) => {
+            // Ignore animations of children and of the date's ::after node; only the print-in itself ends the reveal.
+            if (ev.target !== el || ev.pseudoElement || !['print-in', 'drop-in'].includes(ev.animationName)) return;
+            el.classList.remove('reveal', 'in');
+            el.style.animationDelay = '';
+          },
+          { once: false },
+        );
+      });
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+  );
+  for (const el of all) io.observe(el);
 }
 
 /** A photo that fails to load (hotlink protection, gone) turns into the app-icon mosaic. */
@@ -555,18 +578,19 @@ function mosaicOnError(img) {
 
 function wireImages() {
   for (const img of document.querySelectorAll('.media img, .row-thumb img')) mosaicOnError(img);
-  for (const box of document.querySelectorAll('.media.pending')) pixelReveal(box);
 }
 
 function wireLogo() {
   const logo = $('#logo');
-  logo.innerHTML = radarLogo();
+  logo.innerHTML = paperLogo();
   if (reduced) return;
-  logo.classList.add('sweeping');
-  setTimeout(() => logo.classList.remove('sweeping'), 4800);
-  const mark = $('.wordmark');
-  mark.addEventListener('mouseenter', () => logo.classList.add('sweeping'));
-  mark.addEventListener('mouseleave', () => logo.classList.remove('sweeping'));
+  const print = () => {
+    logo.classList.remove('printing');
+    void logo.offsetWidth; // restart the animation
+    logo.classList.add('printing');
+  };
+  print();
+  $('.wordmark').addEventListener('mouseenter', print);
 }
 
 /* ---------- theme ---------- */
@@ -594,6 +618,9 @@ function wireTheme() {
 
 function wireEvents(archiveDays) {
   document.addEventListener('click', (e) => {
+    // The thumbnail beside a row opens it too.
+    const thumb = e.target.closest('.row-thumb');
+    if (thumb) return thumb.closest('.row').querySelector('.row-btn').click();
     const t = e.target.closest('button, a');
     if (!t) return;
 
@@ -661,6 +688,7 @@ async function main() {
   const archiveDays = days.slice(1);
   renderArchive(archiveDays);
   wireImages();
+  wireReveal();
   wireEvents(archiveDays);
 }
 

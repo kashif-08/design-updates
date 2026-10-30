@@ -1,4 +1,4 @@
-# Radar
+# Pixel Post
 
 A morning paper for one: what popular apps changed in design, flows and features, filtered so only real changes get through.
 
@@ -157,4 +157,4 @@ data/icons.json       cached app icons
 
 ## The page
 
-Light by default, with a dark mode toggle (top right). Pixelify Sans for headlines, Geist for reading. One accent colour; each category has its own square dot (OTA blue, rail green, platform violet, consumer pink). Images arrive blocky and sharpen in a few steps; items without an image show their app icon as a pixel mosaic. Unread dots mark items collected since your previous visit (kept in your browser's localStorage) and clear when you open an item. Motion is switched off when your system asks for reduced motion.
+Light by default, with a dark mode toggle (top right). Pixelify Sans for headlines, Geist for reading. One ultramarine accent; each category has its own square dot (OTA teal, rail mustard, platform violet, consumer pink). The logo is a pixel newspaper whose lines print in. Cards, dates and archive rows print in as they scroll into view, and images arrive blocky and sharpen in a few steps; items without an image show their app icon as a pixel mosaic. Unread dots mark items collected since your previous visit (kept in your browser's localStorage) and clear when you open an item. Motion is switched off when your system asks for reduced motion.

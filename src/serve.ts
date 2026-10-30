@@ -30,4 +30,4 @@ createServer((req, res) => {
   }
   res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'cache-control': 'no-store' });
   createReadStream(file).pipe(res);
-}).listen(port, () => console.log(`App Change Radar at http://localhost:${port}`));
+}).listen(port, () => console.log(`Pixel Post at http://localhost:${port}`));

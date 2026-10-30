@@ -80,7 +80,7 @@ function printDropped(title: string, list: Dropped[], verbose: boolean) {
 }
 
 function print(r: Report, now: Date, verbose: boolean) {
-  out(`App Change Radar · ${r.date} · ${r.mode}`);
+  out(`Pixel Post · ${r.date} · ${r.mode}`);
   out(`\nSources`);
   out(`  feeds: ${r.feeds.ok} ok, ${r.feeds.failed.length} failed, ${r.feeds.entries} entries`);
   for (const f of r.feeds.failed) out(`    ! ${f.name}: ${f.error}`);
