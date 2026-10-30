@@ -10,7 +10,7 @@
   --ink-3: #6e675c;
   --line: #d9d1c1;
   --accent: #d63c1f;
-  --accent-ink: #b8321a;
+  --accent-ink: var(--accent); /* one orange everywhere: text, cursor, timeline */
   --sun: #f2b705;
   --ota: #2f6fe0;
   --rail: #1d9a5b;
@@ -38,7 +38,7 @@
   --ink-3: #9c9384;
   --line: #3a352b;
   --accent: #ff6a45;
-  --accent-ink: #ff7d5c;
+  --accent-ink: var(--accent);
   --sun: #ffcc33;
   --ota: #6b9cff;
   --rail: #3fcf8a;
