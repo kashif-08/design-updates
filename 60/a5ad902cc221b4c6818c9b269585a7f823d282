@@ -1,0 +1,19 @@
+site/styles.css
+  s_54fc1ca7bb74fe::t_9f38c33c7deadd 13,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "60a5ad902cc221b4c6818c9b269585a7f823d282",
+  "prompts": {},
+  "sessions": {
+    "s_54fc1ca7bb74fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "752feab2-5b26-4e2c-8c5b-8e100159791a",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "kashif-08 <kashif-08@users.noreply.github.com>"
+    }
+  }
+}
