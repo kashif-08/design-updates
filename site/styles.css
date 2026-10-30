@@ -9,8 +9,8 @@
   --ink-2: #4a443b;
   --ink-3: #6e675c;
   --line: #d9d1c1;
-  --accent: #d63c1f;
-  --accent-ink: var(--accent); /* one orange everywhere: text, cursor, timeline */
+  --accent: #b8321a;
+  --accent-ink: var(--accent); /* one muted orange everywhere: text, cursor, timeline */
   --sun: #f2b705;
   --ota: #2f6fe0;
   --rail: #1d9a5b;
