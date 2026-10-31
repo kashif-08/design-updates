@@ -1,7 +1,44 @@
 {
   "version": 1,
-  "updated_at": "2026-10-30T23:01:01.247Z",
+  "updated_at": "2026-10-31T23:00:29.023Z",
   "days": [
+    {
+      "date": "2026-11-01",
+      "collected_at": "2026-10-31T23:00:29.023Z",
+      "quiet": false,
+      "pattern": null,
+      "pattern_zh": null,
+      "items": [
+        {
+          "id": "apple-music-android-liquid-glass",
+          "app": "Apple Music",
+          "category": "consumer",
+          "kind": "ui",
+          "date": "2026-10-31",
+          "published_at": "2026-10-30T17:27:24.000Z",
+          "beta": false,
+          "importance": 3,
+          "headline": "Apple Music 7.0 for Android brings the Liquid Glass design and the new app icon.",
+          "what": "Apple Music 7.0 is rolling out on Android with a redesign in Liquid Glass, the visual style Apple introduced on its own platforms. The update also brings the new Apple Music icon from this year's rebrand to Android. It arrives after a month of beta testing.",
+          "why": "Apple chose to bring its own iOS design language to Android instead of adopting Material Design there. A travel app with iOS and Android versions faces the same choice for its tab bar, bottom sheets and app icon: match its own brand across platforms, or follow the host platform's conventions.",
+          "sources": [
+            {
+              "title": "Apple Music 7.0 for Android rolls out with Liquid Glass redesign",
+              "url": "https://9to5google.com/2026/10/30/apple-music-7-0-redesign",
+              "publisher": "9to5Mac"
+            }
+          ],
+          "image": "https://9to5mac.com/wp-content/uploads/sites/6/2026/10/Apple-Music-7-1.jpg?quality=82&strip=all&w=1600",
+          "icon": "https://www.google.com/s2/favicons?domain=music.apple.com&sz=64",
+          "collected_at": "2026-10-31T23:00:29.023Z",
+          "zh": {
+            "headline": "Apple Music 7.0 安卓版换上 Liquid Glass 设计和新应用图标。",
+            "what": "Apple Music 7.0 安卓版正在陆续推送，界面改用 Liquid Glass 风格，也就是苹果在自家系统上推出的视觉语言。这次更新同时把今年品牌焕新后的新图标带到了安卓端。正式版推出前已经过一个月的 Beta 测试。",
+            "why": "苹果把自己的 iOS 设计语言直接带到了安卓，没有改用 Material Design。双端旅行 App 也要做同样的取舍：底部标签栏、底部弹层和应用图标，是在两端统一自家品牌风格，还是遵循各自平台的规范。"
+          }
+        }
+      ]
+    },
     {
       "date": "2026-10-31",
       "collected_at": "2026-10-30T23:01:01.247Z",

@@ -484,5 +484,36 @@
       }
     ],
     "cost_usd": 0
+  },
+  {
+    "at": "2026-10-31T23:00:29.023Z",
+    "date": "2026-11-01",
+    "mode": "company",
+    "feeds_ok": 17,
+    "feeds_failed": [
+      "Booking Holdings",
+      "Spotify Newsroom",
+      "Dezeen (logos)",
+      "BP&O",
+      "Logo Design Love",
+      "PRINT",
+      "Sidebar",
+      "Figma Blog"
+    ],
+    "candidates": 994,
+    "sent_to_model": 47,
+    "kept": 1,
+    "added": 1,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 18097,
+        "output_tokens": 1064,
+        "web_searches": 0,
+        "credits": 0.9549235333333332
+      }
+    ],
+    "cost_usd": 0
   }
 ]
