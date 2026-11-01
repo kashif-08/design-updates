@@ -3,7 +3,8 @@
 # RADAR_UPLOAD_WAITS sets the pauses between tries in seconds (tests set it to zeros).
 
 upload() {
-  for wait in ${RADAR_UPLOAD_WAITS:-0 15 30 60 120}; do
+  # $(echo ...) so the list splits into numbers in zsh too, not only in sh.
+  for wait in $(echo "${RADAR_UPLOAD_WAITS:-0 15 30 60 120}"); do
     if [ "$wait" -gt 0 ]; then
       echo "Upload failed, trying again in ${wait}s."
       sleep "$wait"
