@@ -1,0 +1,59 @@
+src/config.ts
+  s_54fc1ca7bb74fe::t_523e4467cfc469 13-14,42-44,93,132-139,152-157
+site/app.js
+  s_54fc1ca7bb74fe::t_3c642bc3459060 73-100,150-177
+  s_54fc1ca7bb74fe::t_35ae40152e8525 383-409,423,438-463,470,494,508,551-556,559,564,574
+  s_54fc1ca7bb74fe::t_ef5b2a04128b42 9-16,1129-1130,1132,1164-1175,1210-1217,1236,1255
+  s_54fc1ca7bb74fe::t_9fbab80358247a 913-1116
+src/curate.ts
+  s_54fc1ca7bb74fe::t_ee1b9b12a2476a 77-82,195
+  s_54fc1ca7bb74fe::t_d51d2d18f24809 71-72
+site/index.html
+  s_54fc1ca7bb74fe::t_ef5b2a04128b42 34,60
+site/styles.css
+  s_54fc1ca7bb74fe::t_d8701c8832947f 208-290,378-530,686-736,1475,1486-1501
+  s_54fc1ca7bb74fe::t_6c2f0c744ef35f 1460-1474,1477-1485
+src/prompts.ts
+  s_54fc1ca7bb74fe::t_d51d2d18f24809 40-41
+src/compare.ts
+  s_54fc1ca7bb74fe::t_8314b0d006bb87 33-37,77,81-83
+  s_54fc1ca7bb74fe::t_928663a58fbb4a 1-32,38-76,78-80,84-124
+src/run.ts
+  s_54fc1ca7bb74fe::t_4d940fdcbb3993 1-2,7,16,25-26,35,58,94-96,128-130,133,147,149-150,152,176-187,245,277-292,301
+src/types.ts
+  s_54fc1ca7bb74fe::t_523e4467cfc469 8-24,49-50,91-92
+watchlist.yaml
+  s_54fc1ca7bb74fe::t_d13434eaa257fa 22-29,55-56,69,74,80,85-86,94,99-100,104,116-117,121-122,153,158,163,168,173,178,183,188,193,198-199
+src/stores.ts
+  s_54fc1ca7bb74fe::t_e3e32aeaecc45d 68-70
+  s_54fc1ca7bb74fe::t_83eb7404629d8e 1-67,71-165
+src/pagemeta.ts
+  s_54fc1ca7bb74fe::t_f2184df4bc10a9 6-12,18-21,24-70,113
+  s_54fc1ca7bb74fe::t_06824276c72888 22-23
+src/backfill-compare.ts
+  s_54fc1ca7bb74fe::t_d8641ec641b8a4 1-40
+README.md
+  s_54fc1ca7bb74fe::t_9018fbf37a3f11 14,18-20,48,161-163,168
+package.json
+  s_54fc1ca7bb74fe::t_df987c25fc5809 16-17
+src/collect.ts
+  s_54fc1ca7bb74fe::t_ee1b9b12a2476a 87-90
+tests/pipeline.test.ts
+  s_54fc1ca7bb74fe::t_ee1b9b12a2476a 427-504
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.51-trip",
+  "base_commit_sha": "987b341199a4cd192587836adfb119fc67c26e04",
+  "prompts": {},
+  "sessions": {
+    "s_54fc1ca7bb74fe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "752feab2-5b26-4e2c-8c5b-8e100159791a",
+        "model": "unknown"
+      },
+      "human_author": "kashif-08 <kashif-08@users.noreply.github.com>"
+    }
+  }
+}
