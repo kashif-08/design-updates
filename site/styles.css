@@ -273,8 +273,31 @@ button {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
-.note-box[hidden] {
+.note-editor {
+  max-width: 40em;
+  margin-top: 10px;
+}
+.note-editor[hidden] {
   display: none;
+}
+.note-editor .note-box {
+  margin-top: 0;
+}
+.note-save {
+  margin-top: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: none;
+}
+.note-save:hover {
+  box-shadow: none;
+  opacity: 0.85;
+}
+.note-save:disabled {
+  background: transparent;
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 2px var(--line);
+  opacity: 1;
 }
 .saved-mark {
   display: none;
