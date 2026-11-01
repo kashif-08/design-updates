@@ -31,6 +31,7 @@
             <span class="wordmark-text">Pixel Post</span>
           </a>
           <p class="masthead-meta" id="issue"></p>
+          <button class="digest-btn" id="digest" type="button"><span class="star" aria-hidden="true"></span><span class="label">Digest</span><span class="n" hidden></span></button>
           <button class="lang-toggle" id="lang" type="button" aria-label="切换到中文" lang="zh-CN">中</button>
           <button class="theme-toggle" id="theme" type="button" aria-label="Switch to dark mode"></button>
         </div>
@@ -56,6 +57,7 @@
 
       <footer class="footer" id="footer"></footer>
     </div>
+    <dialog id="digest-dialog" class="digest" aria-labelledby="digest-title"><div id="digest-box"></div></dialog>
     <script type="module" src="app.js"></script>
   </body>
 </html>

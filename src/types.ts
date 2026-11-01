@@ -5,6 +5,23 @@ export type Category = (typeof CATEGORIES)[number];
 export const KINDS = ['ui', 'ux', 'brand'] as const;
 export type Kind = (typeof KINDS)[number];
 
+/** Old and new design side by side. `combined` is one image that already shows both. */
+export interface Compare {
+  before: string | null;
+  after: string;
+  combined?: boolean;
+  /** Where the pair came from: captions in the article, or App Store screenshots of two versions. */
+  from: 'article' | 'app-store';
+  /** For app-store pairs: the version shown as "before". */
+  before_version?: string;
+}
+
+/** An item that came from an app's own store version notes rather than a news story. */
+export interface Release {
+  store: 'app-store' | 'google-play';
+  version: string;
+}
+
 /** The Simplified Chinese write-up of an item, shown when the page is switched to 中文. */
 export interface ItemZh {
   headline: string;
@@ -29,6 +46,8 @@ export interface Candidate {
   app: string | null;
   /** From a design or branding publication: kept without a watchlist match, the model names the brand. */
   design?: boolean;
+  /** From the App Store or Google Play version notes. */
+  release?: Release & { screenshot?: string | null; previousScreenshot?: string | null; previousVersion?: string | null };
 }
 
 export interface Dropped {
@@ -69,6 +88,8 @@ export interface Item {
   icon: string | null;
   collected_at: string;
   zh?: ItemZh | null;
+  compare?: Compare | null;
+  release?: Release | null;
 }
 
 export interface Day {

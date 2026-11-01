@@ -10,6 +10,8 @@ export interface App {
   aliases: string[];
   domains: string[];
   appstoreId: number | null;
+  /** Google Play package name, for version notes. */
+  playId: string | null;
   iconDomain: string | null;
 }
 
@@ -37,7 +39,9 @@ export interface Config {
   provider: Provider;
   timezone: string;
   windowHours: number;
-  models: { curate: string; search: string; searchTool: string; searchesPerGroup: number; maxCandidates: number };
+  models: { curate: string; search: string; searchTool: string; searchesPerGroup: number; maxCandidates: number; compare: string };
+  /** Check App Store / Google Play version notes of the watchlist apps. */
+  stores: { appStore: boolean; googlePlay: boolean; country: string };
   prices: Record<string, { input: number; output: number }>;
   webSearchPer1000: number;
   groups: Group[];
@@ -86,6 +90,7 @@ export function parseConfig(src: string, env: Record<string, string | undefined>
         aliases: strList(a.aliases, `${name}.aliases`).length ? strList(a.aliases, `${name}.aliases`) : [name],
         domains: strList(a.domains, `${name}.domains`).map((d) => d.toLowerCase().replace(/^www\./, '')),
         appstoreId: a.appstore_id == null ? null : Number(a.appstore_id),
+        playId: a.play_id ? String(a.play_id) : null,
         iconDomain: a.icon_domain ? String(a.icon_domain) : null,
       };
     });
@@ -124,6 +129,14 @@ export function parseConfig(src: string, env: Record<string, string | undefined>
       : provider === 'gemini'
         ? String(gemini.curate ?? 'gemini-3.8-flash')
         : String(models.curate ?? 'claude-sonnet-5-5');
+  // The small second call that picks before/after images. A cheap model is enough.
+  const compare =
+    provider === 'company'
+      ? String(company.compare ?? 'kr-claude-haiku-4-5-20251001')
+      : provider === 'gemini'
+        ? String(gemini.compare ?? gemini.curate ?? 'gemini-3.8-flash')
+        : String(models.compare ?? 'claude-haiku-5-5');
+  const stores = isObj(y.stores) ? y.stores : {};
 
   return {
     reader: String(y.reader ?? ''),
@@ -136,6 +149,12 @@ export function parseConfig(src: string, env: Record<string, string | undefined>
       searchTool: String(models.search_tool ?? 'web_search_20250305'),
       searchesPerGroup: Number(models.searches_per_group ?? 3),
       maxCandidates: Number(models.max_candidates ?? 150),
+      compare,
+    },
+    stores: {
+      appStore: stores.app_store !== false,
+      googlePlay: stores.google_play !== false,
+      country: String(stores.country ?? 'us'),
     },
     prices: priceTable,
     webSearchPer1000: Number(prices.web_search_per_1000 ?? 10),

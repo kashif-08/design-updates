@@ -19,6 +19,14 @@ provider: company
 
 company:
   curate: kr-claude-opus-5.5  # the model list is at aicoding.console.ctripcorp.com/admin/modelList
+  compare: kr-claude-haiku-4-5-20251001  # small second call that picks before/after images
+
+# Version notes from the stores: catches design changes nobody announces. A new version whose notes
+# mention design words (redesign, new look, layout...) goes to the model like a news item.
+stores:
+  app_store: true
+  google_play: true
+  country: us
 
 gemini:
   curate: gemini-3.8-flash    # free tier; see ai.google.dev/gemini-api/docs/pricing
@@ -44,7 +52,8 @@ prices:
 #   aliases      words that mark a headline as being about this app. Whole words, exact
 #                capitals, so "Threads" matches the app but not "email threads".
 #   domains      the company's own sites; items from these count as first-party
-#   appstore_id  App Store id used to fetch the icon (optional)
+#   appstore_id  App Store id: the icon, and version notes for "changes nobody announces" (optional)
+#   play_id      Google Play package name, for version notes (optional)
 #   icon_domain  use this site's favicon as the icon instead (optional)
 groups:
   ota:
@@ -57,19 +66,24 @@ groups:
       - name: Expedia
         aliases: [Expedia, Hotels.com, Vrbo]
         domains: [expediagroup.com, expedia.com]
+        play_id: com.expedia.bookings
         appstore_id: 427916203
       - name: Booking.com
         aliases: [Booking.com, Booking Holdings]
         domains: [booking.com, bookingholdings.com]
+        play_id: com.booking
         appstore_id: 367003839
       # Airbnb is also in your consumer list; it is tracked once, here.
       - name: Airbnb
         aliases: [Airbnb]
         domains: [airbnb.com, news.airbnb.com]
+        play_id: com.airbnb.android
         appstore_id: 401626263
       - name: Agoda
         aliases: [Agoda]
         domains: [agoda.com]
+        appstore_id: 440676901
+        play_id: com.agoda.mobile.consumer
       - name: Google Travel
         aliases: [Google Flights, Google Travel, Google Hotels]
         domains: [blog.google]
@@ -77,13 +91,17 @@ groups:
       - name: Hopper
         aliases: [Hopper]
         domains: [hopper.com]
+        play_id: com.hopper.mountainview.play
         appstore_id: 904052407
       - name: Klook
         aliases: [Klook]
         domains: [klook.com]
+        appstore_id: 961850126
+        play_id: com.klook
       - name: Trip.com
         aliases: [Trip.com, Ctrip]
         domains: [trip.com, group.trip.com]
+        play_id: ctrip.english
         appstore_id: 681752345
 
   rail:
@@ -95,9 +113,13 @@ groups:
       - name: Trainline
         aliases: [Trainline]
         domains: [thetrainline.com, trainlinegroup.com]
+        appstore_id: 334235181
+        play_id: com.thetrainline
       - name: Omio
         aliases: [Omio]
         domains: [omio.com]
+        appstore_id: 885372509
+        play_id: com.goeuro.rosie
       - name: JR / Japan rail
         aliases: [JR East, JR West, JR Central, JR Kyushu, Eki-net, SmartEX, Shinkansen app]
         domains: [jreast.co.jp, jr-central.co.jp, westjr.co.jp, jrkyushu.co.jp]
@@ -128,42 +150,53 @@ groups:
       - name: Duolingo
         aliases: [Duolingo]
         domains: [duolingo.com, blog.duolingo.com]
+        play_id: com.duolingo
         appstore_id: 570060128
       - name: Revolut
         aliases: [Revolut]
         domains: [revolut.com]
+        play_id: com.revolut.revolut
         appstore_id: 932493382
       - name: Uber
         aliases: [Uber]
         domains: [uber.com]
+        play_id: com.ubercab
         appstore_id: 368677368
       - name: Spotify
         aliases: [Spotify]
         domains: [spotify.com, newsroom.spotify.com]
+        play_id: com.spotify.music
         appstore_id: 324684580
       - name: Instagram
         aliases: [Instagram]
         domains: [about.instagram.com, about.fb.com, instagram.com]
+        play_id: com.instagram.android
         appstore_id: 389801252
       - name: WhatsApp
         aliases: [WhatsApp]
         domains: [blog.whatsapp.com, whatsapp.com, about.fb.com]
+        play_id: com.whatsapp
         appstore_id: 310633997
       - name: TikTok
         aliases: [TikTok]
         domains: [newsroom.tiktok.com, tiktok.com]
+        play_id: com.zhiliaoapp.musically
         appstore_id: 835599320
       - name: Threads
         aliases: [Threads]
         domains: [about.fb.com, threads.com, threads.net]
+        play_id: com.instagram.barcelona
         appstore_id: 6446901002
       - name: Notion
         aliases: [Notion]
         domains: [notion.com, notion.so]
+        play_id: notion.id
         appstore_id: 1232780281
       - name: Linear
         aliases: [Linear app, Linear's, Linear launches, Linear adds]
         domains: [linear.app]
+        appstore_id: 1645587184
+        play_id: app.linear
         icon_domain: linear.app
 
 # RSS/Atom feeds, read every run. These are the most trusted source.

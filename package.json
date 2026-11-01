@@ -13,6 +13,7 @@
     "icons": "node src/icons.ts",
     "build": "node src/build.ts",
     "dev": "node src/serve.ts",
-    "test": "node --test \"tests/**/*.test.ts\""
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "backfill-compare": "node src/backfill-compare.ts"
   }
 }

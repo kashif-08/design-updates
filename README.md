@@ -11,11 +11,13 @@ Every morning at 07:00 a job on the laptop reads news feeds, applies strict rule
 ## How a run works
 
 1. **Feeds.** Every RSS/Atom feed in `watchlist.yaml` is read: company newsrooms, tech news sites, and design and branding publications (It's Nice That, Dezeen, BP&O, PRINT and others).
+1. **Store version notes (changes nobody announces).** The latest App Store and Google Play version of every watchlist app is read. A version not seen before, released inside the window, whose notes mention a design change (redesign, new look, layout, home, tab, navigation...) becomes a candidate like a news story. Boilerplate ("bug fixes and performance improvements") is ignored, so this fires rarely. What was seen is kept in `data/stores.json`, with each version's first App Store screenshot.
 2. **Search (Anthropic API only).** One call per app group (OTAs, rail, platforms, consumer) with the web search tool, limited to the apps' own sites and the trusted outlets list. This catches newsrooms that have no feed. The company plan and Gemini have no working web search, so with those the run uses feeds only.
 3. **Rules (no model).** Each item is dropped, with a reason, if it comes from a blocked or unknown site, has no real publish date or is older than 48 hours, has a drop word in the headline ("funding", "deals", "rumor"...), or was already reported. From news sites, an item must be about a watchlist app or have a design word in its headline (redesign, rebrand, new logo, interface, onboarding...). Everything from a design publication goes through. Search results are dated by the article page itself, not by the search engine.
 4. **One curate call.** The model gets everything that passed, plus what was reported in the last two weeks. It keeps only design changes of three kinds: **UI** (the interface: redesigns, layout, visual style, icons, platform design rules), **UX** (how a flow works: navigation, onboarding, search, checkout, sign-in) and **Brand** (logos, identity, type, colour, app icons). Feature news with no visible design angle is dropped. Watchlist apps come first, but any well-known app, site or brand counts. It merges syndicated copies of one launch into one item (keeping the two best sources), drops the rest with a reason, and writes `headline`, `what` and `why` for each item in English and in Simplified Chinese (`zh`). It adds a `pattern` note (and `pattern_zh`) only when three or more apps moved the same way.
-5. **Checks.** The answer is validated in code: unknown apps, missing sources and incomplete write-ups are dropped; emojis and exclamation marks are removed; hype words are flagged in the log. Each kept page is re-read for its `og:image` and to make sure it is not an old story with a new date.
-6. **Write.** `data/radar.json` gets a new day at the top. A quiet day is recorded as `"quiet": true` with no items. `data/seen.json` remembers every reported event, so a launch never shows up again on a later day. `data/runs.json` logs token use and estimated cost per run.
+5. **Before and after.** For each kept UI or Brand item, the pictures in its source articles are read with their alt text, captions and file names. When those clearly say which picture is the old design and which the new ("Apple-Music-icon-old.jpg", "the previous logo"), the item gets a `compare` pair and the page shows them side by side. When only the new design is there, it replaces the generic photo. Unclear cases go to one small extra model call (`company.compare`, Haiku), which sees only those words and answers "not sure" rather than guess. Items from App Store notes show the previous version's screenshot next to the new one, when they differ.
+6. **Checks.** The answer is validated in code: unknown apps, missing sources and incomplete write-ups are dropped; emojis and exclamation marks are removed; hype words are flagged in the log. Each kept page is re-read for its `og:image` and to make sure it is not an old story with a new date.
+7. **Write.** `data/radar.json` gets a new day at the top. A quiet day is recorded as `"quiet": true` with no items. `data/seen.json` remembers every reported event, so a launch never shows up again on a later day. `data/runs.json` logs token use and estimated cost per run.
 
 Running twice on the same day only adds genuinely new items to today. Past days are never rewritten. If no source could be read at all, the run fails and writes nothing, rather than claiming a quiet day.
 
@@ -43,6 +45,7 @@ Runs the job and prints what it kept and what it dropped, with the reason for ea
 Other commands:
 
 - `npm run check-feeds`: tests every feed URL and says how fresh each one is. Run it after adding a source.
+- `npm run backfill-compare`: adds before/after pictures to items already in `radar.json` that have none, by re-reading their pages (`-- --dry-run` to only show what it would do). Only `compare` and `image` change.
 - `npm run icons`: looks up app icons again (App Store artwork, or a favicon) and saves them to `data/icons.json`.
 - `npm run build`: builds the site into `dist/`.
 - `npm run dev`: builds and serves the site at http://localhost:5180.
@@ -155,8 +158,13 @@ data/radar.json       every day, newest first
 data/seen.json        events already reported
 data/runs.json        per-run token use and cost
 data/icons.json       cached app icons
+data/stores.json      last App Store / Google Play version seen per app
+src/stores.ts         store version notes
+src/compare.ts        before/after pictures
 ```
 
 ## The page
+
+**Save and share.** Every item has a **star** and a **note**. The **Digest** button (top right) lists the week's starred items with your notes; add an intro and your name, then **Copy text** (for Feishu, WeChat or email, in the page's language) or **Copy link** (opens the same digest, read-only, for anyone; the items and notes travel in the link, nothing is uploaded). Stars and notes are kept in your browser only, so they don't follow you to another device.
 
 English by default, with a **中 / EN** switch (top right) that changes everything on the page, including dates and each item's write-up, and is remembered in your browser. Items written before the Chinese write-ups were added (before 30 Oct 2026) stay in English. Light by default, with a dark mode toggle next to it. Each item has a **UI**, **UX** or **Brand** label, and the archive can be filtered by it. Pixelify Sans for headlines, Geist for reading. One coral-red accent (#D6614F); each category has its own square dot (OTA blue, rail green, platform violet, consumer pink). The timeline fills with the accent as you scroll. The logo is a pixel newspaper whose lines print in. Cards, dates and archive rows print in as they scroll into view, and images arrive blocky and sharpen in a few steps; items without an image show their app icon as a pixel mosaic. Unread dots mark items collected since your previous visit (kept in your browser's localStorage) and clear when you open an item. Motion is switched off when your system asks for reduced motion.

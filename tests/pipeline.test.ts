@@ -424,3 +424,81 @@ trust:
   assert.deepEqual(item.zh, { headline: 'YouTube 重新设计底部标签栏。', what: '订阅移出底部栏。', why: '标签栏位置有限。' });
   assert.equal(r.dropped[0].reason, 'small client work');
 });
+
+test('store version notes: only new versions inside the window whose notes mention design go to the model', async () => {
+  const { checkStores, notesMentionDesign, parsePlayPage } = await import('../src/stores.ts');
+  assert.equal(notesMentionDesign('Bug fixes and performance improvements.'), false);
+  assert.equal(notesMentionDesign('We update the app regularly to make the experience better. Thanks for using WhatsApp.'), false);
+  assert.equal(notesMentionDesign('Now you can book homes, experiences, and services, all in one app. Our redesigned app includes a new Services tab.'), true);
+  assert.equal(notesMentionDesign('Bug fixes and UI improvements.'), true, 'a vague mention still reaches the model, which drops it');
+
+  const play = parsePlayPage('<div>What’s new</div><div itemprop="description">Fresh new look for the home screen.<br>Bug fixes.</div><div>Updated on</div><div class="x">Oct 30, 2026</div>');
+  assert.equal(play?.notes, 'Fresh new look for the home screen. Bug fixes.');
+  assert.equal(play?.date, '2026-10-30T00:00:00.000Z');
+
+  const cfg = parseConfig(`
+window_hours: 48
+groups:
+  ota:
+    apps:
+      - name: Airbnb
+        domains: [airbnb.com]
+        appstore_id: 401626263
+      - name: Expedia
+        domains: [expedia.com]
+        appstore_id: 427916203
+stores:
+  google_play: false
+`);
+  const fresh = new Date(NOW.getTime() - 5 * 3_600_000).toISOString();
+  const fetchImpl = (async () =>
+    Response.json({
+      results: [
+        { trackId: 401626263, version: '26.44', currentVersionReleaseDate: fresh, releaseNotes: 'Our redesigned app has a new Services tab.', screenshotUrls: ['https://is1.mzstatic.com/new.jpg'] },
+        { trackId: 427916203, version: '2026.43', currentVersionReleaseDate: fresh, releaseNotes: 'Bug fixes and performance improvements.', screenshotUrls: ['https://is1.mzstatic.com/e.jpg'] },
+      ],
+    })) as unknown as typeof fetch;
+  const state = { appStore: { Airbnb: { version: '26.40', date: null, notes: '', screenshot: 'https://is1.mzstatic.com/old.jpg' } }, googlePlay: {} };
+  const r = await checkStores(cfg, state, NOW, fetchImpl);
+  assert.equal(r.candidates.length, 1);
+  const [c] = r.candidates;
+  assert.equal(c.app, 'Airbnb');
+  assert.equal(c.url, 'https://apps.apple.com/us/app/id401626263?version=26.44');
+  assert.deepEqual(c.release, { store: 'app-store', version: '26.44', screenshot: 'https://is1.mzstatic.com/new.jpg', previousScreenshot: 'https://is1.mzstatic.com/old.jpg', previousVersion: '26.40' });
+  assert.deepEqual(r.skipped, [{ app: 'Expedia', store: 'app-store', version: '2026.43', reason: 'notes mention no design change' }]);
+  assert.equal(r.latest.appStore.Airbnb.version, '26.44', 'remembered for next time');
+
+  const again = await checkStores(cfg, r.latest, NOW, fetchImpl);
+  assert.equal(again.candidates.length, 0, 'the same version is never passed on twice');
+});
+
+test('before/after: captions settle clear cases, the model handles the rest, app-store items use two versions’ screenshots', async () => {
+  const { pairFromWords, addCompares } = await import('../src/compare.ts');
+  const img = (src: string, alt = '', caption = '') => ({ src, alt, caption });
+  assert.deepEqual(pairFromWords([img('https://x/hero.jpg', 'Team photo'), img('https://x/a.png', 'The previous Mastercard logo'), img('https://x/b.png', '', 'The new wordmark')]), { before: 'https://x/a.png', after: 'https://x/b.png', from: 'article' });
+  assert.deepEqual(pairFromWords([img('https://x/c.png', '', 'Before and after: the app icon')]), { before: null, after: 'https://x/c.png', combined: true, from: 'article' });
+  assert.equal(pairFromWords([img('https://x/1.jpg', 'Duolingo office'), img('https://x/2.jpg', '')]), null);
+
+  const base = { app: 'X', category: 'consumer' as const, date: '', published_at: '', beta: false, importance: 2, what: 'w', why: 'y', sources: [{ title: 't', url: 'https://x/post', publisher: 'p' }], image: 'https://x/og.jpg', icon: null, collected_at: '' };
+  const items = [
+    { ...base, id: 'brand-a', kind: 'brand' as const, headline: 'A gets a new logo' },
+    { ...base, id: 'ux-b', kind: 'ux' as const, headline: 'B changes checkout' },
+    { ...base, id: 'airbnb-v', kind: 'ui' as const, headline: 'Airbnb redesign', release: { store: 'app-store' as const, version: '26.44' } },
+  ];
+  const asked: string[] = [];
+  const llm: Llm = {
+    mode: 'company',
+    canSearch: false,
+    messages: async (req) => {
+      asked.push(...(JSON.parse(req.messages[0].content as string).items as { id: string }[]).map((i) => i.id));
+      return { content: [{ type: 'text', text: '{"items":[{"id":"brand-a","before":null,"after":1,"combined":null}]}' }], stopReason: 'end_turn', usage: { input_tokens: 300, output_tokens: 20, web_searches: 0, credits: 0.01 } };
+    },
+  };
+  const shots = new Map([['airbnb-v', { before: 'https://is1/old.jpg', after: 'https://is1/new.jpg', beforeVersion: '26.40' }]]);
+  const r = await addCompares(CFG, items, async () => [img('https://x/p1.jpg', 'Studio portrait'), img('https://x/p2.jpg', 'The rebrand')], llm, shots);
+  assert.deepEqual(asked, ['brand-a'], 'UX items are not given pictures; app-store items need no model');
+  assert.equal(r.items[0].compare, undefined);
+  assert.equal(r.items[0].image, 'https://x/p2.jpg', 'only the new design: it replaces the generic photo');
+  assert.deepEqual(r.items[2].compare, { before: 'https://is1/old.jpg', after: 'https://is1/new.jpg', from: 'app-store', before_version: '26.40' });
+  assert.equal(r.usage?.step, 'compare');
+});

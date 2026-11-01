@@ -37,6 +37,8 @@ Keep an event only if ALL of these hold:
 3. It was published inside the window. Trust published_at; if it is missing or outside the window, drop it.
 4. It is announced by the company or reported as fact by a reputable outlet. Drop rumours, leaks, "reportedly", teardowns of unreleased features, opinion and analysis pieces, SEO listicles, how-to guides, interviews, student work, speculative concepts and community redesigns.
 
+Some candidates are an app's own version notes from the App Store or Google Play (they have "version_notes"). These catch changes no one announced. Keep one only when the notes describe a visible design change (a redesigned screen, a new tab or home, a new flow, a new look), not "bug fixes", "improvements" or a single new feature with no design detail. Write it like any item, from the notes alone, and say in "what" that it comes from the version notes. If a news article covers the same change, merge them and list the article first.
+
 Beta features, tests and gradual rollouts are fine to keep. Set "beta": true only when the source calls it a beta, a test, an experiment or a preview, or says it is limited to selected users. "Rolling out" on its own is not beta.
 
 Merge candidates that report the same event (one launch is often syndicated across many sites) into ONE item. List at most two source_cids, best first: the company's own post first, then the outlet with the most concrete design detail.

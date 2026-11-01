@@ -68,9 +68,16 @@ export function buildCurateInput(cfg: Config, candidates: Candidate[], recent: R
       trust: c.trust,
       published_at: c.publishedAt,
       url: c.url,
-      summary: truncate(c.summary, 300),
+      summary: truncate(c.summary, c.release ? 900 : 300),
+      ...(c.release ? { version_notes: `${c.release.store === 'app-store' ? 'App Store' : 'Google Play'} ${c.release.version}` } : {}),
     })),
   };
+}
+
+/** Store and version, when the item came from an app's own version notes. */
+function releaseOf(sources: Candidate[]): Item['release'] {
+  const r = sources.find((c) => c.release)?.release;
+  return r ? { store: r.store, version: r.version } : null;
 }
 
 type RawItem = {
@@ -185,6 +192,7 @@ export async function curate(
       what,
       why,
       sources: kept.map((c) => ({ title: c.title, url: c.url, publisher: c.source })),
+      release: releaseOf(kept),
       image: kept.find((c) => c.image)?.image ?? null,
       icon: (listed && ctx.icons[listed.name]) || (domain ? favicon(domain) : null),
       collected_at: ctx.now.toISOString(),

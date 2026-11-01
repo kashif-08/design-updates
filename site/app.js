@@ -6,6 +6,14 @@
 let lang = (() => {
   const asked = new URLSearchParams(location.search).get('lang');
   if (asked === 'zh' || asked === 'en') return asked;
+  // A shared digest opens in the language it was written in.
+  const shared = location.hash.match(/^#d=([\w-]+)/)?.[1];
+  if (shared) {
+    try {
+      const l = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(shared.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0)))).l;
+      if (l === 'zh' || l === 'en') return l;
+    } catch {}
+  }
   try {
     return localStorage.getItem('radar.lang') === 'zh' ? 'zh' : 'en';
   } catch {
@@ -62,6 +70,34 @@ const T = {
     langLabel: '切换到中文',
     home: 'Pixel Post, home',
     filterLabel: 'Filter earlier changes',
+    save: 'Save',
+    saved: 'Saved',
+    note: 'Note',
+    addNote: 'A note for your team',
+    digest: 'Digest',
+    digestTitle: 'Weekly digest',
+    digestEmpty: 'Nothing saved this week. Save items with the star and they collect here.',
+    prevWeek: 'Earlier week',
+    nextWeek: 'Later week',
+    intro: 'Intro for your team (optional)',
+    from: 'Your name (optional)',
+    copyText: 'Copy text',
+    copyLink: 'Copy link',
+    copied: 'Copied',
+    localOnly: 'Saved items and notes are kept in this browser only. Copy link to share them.',
+    remove: 'Remove',
+    sharedTitle: (from) => (from ? `Digest from ${from}` : 'Shared digest'),
+    sharedMissing: (n) => `${n} item${n === 1 ? '' : 's'} in this link ${n === 1 ? 'is' : 'are'} no longer on the page.`,
+    close: 'Close',
+    before: 'Before',
+    after: 'After',
+    beforeAfter: 'Before and after',
+    storeNotes: (store, version) => (store === 'app-store' ? `App Store notes · v${version}` : 'Google Play notes'),
+    textHeader: (range) => `Pixel Post · design changes, ${range}`,
+    textWhy: 'Why it matters',
+    textNote: 'Note',
+    textFrom: (name) => `From ${name}`,
+    textOpen: 'Open the digest',
   },
   zh: {
     title: 'Pixel Post · 值得一看的应用设计变化',
@@ -111,6 +147,34 @@ const T = {
     langLabel: 'Switch to English',
     home: 'Pixel Post，首页',
     filterLabel: '筛选往期变化',
+    save: '收藏',
+    saved: '已收藏',
+    note: '备注',
+    addNote: '给团队写一句备注',
+    digest: '周报',
+    digestTitle: '每周设计周报',
+    digestEmpty: '本周还没有收藏。点星标收藏条目，它们会出现在这里。',
+    prevWeek: '上一周',
+    nextWeek: '下一周',
+    intro: '给团队的开场白（可选）',
+    from: '你的名字（可选）',
+    copyText: '复制文字',
+    copyLink: '复制链接',
+    copied: '已复制',
+    localOnly: '收藏和备注只保存在这个浏览器里。点“复制链接”分享给团队。',
+    remove: '移除',
+    sharedTitle: (from) => (from ? `${from} 分享的周报` : '分享的周报'),
+    sharedMissing: (n) => `链接里有 ${n} 条已不在页面上。`,
+    close: '关闭',
+    before: '改版前',
+    after: '改版后',
+    beforeAfter: '改版前后对比',
+    storeNotes: (store, version) => (store === 'app-store' ? `App Store 更新说明 · v${version}` : 'Google Play 更新说明'),
+    textHeader: (range) => `Pixel Post · 设计变化 ${range}`,
+    textWhy: '为什么重要',
+    textNote: '备注',
+    textFrom: (name) => `来自 ${name}`,
+    textOpen: '打开周报',
   },
 };
 const t = () => T[lang];
@@ -316,6 +380,33 @@ function markRead(ids) {
   store.set('radar.read', [...read].slice(-2000));
 }
 
+/* ---------- saved items and notes (this browser only) ---------- */
+
+const saved = store.get('radar.saved', {}); // id -> { note, at }
+const isSaved = (id) => !!saved[id];
+const noteOf = (id) => saved[id]?.note ?? '';
+function setSaved(id, on) {
+  if (on) saved[id] = { note: noteOf(id), at: saved[id]?.at ?? new Date().toISOString() };
+  else delete saved[id];
+  store.set('radar.saved', saved);
+  paintSaved(id);
+}
+function setNote(id, note) {
+  saved[id] = { note, at: saved[id]?.at ?? new Date().toISOString() };
+  store.set('radar.saved', saved);
+  paintSaved(id);
+}
+/** Updates every star for an item, the row marker and the digest count, without redrawing the page. */
+function paintSaved(id) {
+  const on = isSaved(id);
+  for (const b of document.querySelectorAll(`.save-btn[data-save="${CSS.escape(id)}"]`)) {
+    b.setAttribute('aria-pressed', String(on));
+    b.querySelector('.save-label').textContent = on ? t().saved : t().save;
+  }
+  document.querySelector(`.row[data-id="${CSS.escape(id)}"]`)?.classList.toggle('is-saved', on);
+  paintDigestCount();
+}
+
 /* ---------- small pieces ---------- */
 
 function appIcon(item, big = false) {
@@ -329,6 +420,7 @@ function metaRow(item, big = false) {
     <span class="tag" data-cat="${esc(item.category)}">${t().cat[item.category] ?? esc(item.category)}</span>
     ${kindTag(item)}
     ${item.beta ? `<span class="beta">${t().beta}</span>` : ''}
+    ${releaseTag(item)}
     <span class="when"><time datetime="${esc(item.published_at)}">${ago(item.published_at)}</time></span>
   </div>`;
 }
@@ -343,12 +435,39 @@ function sources(item) {
   return `<div class="sources"><span class="stack" aria-hidden="true">${icons}</span><span>${t().sources(list.length)}</span><span aria-hidden="true">·</span><span>${links}</span></div>`;
 }
 
+/** "App Store notes · v26.44" on items that came from an app's own version notes. */
+const releaseTag = (item) => (item.release ? `<span class="release">${esc(t().storeNotes(item.release.store, item.release.version))}</span>` : '');
+
+/** Star and note for an item. The note box opens under them. */
+function actions(item) {
+  const on = isSaved(item.id);
+  const note = noteOf(item.id);
+  return `<div class="actions">
+    <button class="act save-btn" type="button" data-save="${esc(item.id)}" aria-pressed="${on}"><span class="star" aria-hidden="true"></span><span class="save-label">${on ? t().saved : t().save}</span></button>
+    <button class="act note-btn" type="button" data-note="${esc(item.id)}" aria-expanded="${note ? 'true' : 'false'}">${t().note}</button>
+  </div>
+  <textarea class="note-box" data-note-for="${esc(item.id)}" rows="2" placeholder="${esc(t().addNote)}"${note ? '' : ' hidden'}>${esc(note)}</textarea>`;
+}
+
+/** Old and new design side by side (or one picture that shows both). */
+function compareHtml(item, size = 'lead') {
+  const c = item.compare;
+  const label = (k) => `<figcaption>${k === 'before' ? (c.from === 'app-store' && c.before_version ? `${t().before} · v${esc(c.before_version)}` : t().before) : c.from === 'app-store' && item.release ? `${t().after} · v${esc(item.release.version)}` : t().after}</figcaption>`;
+  const pic = (src) => `<img src="${esc(src)}" alt="" loading="${size === 'lead' ? 'eager' : 'lazy'}" referrerpolicy="no-referrer" decoding="async">`;
+  const href = esc(safeUrl(item.sources?.[0]?.url));
+  if (c.combined || !c.before) {
+    return `<a class="frame photo" href="${href}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" data-read="${esc(item.id)}"><div class="compare notch one"><figure>${pic(c.after)}<figcaption>${c.combined ? t().beforeAfter : t().after}</figcaption></figure></div></a>`;
+  }
+  return `<a class="frame photo" href="${href}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" data-read="${esc(item.id)}"><div class="compare notch"><figure class="half">${pic(c.before)}${label('before')}</figure><figure class="half">${pic(c.after)}${label('after')}</figure></div></a>`;
+}
+
 function why(item) {
   return `<p class="why"><b>${t().why}</b>${esc(txt(item, 'why'))}</p>`;
 }
 
 /** A photo if there is one; otherwise the app icon blown up into a pixel mosaic. */
 function media(item, { reveal = false, ratio } = {}) {
+  if (item.compare?.after) return compareHtml(item, reveal ? 'lead' : 'card');
   const href = esc(safeUrl(item.sources?.[0]?.url));
   const style = `--c: var(--${esc(item.category)})${ratio ? `; aspect-ratio: ${ratio}` : ''}`;
   if (item.image) {
@@ -372,6 +491,7 @@ function leadHtml(item) {
       <p class="lead-what">${esc(txt(item, 'what'))}</p>
       ${why(item)}
       ${sources(item)}
+      ${actions(item)}
     </div>
   </article>`;
 }
@@ -385,6 +505,7 @@ function cardHtml(item, i, withMedia) {
     <button class="more" type="button" aria-expanded="false" aria-controls="what-${esc(item.id)}">${t().whatChanged}</button>
     <p class="what" id="what-${esc(item.id)}" hidden>${esc(txt(item, 'what'))}</p>
     ${sources(item)}
+    ${actions(item)}
   </article>`;
 }
 
@@ -427,15 +548,20 @@ const filter = { cat: 'all', kind: null, unread: false };
 function rowHtml(item) {
   const unread = isUnread(item);
   // The thumbnail sits beside the headline and the opened text, so opening a row adds no gap.
-  const thumb = item.image
+  const c = item.compare;
+  const thumb = c?.after && c.before && !c.combined
+    ? `<span class="row-thumb notch split" aria-hidden="true"><img src="${esc(c.before)}" alt="" loading="lazy" referrerpolicy="no-referrer"><img src="${esc(c.after)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
+    : c?.after
+      ? `<span class="row-thumb notch" aria-hidden="true"><img src="${esc(c.after)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
+      : item.image
     ? `<span class="row-thumb notch${reduced ? '' : ' pending'}" aria-hidden="true" data-mosaic="${esc(iconAt(iconFor(item), 16))}"><img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
     : `<span class="row-thumb notch mosaic" aria-hidden="true" style="--c: var(--${esc(item.category)})"><img src="${esc(iconAt(iconFor(item), 16))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`;
-  return `<li class="row reveal ${unread ? 'unread' : 'read'}" data-cat="${esc(item.category)}" data-kind="${esc(item.kind ?? '')}" data-id="${esc(item.id)}">
+  return `<li class="row reveal ${unread ? 'unread' : 'read'}${isSaved(item.id) ? ' is-saved' : ''}" data-cat="${esc(item.category)}" data-kind="${esc(item.kind ?? '')}" data-id="${esc(item.id)}">
     <button class="row-btn" type="button" aria-expanded="false" aria-controls="row-${esc(item.id)}">
       <span class="dot" aria-hidden="true"></span>
       ${appIcon(item).replace('class="icon', 'class="icon row-icon')}
       <span class="row-main">
-        <span class="row-top"><span class="app">${esc(item.app)}</span><span class="tag" data-cat="${esc(item.category)}"><span class="tag-label">${t().cat[item.category] ?? ''}</span></span>${kindTag(item)}${item.beta ? `<span class="beta">${t().beta}</span>` : ''}<span class="when">${ago(item.published_at)}</span>${unread ? `<span class="sr-only">${t().unread}</span>` : ''}</span>
+        <span class="row-top"><span class="app">${esc(item.app)}</span><span class="tag" data-cat="${esc(item.category)}"><span class="tag-label">${t().cat[item.category] ?? ''}</span></span>${kindTag(item)}${item.beta ? `<span class="beta">${t().beta}</span>` : ''}${releaseTag(item)}<span class="saved-mark" aria-hidden="true"></span><span class="when">${ago(item.published_at)}</span>${unread ? `<span class="sr-only">${t().unread}</span>` : ''}</span>
         <span class="row-title">${esc(txt(item, 'headline'))}</span>
         <span class="row-sub">${esc(txt(item, 'why'))}</span>
       </span>
@@ -445,6 +571,7 @@ function rowHtml(item) {
       <p class="what">${esc(txt(item, 'what'))}</p>
       ${why(item)}
       ${sources(item)}
+      ${actions(item)}
     </div>
   </li>`;
 }
@@ -783,6 +910,210 @@ function wireTheme() {
   paintTheme();
 }
 
+/* ---------- weekly digest ---------- */
+
+/** Monday of the week a YYYY-MM-DD date falls in. */
+function weekOf(dateStr) {
+  const d = fromYmd(dateStr);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return ymd(d);
+}
+function weekRange(monday) {
+  const a = fromYmd(monday);
+  const b = new Date(a.getTime() + 6 * 86_400_000);
+  const o = { day: 'numeric', month: 'short' };
+  return `${fmt(a, o)} – ${fmt(b, o)}`;
+}
+const allItems = () => (radar.days ?? []).flatMap((d) => d.items.map((i) => ({ ...i, day: d.date })));
+const intros = store.get('radar.intros', {}); // week -> text
+let digestWeek = null;
+
+/** Weeks that have saved items, newest first. */
+function savedWeeks() {
+  const weeks = new Set(allItems().filter((i) => isSaved(i.id)).map((i) => weekOf(i.day)));
+  return [...weeks].sort().reverse();
+}
+function itemsInWeek(week) {
+  return allItems().filter((i) => isSaved(i.id) && weekOf(i.day) === week);
+}
+
+function paintDigestCount() {
+  const n = Object.keys(saved).filter((id) => allItems().some((i) => i.id === id)).length;
+  const badge = $('#digest .n');
+  if (badge) {
+    badge.textContent = n ? String(n) : '';
+    badge.hidden = !n;
+  }
+}
+
+/** The digest as plain text, for Feishu, WeChat or email. */
+function digestText(week, list, intro, from) {
+  const lines = [t().textHeader(weekRange(week)), ''];
+  if (intro) lines.push(intro, '');
+  list.forEach((i, n) => {
+    const kind = i.kind ? ` · ${t().kind[i.kind]}` : '';
+    lines.push(`${n + 1}. ${i.app}${kind} · ${txt(i, 'headline')}`);
+    lines.push(`   ${t().textWhy}: ${txt(i, 'why')}`);
+    if (i.note) lines.push(`   ${t().textNote}: ${i.note}`);
+    if (i.sources?.[0]?.url) lines.push(`   ${i.sources[0].url}`);
+    lines.push('');
+  });
+  if (from) lines.push(t().textFrom(from));
+  return lines.join('\n').trim();
+}
+
+// Share links carry the week, the saved ids with notes, the intro and the sender's name in the address (#d=...).
+// Nothing is uploaded; anyone with the link sees the same items, read from the public page data.
+const toB64 = (obj) => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+function fromB64(s) {
+  try {
+    const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))));
+  } catch {
+    return null;
+  }
+}
+function shareLink(week, list, intro, from) {
+  const payload = { w: week, i: list.map((i) => (i.note ? [i.id, i.note] : [i.id])), ...(intro ? { t: intro } : {}), ...(from ? { f: from } : {}), l: lang };
+  return `${location.origin}${location.pathname}#d=${toB64(payload)}`;
+}
+
+async function copy(textValue, btn) {
+  try {
+    await navigator.clipboard.writeText(textValue);
+  } catch {
+    const ta = Object.assign(document.createElement('textarea'), { value: textValue });
+    document.body.append(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+  }
+  const was = btn.textContent;
+  btn.textContent = t().copied;
+  setTimeout(() => (btn.textContent = was), 1400);
+}
+
+function digestRow(i, editable) {
+  return `<li class="d-item" data-id="${esc(i.id)}">
+    <div class="meta"><span class="app">${appIcon(i)}${esc(i.app)}</span>${kindTag(i)}<span class="when">${esc(fmt(fromYmd(i.day), { weekday: 'short', day: 'numeric', month: 'short' }))}</span></div>
+    <p class="d-head"><a href="${esc(safeUrl(i.sources?.[0]?.url))}" target="_blank" rel="noopener">${esc(txt(i, 'headline'))}</a></p>
+    <p class="d-why">${esc(txt(i, 'why'))}</p>
+    ${
+      editable
+        ? `<textarea class="note-box" data-note-for="${esc(i.id)}" rows="2" placeholder="${esc(t().addNote)}">${esc(noteOf(i.id))}</textarea>
+           <button class="act d-remove" type="button" data-unsave="${esc(i.id)}">${t().remove}</button>`
+        : i.note
+          ? `<p class="d-note"><b>${t().textNote}</b>${esc(i.note)}</p>`
+          : ''
+    }
+  </li>`;
+}
+
+function renderDigest() {
+  const box = $('#digest-box');
+  const weeks = savedWeeks();
+  if (!digestWeek || !weeks.includes(digestWeek)) digestWeek = weeks.includes(weekOf(todayYmd)) ? weekOf(todayYmd) : (weeks[0] ?? weekOf(todayYmd));
+  const at = weeks.indexOf(digestWeek);
+  const list = itemsInWeek(digestWeek).map((i) => ({ ...i, note: noteOf(i.id) }));
+  box.innerHTML = `
+    <header class="d-top">
+      <h2>${t().digestTitle}</h2>
+      <button class="act" type="button" data-close>${t().close}</button>
+    </header>
+    <div class="d-week">
+      <button class="act" type="button" data-week="-1" ${at < 0 || at >= weeks.length - 1 ? 'disabled' : ''} aria-label="${t().prevWeek}">‹</button>
+      <span>${esc(weekRange(digestWeek))}</span>
+      <button class="act" type="button" data-week="1" ${at <= 0 ? 'disabled' : ''} aria-label="${t().nextWeek}">›</button>
+    </div>
+    ${
+      list.length
+        ? `<label class="d-field"><span>${t().intro}</span><textarea id="d-intro" rows="2">${esc(intros[digestWeek] ?? '')}</textarea></label>
+           <ol class="d-list">${list.map((i) => digestRow(i, true)).join('')}</ol>
+           <label class="d-field"><span>${t().from}</span><input id="d-from" value="${esc(store.get('radar.from', ''))}"></label>
+           <div class="d-buttons">
+             <button class="chip" type="button" data-copy="text" aria-pressed="true">${t().copyText}</button>
+             <button class="chip" type="button" data-copy="link">${t().copyLink}</button>
+           </div>`
+        : `<p class="empty">${t().digestEmpty}</p>`
+    }
+    <p class="d-hint">${t().localOnly}</p>`;
+}
+
+/** A digest someone sent: read-only, from the link alone. */
+function renderShared(payload) {
+  const box = $('#digest-box');
+  const byId = new Map(allItems().map((i) => [i.id, i]));
+  const list = (payload.i ?? []).map(([id, note]) => (byId.has(id) ? { ...byId.get(id), note: note ?? '' } : null));
+  const found = list.filter(Boolean);
+  const missing = list.length - found.length;
+  box.innerHTML = `
+    <header class="d-top">
+      <h2>${esc(t().sharedTitle(payload.f ?? ''))}</h2>
+      <button class="act" type="button" data-close>${t().close}</button>
+    </header>
+    <div class="d-week"><span>${esc(weekRange(payload.w ?? weekOf(todayYmd)))}</span></div>
+    ${payload.t ? `<p class="d-intro">${esc(payload.t)}</p>` : ''}
+    <ol class="d-list">${found.map((i) => digestRow(i, false)).join('')}</ol>
+    ${missing ? `<p class="d-hint">${t().sharedMissing(missing)}</p>` : ''}`;
+}
+
+let sharedPayload = null;
+function openDigest() {
+  const dlg = $('#digest-dialog');
+  if (sharedPayload) renderShared(sharedPayload);
+  else renderDigest();
+  if (!dlg.open) dlg.showModal?.() ?? dlg.setAttribute('open', '');
+}
+
+function wireDigest() {
+  const dlg = $('#digest-dialog');
+  $('#digest').addEventListener('click', () => {
+    sharedPayload = null;
+    openDigest();
+  });
+  dlg.addEventListener('close', () => {
+    if (sharedPayload) {
+      sharedPayload = null;
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  });
+  dlg.addEventListener('click', (e) => {
+    if (e.target === dlg) return dlg.close(); // click on the backdrop
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.close !== undefined) dlg.close();
+    if (b.dataset.week) {
+      const weeks = savedWeeks();
+      const at = weeks.indexOf(digestWeek) - Number(b.dataset.week);
+      if (weeks[at]) digestWeek = weeks[at];
+      renderDigest();
+    }
+    if (b.dataset.unsave) {
+      setSaved(b.dataset.unsave, false);
+      renderDigest();
+    }
+    if (b.dataset.copy) {
+      const list = itemsInWeek(digestWeek).map((i) => ({ ...i, note: noteOf(i.id) }));
+      const intro = intros[digestWeek] ?? '';
+      const from = store.get('radar.from', '');
+      copy(b.dataset.copy === 'link' ? shareLink(digestWeek, list, intro, from) : digestText(digestWeek, list, intro, from), b);
+    }
+  });
+  dlg.addEventListener('input', (e) => {
+    if (e.target.id === 'd-intro') {
+      intros[digestWeek] = e.target.value;
+      store.set('radar.intros', intros);
+    }
+    if (e.target.id === 'd-from') store.set('radar.from', e.target.value);
+  });
+  // Opened from a share link?
+  const d = location.hash.match(/^#d=([\w-]+)/)?.[1];
+  if (d) {
+    sharedPayload = fromB64(d);
+    if (sharedPayload) openDigest();
+  }
+}
+
 /* ---------- language switch ---------- */
 
 /** Static text in index.html, the switch's own label, and the page language for fonts and screen readers. */
@@ -795,7 +1126,10 @@ function paintLanguage() {
   btn.textContent = t().langButton;
   btn.setAttribute('aria-label', t().langLabel);
   btn.setAttribute('lang', lang === 'zh' ? 'en' : 'zh-CN');
+  const dg = $('#digest .label');
+  if (dg) dg.textContent = t().digest;
   paintTheme();
+  if ($('#digest-dialog')?.open) openDigest();
 }
 
 function wireLanguage() {
@@ -825,6 +1159,18 @@ function wireEvents() {
         row.classList.replace('unread', 'read');
         renderFilters(archiveDays);
       }
+    }
+
+    if (t.dataset.save) {
+      setSaved(t.dataset.save, !isSaved(t.dataset.save));
+      if (!isSaved(t.dataset.save)) for (const box of document.querySelectorAll(`.note-box[data-note-for="${CSS.escape(t.dataset.save)}"]`)) box.value = '';
+    }
+    if (t.dataset.note) {
+      const box = t.closest('.actions').nextElementSibling;
+      const open = box.hidden;
+      box.hidden = !open;
+      t.setAttribute('aria-expanded', String(open));
+      if (open) box.focus();
     }
 
     if (t.classList.contains('more')) {
@@ -861,6 +1207,14 @@ function wireEvents() {
   });
 }
 
+// Typing a note saves the item too, so a note is never lost by forgetting the star.
+document.addEventListener('input', (e) => {
+  const id = e.target.dataset?.noteFor;
+  if (id === undefined) return;
+  setNote(id, e.target.value);
+  for (const other of document.querySelectorAll(`.note-box[data-note-for="${CSS.escape(id)}"]`)) if (other !== e.target) other.value = e.target.value;
+});
+
 /* ---------- start ---------- */
 
 let radar = { days: [] };
@@ -879,6 +1233,7 @@ function render() {
   renderArchive(archiveDays);
   wireImages();
   wireReveal();
+  paintDigestCount();
 }
 
 async function main() {
@@ -897,6 +1252,7 @@ async function main() {
   render();
   wireRail();
   wireEvents();
+  wireDigest();
 }
 
 main();

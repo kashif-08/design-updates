@@ -35,6 +35,11 @@
             "headline": "Apple Music 7.0 安卓版换上 Liquid Glass 设计和新应用图标。",
             "what": "Apple Music 7.0 安卓版正在陆续推送，界面改用 Liquid Glass 风格，也就是苹果在自家系统上推出的视觉语言。这次更新同时把今年品牌焕新后的新图标带到了安卓端。正式版推出前已经过一个月的 Beta 测试。",
             "why": "苹果把自己的 iOS 设计语言直接带到了安卓，没有改用 Material Design。双端旅行 App 也要做同样的取舍：底部标签栏、底部弹层和应用图标，是在两端统一自家品牌风格，还是遵循各自平台的规范。"
+          },
+          "compare": {
+            "before": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Apple-Music-icon-old.jpg?strip=info&w=672",
+            "after": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Apple-Music-icon-new.jpg?strip=info&w=672",
+            "from": "article"
           }
         }
       ]
@@ -243,6 +248,11 @@
             "headline": "Google Photos 改版「Collections」标签页，支持用户自定义。",
             "what": "Google Photos 正在 Android 和 iOS 上推出「Collections」标签页的改版，用户可以自定义这个标签页。此前该应用在 7 月已改用悬浮导航栏。",
             "why": "旅行 App 的「行程」或「收藏」页同样混合了订单、心愿单和证件等内容，和相册的合集页类似。这次改版可以作为参考：这类内容汇总页是否应该交给用户自己调整分区，而不是由产品写死。"
+          },
+          "compare": {
+            "before": "https://9to5google.com/wp-content/uploads/sites/4/2026/08/Google-Photos-Collections-old-1.jpg?strip=info&w=1080",
+            "after": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Google-Photos-Collections-redesign-1.jpg?strip=info&w=1280",
+            "from": "article"
           }
         }
       ]
@@ -301,14 +311,15 @@
               "publisher": "9to5Google"
             }
           ],
-          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/05/gemini-live-2.jpg?quality=82&strip=all&resize=1200,628",
+          "image": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Gemini-Live-plus-redesign-1.jpg?strip=info&w=1280",
           "icon": "https://www.google.com/s2/favicons?domain=android.com&sz=64",
           "collected_at": "2026-10-27T15:45:10.721Z",
           "zh": {
             "headline": "Google 在 Android 版 Gemini Live 中重新设计了加号按钮，添加照片和文件更方便。",
             "what": "Google 正在为 Android 版 Gemini Live 推送一次小幅改版，调整了“加号”入口，用户在实时对话中添加照片和文件更顺手。这是本月 Gemini 一系列界面更新中的又一项。",
             "why": "旅行 App 的在线客服对话也要决定附件入口的显眼程度。用户在对话中常常需要发送订单截图、发票或证件照片。"
-          }
+          },
+          "compare": null
         }
       ]
     },
@@ -390,6 +401,11 @@
             "headline": "Google 为 Android 版 Gemini 应用重新设计了侧边栏和设置页。",
             "what": "Android 版 Gemini 应用已上线新的侧边栏和设置页设计。这次改版是在此前的 Spark-to-Task 更新之后推出的。",
             "why": "出行应用通常把历史行程、收藏和偏好设置放在侧边栏或账户菜单里。重新梳理自家账户页和设置页时，可以参考 Gemini 这次的分组方式，它是 Google 当下的做法。"
+          },
+          "compare": {
+            "before": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Gemini-side-panel-old.jpg?strip=info&w=1280",
+            "after": "https://9to5google.com/wp-content/uploads/sites/4/2026/10/Gemini-app-side-panel-redesign-1.jpg?strip=info&w=1280",
+            "from": "article"
           }
         },
         {

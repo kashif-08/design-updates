@@ -84,6 +84,10 @@ function print(r: Report, now: Date, verbose: boolean) {
   out(`\nSources`);
   out(`  feeds: ${r.feeds.ok} ok, ${r.feeds.failed.length} failed, ${r.feeds.entries} entries`);
   for (const f of r.feeds.failed) out(`    ! ${f.name}: ${f.error}`);
+  if (r.stores.ran) {
+    out(`  store version notes: ${r.stores.ok ? '' : `partly failed (${r.stores.error}), `}${r.stores.read} read, ${r.stores.newVersions} new, ${r.stores.passed} mention design`);
+    for (const s of r.stores.skipped) out(`    - ${s.app} ${s.store} ${s.version}: ${s.reason}`);
+  }
   if (!r.search.ran) out(`  search: skipped (${r.search.skippedReason})`);
   for (const g of r.search.groups) out(`  search ${g.group}: ${g.ok ? `${g.found} results` : `failed: ${g.error}`}`);
   out(`  ${r.candidates} candidates → ${r.sentToModel.length} passed the rules`);

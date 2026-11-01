@@ -1,8 +1,10 @@
-// One collection run: feeds + search → rule checks → one model call → radar.json.
+// One collection run: feeds + store version notes + search → rule checks → one model call → before/after pictures
+// (a second, small call) → radar.json.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Config } from './config.ts';
+import { addCompares } from './compare.ts';
 import { curate } from './curate.ts';
 import { feedCandidates, readFeed, type FeedResult } from './feeds.ts';
 import { ensureIcons } from './icons.ts';
@@ -11,6 +13,7 @@ import { fetchPageMeta, type PageMeta } from './pagemeta.ts';
 import { prefilter } from './prefilter.ts';
 import { emptyRadar, mergeDay, recentItems, recordSeen, seenUrls } from './radar.ts';
 import { searchGroup, type SearchResult } from './search.ts';
+import { checkStores, emptyStores, type StoreState, type StoresResult } from './stores.ts';
 import type { CallUsage, Candidate, Dropped, Item, Radar, Seen } from './types.ts';
 import { hoursAgo, localDate, mapLimit, parseDate, readJson, writeJson } from './util.ts';
 
@@ -19,6 +22,8 @@ export interface Paths {
   seen: string;
   runs: string;
   icons: string;
+  /** Last version seen in each store, per app. */
+  stores: string;
   cache: string;
 }
 
@@ -27,6 +32,7 @@ export const defaultPaths = (dir = 'data'): Paths => ({
   seen: join(dir, 'seen.json'),
   runs: join(dir, 'runs.json'),
   icons: join(dir, 'icons.json'),
+  stores: join(dir, 'stores.json'),
   cache: '.cache',
 });
 
@@ -49,6 +55,7 @@ export interface Report {
   mode: string;
   feeds: { ok: number; failed: { name: string; error: string }[]; entries: number };
   search: { ran: boolean; skippedReason?: string; groups: { group: string; ok: boolean; error?: string; found: number }[] };
+  stores: { ran: boolean; ok: boolean; error?: string; read: number; newVersions: number; passed: number; skipped: StoresResult['skipped'] };
   candidates: number;
   sentToModel: Candidate[];
   preDropped: Dropped[];
@@ -84,6 +91,9 @@ interface Snapshot {
   usage: CallUsage[];
   /** Page details for every candidate, by URL. */
   pages: Record<string, PageMeta | null>;
+  stores?: Report['stores'];
+  /** Store versions read this run, saved to data/stores.json once the run is written. */
+  storeState?: StoreState;
 }
 
 export function costOf(cfg: Config, usage: CallUsage[]): number {
@@ -115,9 +125,12 @@ async function gather(opts: CollectOptions, seen: Seen): Promise<Snapshot> {
           ? 'searches_per_group is 0'
           : null;
 
-  const [feedResults, searchResults] = await Promise.all([
+  const storeState = readJson<StoreState>(opts.paths.stores, emptyStores());
+  const storesOn = cfg.stores.appStore || cfg.stores.googlePlay;
+  const [feedResults, searchResults, storeResult] = await Promise.all([
     mapLimit(cfg.feeds, 6, (f) => readFeed(f, fetchImpl)) as Promise<FeedResult[]>,
     searchOff ? Promise.resolve([] as SearchResult[]) : Promise.all(cfg.groups.filter((g) => g.search.length).map((g) => searchGroup(cfg, g, llm!, now))),
+    storesOn ? checkStores(cfg, storeState, now, fetchImpl) : Promise.resolve(null),
   ]);
 
   const fromSearch = searchResults.flatMap((r) => r.candidates);
@@ -131,11 +144,12 @@ async function gather(opts: CollectOptions, seen: Seen): Promise<Snapshot> {
     if (meta?.siteName && c.source === c.domain) c.source = meta.siteName;
   });
 
-  const all = [...feedCandidates(cfg, feedResults), ...fromSearch];
+  const all = [...feedCandidates(cfg, feedResults), ...fromSearch, ...(storeResult?.candidates ?? [])];
   const { kept, dropped } = prefilter(cfg, all, { now, seenUrls: seenUrls(seen) });
-  // Page details for what the model will see (og:image, real publish date), fetched once here.
+  // Page details for what the model will see (og:image, real publish date, article pictures), fetched once here.
+  // Store listings are skipped: their notes and screenshots are already in hand.
   await mapLimit(
-    kept.filter((c) => !(c.url in pages)),
+    kept.filter((c) => !(c.url in pages) && !c.release),
     6,
     async (c) => {
       pages[c.url] = await fetchPageMeta(c.url, fetchImpl);
@@ -159,6 +173,18 @@ async function gather(opts: CollectOptions, seen: Seen): Promise<Snapshot> {
     total: all.length,
     usage: searchResults.flatMap((r) => r.usage),
     pages,
+    stores: storeResult
+      ? {
+          ran: true,
+          ok: storeResult.ok,
+          error: storeResult.error,
+          read: Object.keys(storeResult.latest.appStore).length + Object.keys(storeResult.latest.googlePlay).length,
+          newVersions: storeResult.candidates.length + storeResult.skipped.length,
+          passed: storeResult.candidates.length,
+          skipped: storeResult.skipped,
+        }
+      : { ran: false, ok: true, read: 0, newVersions: 0, passed: 0, skipped: [] },
+    storeState: storeResult?.latest,
   };
 }
 
@@ -216,6 +242,7 @@ export async function collect(opts: CollectOptions): Promise<Report> {
     mode: opts.dryRun ? 'dry run' : opts.gatherOnly ? 'gather only' : `${llm?.mode ?? 'none'}${offline ? ', saved sources' : ''}`,
     feeds: snap.feeds,
     search: snap.search,
+    stores: snap.stores ?? { ran: false, ok: true, read: 0, newVersions: 0, passed: 0, skipped: [] },
     candidates: snap.total,
     sentToModel: snap.candidates,
     preDropped: snap.preDropped,
@@ -247,7 +274,22 @@ export async function collect(opts: CollectOptions): Promise<Report> {
     report.warnings.push(...result.warnings);
     const getMeta = async (url: string) => (url in snap.pages || offline ? (snap.pages[url] ?? null) : fetchPageMeta(url, fetchImpl));
     const post = await postCheck(cfg, result.items, now, getMeta);
-    items = post.items;
+    // Before/after: App Store screenshots for version-note items, article pictures for the rest.
+    const byUrl = new Map(snap.candidates.map((c) => [c.url, c]));
+    const releaseShots = new Map<string, { before: string | null; after: string | null; beforeVersion: string | null }>();
+    for (const item of post.items) {
+      const rel = item.sources.map((s) => byUrl.get(s.url)?.release).find(Boolean);
+      if (rel) releaseShots.set(item.id, { before: rel.previousScreenshot ?? null, after: rel.screenshot ?? null, beforeVersion: rel.previousVersion ?? null });
+    }
+    const imagesFor = async (item: Item) => {
+      const found = [];
+      for (const s of item.sources) found.push(...((await getMeta(s.url))?.images ?? []));
+      return found;
+    };
+    const cmp = await addCompares(cfg, post.items, imagesFor, llm, releaseShots);
+    if (cmp.usage) report.usage.push(cmp.usage);
+    report.warnings.push(...cmp.notes.map((n) => `before/after: ${n}`));
+    items = cmp.items;
     pattern = result.pattern;
     pattern_zh = result.pattern_zh;
     report.modelDropped = [...result.dropped, ...post.dropped];
@@ -256,6 +298,7 @@ export async function collect(opts: CollectOptions): Promise<Report> {
   const merged = mergeDay(radar, { date, items, pattern, pattern_zh, now });
   writeJson(paths.radar, merged.radar);
   writeJson(paths.seen, recordSeen(seen, merged.added));
+  if (snap.storeState && !offline) writeJson(paths.stores, snap.storeState);
   report.kept = items;
   report.added = merged.added;
   report.pattern = merged.day.pattern;

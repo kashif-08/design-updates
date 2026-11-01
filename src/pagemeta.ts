@@ -3,11 +3,71 @@
 
 import { decodeEntities, fetchText, parseDate } from './util.ts';
 
+/** An image inside the article, with the words around it that say what it shows. */
+export interface PageImage {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
 export interface PageMeta {
   publishedAt: string | null;
   image: string | null;
   siteName: string | null;
   title: string | null;
+  /** Up to 12 images from the article body, for finding a before/after pair. */
+  images?: PageImage[];
+}
+
+// Site chrome, not article pictures. Not plain "logo": design articles are full of logo images.
+const NOT_CONTENT = /((site|header|footer|nav|brand)[-_]?logo|favicon|avatar|author|gravatar|sprite|badge|emoji|pixel\.|tracking|spacer|placeholder|advert|banner-ad|\.svg($|\?)|data:image)/i;
+
+const attrOf = (tag: string, name: string): string | null => {
+  const m = tag.match(new RegExp(`\\s${name}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'i'));
+  return m ? decodeEntities(m[2] ?? m[3] ?? '') : null;
+};
+
+/** The real picture behind lazy-loading markup: data-src, then the largest srcset entry, then src. */
+function imgSrc(tag: string): string | null {
+  const srcset = attrOf(tag, 'data-srcset') ?? attrOf(tag, 'srcset');
+  if (srcset) {
+    const best = srcset
+      .split(',')
+      .map((p) => p.trim().split(/\s+/))
+      .map(([u, w]) => ({ u, w: Number.parseInt(w ?? '0', 10) || 0 }))
+      .sort((a, b) => b.w - a.w)[0];
+    if (best?.u) return best.u;
+  }
+  return attrOf(tag, 'data-src') ?? attrOf(tag, 'data-lazy-src') ?? attrOf(tag, 'src');
+}
+
+export function parseImages(html: string, pageUrl: string): PageImage[] {
+  const out: PageImage[] = [];
+  const seen = new Set<string>();
+  const add = (tag: string, caption: string) => {
+    const raw = imgSrc(tag);
+    if (!raw || NOT_CONTENT.test(raw)) return;
+    const w = Number(attrOf(tag, 'width'));
+    if (w && w < 200) return;
+    let src: string;
+    try {
+      src = new URL(raw, pageUrl).toString();
+    } catch {
+      return;
+    }
+    const key = src.replace(/[?#].*$/, '').replace(/-\d+x\d+(?=\.\w+$)/, '');
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ src, alt: (attrOf(tag, 'alt') ?? '').slice(0, 200), caption: caption.slice(0, 240) });
+  };
+  const body = html.slice(0, 600_000);
+  for (const f of body.matchAll(/<figure\b[\s\S]*?<\/figure>/gi)) {
+    const cap = f[0].match(/<figcaption[^>]*>([\s\S]*?)<\/figcaption>/i)?.[1] ?? '';
+    const img = f[0].match(/<img\b[^>]*>/i)?.[0];
+    if (img) add(img, decodeEntities(cap.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim());
+  }
+  for (const m of body.matchAll(/<img\b[^>]*>/gi)) add(m[0], '');
+  return out.slice(0, 12);
 }
 
 const DATE_KEYS = ['article:published_time', 'og:published_time', 'datepublished', 'pubdate', 'publish-date', 'publishdate', 'date', 'dc.date', 'dc.date.issued', 'sailthru.date', 'parsely-pub-date'];
@@ -50,6 +110,7 @@ export function parsePageMeta(html: string, pageUrl: string): PageMeta {
     image,
     siteName: meta.get('og:site_name') ?? null,
     title: meta.get('og:title') ?? (title ? decodeEntities(title.trim()) : null),
+    images: parseImages(html, pageUrl),
   };
 }
 
