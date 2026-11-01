@@ -117,7 +117,8 @@ When this was set up (October 2026) there was no working public feed for the Air
 - **Remove:** `sh scripts/uninstall-mac.sh`.
 - **Log:** `.cache/daily.log`. The last run's full output is in `.cache/last-run.txt`.
 - **Run again today anyway:** `RADAR_FORCE=1 sh scripts/daily.sh`.
-- **If something needs you,** a Mac notification says so: an expired company login (`ada refresh`), or an upload that failed (usually an expired GitHub token).
+- **Uploads retry.** A dropped connection to GitHub is tried 5 times over about 4 minutes. If it still fails, the next run that day only uploads, without collecting (and spending credits) again.
+- **If something needs you,** a Mac notification says so: an expired company login (`ada refresh`), an expired GitHub token (GitHub rejects the login, so it stops at once), or an upload that could not get through.
 
 The Mac has to be awake at one of those times and able to reach the company AI server (`ada-cli-golang.ctripcorp.com`), which may need the office network or VPN. The upload uses the GitHub token saved in the macOS Keychain. Fine-grained tokens expire; when it does, make a new one (GitHub → Settings → Developer settings → Personal access tokens) and run `git push` once in Terminal to save it.
 
@@ -152,6 +153,7 @@ src/radar.ts          append-only merge into radar.json, seen events
 src/llm.ts            model access: company gateway, Gemini, Anthropic API, manual
 src/mirror.ts         copies icons into the built site
 scripts/daily.sh      the morning job on this Mac
+scripts/upload.sh     upload to GitHub with retries
 scripts/install-mac.sh / uninstall-mac.sh   schedule it with macOS (launchd)
 site/                 the page (plain HTML, CSS, JS)
 data/radar.json       every day, newest first
