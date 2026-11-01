@@ -273,7 +273,9 @@ button {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
+/* The note box, with Save note inside it at the bottom right. */
 .note-editor {
+  position: relative;
   max-width: 40em;
   margin-top: 10px;
 }
@@ -282,22 +284,49 @@ button {
 }
 .note-editor .note-box {
   margin-top: 0;
+  padding-bottom: 46px;
+  resize: none;
 }
 .note-save {
-  margin-top: 8px;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
   background: var(--ink);
   color: var(--paper);
-  box-shadow: none;
+  font: 500 12px/1 var(--display);
+  letter-spacing: 0.04em;
+  cursor: pointer;
 }
 .note-save:hover {
-  box-shadow: none;
   opacity: 0.85;
 }
 .note-save:disabled {
-  background: transparent;
+  background: var(--paper-2);
   color: var(--ink-3);
-  box-shadow: inset 0 0 0 2px var(--line);
+  cursor: default;
   opacity: 1;
+}
+/* A saved note, shown as text under the buttons. */
+.note-text {
+  max-width: 40em;
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  font-size: 14px;
+  background: var(--card);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.note-text[hidden] {
+  display: none;
+}
+.note-text b {
+  margin-right: 8px;
+  font: 500 11px/1 var(--display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 .saved-mark {
   display: none;

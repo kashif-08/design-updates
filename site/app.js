@@ -73,19 +73,14 @@ const T = {
     save: 'Save',
     saved: 'Saved',
     note: 'Note',
+    editNote: 'Edit note',
     saveNote: 'Save note',
-    noteSaved: 'Note saved',
     addNote: 'A note for your team',
     digest: 'Saved',
-    digestTitle: 'Saved this week',
+    digestTitle: 'Saved',
     digestEmpty: 'Nothing saved this week. Save items with the star and they collect here.',
     prevWeek: 'Earlier week',
     nextWeek: 'Later week',
-    from: 'Your name (optional)',
-    copyText: 'Copy text',
-    copyLink: 'Copy link',
-    copied: 'Copied',
-    localOnly: 'Saved items and notes are kept in this browser only. Copy link to share them.',
     remove: 'Remove',
     sharedTitle: (from) => (from ? `Digest from ${from}` : 'Shared digest'),
     sharedMissing: (n) => `${n} item${n === 1 ? '' : 's'} in this link ${n === 1 ? 'is' : 'are'} no longer on the page.`,
@@ -94,11 +89,7 @@ const T = {
     after: 'After',
     beforeAfter: 'Before and after',
     storeNotes: (store, version) => (store === 'app-store' ? `App Store notes · v${version}` : 'Google Play notes'),
-    textHeader: (range) => `Pixel Post · design changes, ${range}`,
-    textWhy: 'Why it matters',
     textNote: 'Note',
-    textFrom: (name) => `From ${name}`,
-    textOpen: 'Open the digest',
   },
   zh: {
     title: 'Pixel Post · 值得一看的应用设计变化',
@@ -151,19 +142,14 @@ const T = {
     save: '收藏',
     saved: '已收藏',
     note: '备注',
+    editNote: '编辑备注',
     saveNote: '保存备注',
-    noteSaved: '已保存',
     addNote: '给团队写一句备注',
     digest: '收藏',
-    digestTitle: '本周收藏',
+    digestTitle: '收藏',
     digestEmpty: '本周还没有收藏。点星标收藏条目，它们会出现在这里。',
     prevWeek: '上一周',
     nextWeek: '下一周',
-    from: '你的名字（可选）',
-    copyText: '复制文字',
-    copyLink: '复制链接',
-    copied: '已复制',
-    localOnly: '收藏和备注只保存在这个浏览器里。点“复制链接”分享给团队。',
     remove: '移除',
     sharedTitle: (from) => (from ? `${from} 分享的周报` : '分享的周报'),
     sharedMissing: (n) => `链接里有 ${n} 条已不在页面上。`,
@@ -172,11 +158,7 @@ const T = {
     after: '改版后',
     beforeAfter: '改版前后对比',
     storeNotes: (store, version) => (store === 'app-store' ? `App Store 更新说明 · v${version}` : 'Google Play 更新说明'),
-    textHeader: (range) => `Pixel Post · 设计变化 ${range}`,
-    textWhy: '为什么重要',
     textNote: '备注',
-    textFrom: (name) => `来自 ${name}`,
-    textOpen: '打开周报',
   },
 };
 const t = () => T[lang];
@@ -440,24 +422,37 @@ function sources(item) {
 /** "App Store notes · v26.44" on items that came from an app's own version notes. */
 const releaseTag = (item) => (item.release ? `<span class="release">${esc(t().storeNotes(item.release.store, item.release.version))}</span>` : '');
 
-/** A note box with its own Save button. Nothing is stored until Save (or Cmd/Ctrl+Enter). */
-function noteEditor(id, open) {
-  const note = noteOf(id);
-  return `<div class="note-editor" data-editor-for="${esc(id)}"${open ? '' : ' hidden'}>
-    <textarea class="note-box" data-note-for="${esc(id)}" rows="2" placeholder="${esc(t().addNote)}">${esc(note)}</textarea>
-    <button class="act note-save" type="button" data-note-save="${esc(id)}" disabled>${t().saveNote}</button>
-  </div>`;
-}
-
-/** Star and note for an item. The note box opens under them. */
+/** Star and note for an item. A saved note shows as text; Note / Edit note opens a box with Save note inside it. */
 function actions(item) {
   const on = isSaved(item.id);
   const note = noteOf(item.id);
   return `<div class="actions">
     <button class="act save-btn" type="button" data-save="${esc(item.id)}" aria-pressed="${on}"><span class="star" aria-hidden="true"></span><span class="save-label">${on ? t().saved : t().save}</span></button>
-    <button class="act note-btn" type="button" data-note="${esc(item.id)}" aria-expanded="${note ? 'true' : 'false'}">${t().note}</button>
+    <button class="act note-btn" type="button" data-note="${esc(item.id)}" aria-expanded="false">${note ? t().editNote : t().note}</button>
   </div>
-  ${noteEditor(item.id, !!note)}`;
+  <p class="note-text" data-note-text-for="${esc(item.id)}"${note ? '' : ' hidden'}><b>${t().textNote}</b><span>${esc(note)}</span></p>
+  <div class="note-editor" data-editor-for="${esc(item.id)}" hidden>
+    <textarea class="note-box" data-note-for="${esc(item.id)}" rows="3" placeholder="${esc(t().addNote)}">${esc(note)}</textarea>
+    <button class="note-save" type="button" data-note-save="${esc(item.id)}" disabled>${t().saveNote}</button>
+  </div>`;
+}
+
+/** After a save (or un-star): every copy of this item shows the note as text and closes its box. */
+function paintNote(id) {
+  const note = noteOf(id);
+  for (const p of document.querySelectorAll(`.note-text[data-note-text-for="${CSS.escape(id)}"]`)) {
+    p.hidden = !note;
+    p.querySelector('span').textContent = note;
+  }
+  for (const ed of document.querySelectorAll(`.note-editor[data-editor-for="${CSS.escape(id)}"]`)) {
+    ed.hidden = true;
+    ed.querySelector('textarea').value = note;
+    ed.querySelector('.note-save').disabled = true;
+  }
+  for (const b of document.querySelectorAll(`.note-btn[data-note="${CSS.escape(id)}"]`)) {
+    b.textContent = note ? t().editNote : t().note;
+    b.setAttribute('aria-expanded', 'false');
+  }
 }
 
 /** Old and new design side by side (or one picture that shows both). */
@@ -956,24 +951,8 @@ function paintDigestCount() {
   }
 }
 
-/** The digest as plain text, for Feishu, WeChat or email. */
-function digestText(week, list, from) {
-  const lines = [t().textHeader(weekRange(week)), ''];
-  list.forEach((i, n) => {
-    const kind = i.kind ? ` · ${t().kind[i.kind]}` : '';
-    lines.push(`${n + 1}. ${i.app}${kind} · ${txt(i, 'headline')}`);
-    lines.push(`   ${t().textWhy}: ${txt(i, 'why')}`);
-    if (i.note) lines.push(`   ${t().textNote}: ${i.note}`);
-    if (i.sources?.[0]?.url) lines.push(`   ${i.sources[0].url}`);
-    lines.push('');
-  });
-  if (from) lines.push(t().textFrom(from));
-  return lines.join('\n').trim();
-}
-
-// Share links carry the week, the saved ids with notes and the sender's name in the address (#d=...).
-// Nothing is uploaded; anyone with the link sees the same items, read from the public page data.
-const toB64 = (obj) => btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+// Share links sent before sharing was removed (Nov 2026) carry the week, saved ids with notes and a name in
+// the address (#d=...). They still open, read-only.
 function fromB64(s) {
   try {
     const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
@@ -982,39 +961,13 @@ function fromB64(s) {
     return null;
   }
 }
-function shareLink(week, list, from) {
-  const payload = { w: week, i: list.map((i) => (i.note ? [i.id, i.note] : [i.id])), ...(from ? { f: from } : {}), l: lang };
-  return `${location.origin}${location.pathname}#d=${toB64(payload)}`;
-}
-
-async function copy(textValue, btn) {
-  try {
-    await navigator.clipboard.writeText(textValue);
-  } catch {
-    const ta = Object.assign(document.createElement('textarea'), { value: textValue });
-    document.body.append(ta);
-    ta.select();
-    document.execCommand('copy');
-    ta.remove();
-  }
-  const was = btn.textContent;
-  btn.textContent = t().copied;
-  setTimeout(() => (btn.textContent = was), 1400);
-}
-
-function digestRow(i, editable) {
+function digestRow(i, removable) {
   return `<li class="d-item" data-id="${esc(i.id)}">
     <div class="meta"><span class="app">${appIcon(i)}${esc(i.app)}</span>${kindTag(i)}<span class="when">${esc(fmt(fromYmd(i.day), { weekday: 'short', day: 'numeric', month: 'short' }))}</span></div>
     <p class="d-head"><a href="${esc(safeUrl(i.sources?.[0]?.url))}" target="_blank" rel="noopener">${esc(txt(i, 'headline'))}</a></p>
     <p class="d-why">${esc(txt(i, 'why'))}</p>
-    ${
-      editable
-        ? `${noteEditor(i.id, true)}
-           <button class="act d-remove" type="button" data-unsave="${esc(i.id)}">${t().remove}</button>`
-        : i.note
-          ? `<p class="d-note"><b>${t().textNote}</b>${esc(i.note)}</p>`
-          : ''
-    }
+    ${i.note ? `<p class="d-note"><b>${t().textNote}</b>${esc(i.note)}</p>` : ''}
+    ${removable ? `<button class="act d-remove" type="button" data-unsave="${esc(i.id)}">${t().remove}</button>` : ''}
   </li>`;
 }
 
@@ -1036,15 +989,9 @@ function renderDigest() {
     </div>
     ${
       list.length
-        ? `<ol class="d-list">${list.map((i) => digestRow(i, true)).join('')}</ol>
-           <label class="d-field"><span>${t().from}</span><input id="d-from" value="${esc(store.get('radar.from', ''))}"></label>
-           <div class="d-buttons">
-             <button class="chip" type="button" data-copy="text" aria-pressed="true">${t().copyText}</button>
-             <button class="chip" type="button" data-copy="link">${t().copyLink}</button>
-           </div>`
+        ? `<ol class="d-list">${list.map((i) => digestRow(i, true)).join('')}</ol>`
         : `<p class="empty">${t().digestEmpty}</p>`
-    }
-    <p class="d-hint">${t().localOnly}</p>`;
+    }`;
 }
 
 /** A digest someone sent: read-only, from the link alone. */
@@ -1098,16 +1045,9 @@ function wireDigest() {
     }
     if (b.dataset.unsave) {
       setSaved(b.dataset.unsave, false);
+      paintNote(b.dataset.unsave);
       renderDigest();
     }
-    if (b.dataset.copy) {
-      const list = itemsInWeek(digestWeek).map((i) => ({ ...i, note: noteOf(i.id) }));
-      const from = store.get('radar.from', '');
-      copy(b.dataset.copy === 'link' ? shareLink(digestWeek, list, from) : digestText(digestWeek, list, from), b);
-    }
-  });
-  dlg.addEventListener('input', (e) => {
-    if (e.target.id === 'd-from') store.set('radar.from', e.target.value);
   });
   // Opened from a share link?
   const d = location.hash.match(/^#d=([\w-]+)/)?.[1];
@@ -1166,14 +1106,21 @@ function wireEvents() {
 
     if (t.dataset.save) {
       setSaved(t.dataset.save, !isSaved(t.dataset.save));
-      if (!isSaved(t.dataset.save)) for (const box of document.querySelectorAll(`.note-box[data-note-for="${CSS.escape(t.dataset.save)}"]`)) box.value = '';
+      if (!isSaved(t.dataset.save)) paintNote(t.dataset.save);
     }
     if (t.dataset.note) {
-      const editor = t.closest('.actions').nextElementSibling;
+      const wrap = t.closest('.actions').parentElement;
+      const editor = wrap.querySelector(`.note-editor[data-editor-for="${CSS.escape(t.dataset.note)}"]`);
+      const text = wrap.querySelector(`.note-text[data-note-text-for="${CSS.escape(t.dataset.note)}"]`);
       const open = editor.hidden;
       editor.hidden = !open;
+      text.hidden = open || !noteOf(t.dataset.note);
       t.setAttribute('aria-expanded', String(open));
-      if (open) editor.querySelector('textarea').focus();
+      if (open) {
+        const box = editor.querySelector('textarea');
+        box.focus();
+        box.setSelectionRange(box.value.length, box.value.length);
+      }
     }
     if (t.dataset.noteSave) saveNoteFrom(t.closest('.note-editor').querySelector('textarea'));
 
@@ -1211,16 +1158,10 @@ function wireEvents() {
   });
 }
 
-/** Saves a note box: stores the note, stars the item, and copies the text to the same item's other boxes. */
+/** Saves a note box: stores the note, stars the item, closes the box and shows the note as text. */
 function saveNoteFrom(box) {
-  const id = box.dataset.noteFor;
-  setNote(id, box.value.trim());
-  for (const other of document.querySelectorAll(`.note-box[data-note-for="${CSS.escape(id)}"]`)) other.value = box.value.trim();
-  for (const btn of document.querySelectorAll(`.note-save[data-note-save="${CSS.escape(id)}"]`)) {
-    btn.disabled = true;
-    btn.textContent = t().noteSaved;
-    setTimeout(() => (btn.textContent = t().saveNote), 1400);
-  }
+  setNote(box.dataset.noteFor, box.value.trim());
+  paintNote(box.dataset.noteFor);
 }
 
 // The Save note button wakes up as soon as the note differs from what is stored.
@@ -1228,16 +1169,16 @@ document.addEventListener('input', (e) => {
   const id = e.target.dataset?.noteFor;
   if (id === undefined) return;
   const btn = e.target.closest('.note-editor')?.querySelector('.note-save');
-  if (btn) {
-    btn.disabled = e.target.value.trim() === noteOf(id);
-    btn.textContent = t().saveNote;
-  }
+  if (btn) btn.disabled = e.target.value.trim() === noteOf(id);
 });
-// Cmd/Ctrl+Enter saves too.
+// Cmd/Ctrl+Enter saves; Escape closes the box without saving.
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && e.target.dataset?.noteFor !== undefined) {
+  if (e.target.dataset?.noteFor === undefined) return;
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
     e.preventDefault();
     saveNoteFrom(e.target);
+  } else if (e.key === 'Escape') {
+    paintNote(e.target.dataset.noteFor);
   }
 });
 
