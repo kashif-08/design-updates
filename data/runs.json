@@ -515,5 +515,27 @@
       }
     ],
     "cost_usd": 0
+  },
+  {
+    "at": "2026-11-02T03:27:04.617Z",
+    "date": "2026-11-02",
+    "mode": "company",
+    "feeds_ok": 28,
+    "feeds_failed": [],
+    "candidates": 1970,
+    "sent_to_model": 32,
+    "kept": 0,
+    "added": 0,
+    "usage": [
+      {
+        "step": "curate",
+        "model": "kr-claude-opus-5.5",
+        "input_tokens": 12563,
+        "output_tokens": 557,
+        "web_searches": 0,
+        "credits": 0.39203916384742954
+      }
+    ],
+    "cost_usd": 0
   }
 ]
