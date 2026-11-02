@@ -107,7 +107,11 @@ Add a feed under `feeds:`:
 
 Run `npm run check-feeds` to confirm it works. If a site has no feed, add its domain to the app's `domains` (for a company) or to `trust.outlets` (for a news site) so the search step covers it instead.
 
-When this was set up (October 2026) there was no working public feed for the Airbnb, Expedia Group, Agoda, Trainline and Omio newsrooms, Google Design / Material Design, or PhocusWire (it blocks automated readers). From the laptop's network, Brand New, Design Week, Creative Review, Creative Bloq and Fast Company Co.Design could not be reached either.
+When this was set up (October 2026) there was no working public feed for the Airbnb, Expedia Group, Agoda, Trainline and Omio newsrooms, Google Design / Material Design, or PhocusWire (it blocks automated readers). From the laptop's network, Brand New, Design Week, Creative Review and Fast Company Co.Design could not be reached either. (Creative Bloq worked when checked again in November 2026 and was added.)
+
+**X and LinkedIn are not read directly.** X's API is paid only (from $0.005 per post read). LinkedIn only lets you read pages you administer, and scraping it breaks its terms. Big design news posted there usually reaches the outlets and design publications in the list, so it still gets picked up. The Airbnb, Uber, Spotify and Google Design blogs on Medium were also tried; their newest posts are 1 to 8 years old.
+
+`medium.com` is in `blocked_domains` because anyone can publish there. A feed you add yourself is exempt for its own posts (the Netflix Tech Blog lives on Medium), but a Medium link reached through another feed is still blocked.
 
 ## The morning job (this Mac)
 

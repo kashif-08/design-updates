@@ -206,9 +206,11 @@ groups:
 #   kind: design   a design or branding publication; every item goes to the model, which names the brand
 # `npm run check-feeds` tests every URL below.
 #
-# No working public feed was found (Oct 2026) for: Airbnb, Expedia Group, Agoda, Trainline and Omio
-# newsrooms, Google Design / Material Design, and PhocusWire (blocks automated readers). The web
-# search step covers them: it searches each app's own domains plus the trusted outlets below.
+# No working public feed was found (Oct 2026) for: Expedia Group, Agoda, Trainline and Omio
+# newsrooms, and PhocusWire (blocks automated readers). The web search step covers them: it searches
+# each app's own domains plus the trusted outlets below.
+# X and LinkedIn have no free way to read posts (Nov 2026). Big design news posted there is usually
+# picked up by the outlets and design publications below.
 feeds:
   - name: Apple Developer News
     url: https://developer.apple.com/news/rss/news.rss
@@ -272,9 +274,16 @@ feeds:
     kind: company
     app: Apple
 
+  # On medium.com, which is otherwise blocked; a feed's own posts skip the block.
+  # The Airbnb, Uber, Spotify and Google Design Medium blogs were tried and left out: their newest
+  # posts are 1 to 8 years old (Nov 2026), and their current sites have no feed.
+  - name: Netflix Tech Blog
+    url: https://medium.com/feed/netflix-techblog
+    kind: outlet
+
   # Design and branding publications (UI, UX and brand news about any app, site or brand).
-  # Not reachable from the laptop's network (Oct 2026): Brand New (underconsideration.com), Design Week,
-  # Creative Review, Creative Bloq, Fast Company Co.Design. Designboom and Wallpaper work but are mostly
+  # Not reachable from the laptop's network (Nov 2026): Brand New (underconsideration.com), Design Week,
+  # Creative Review, Fast Company Co.Design. Designboom and Wallpaper work but are mostly
   # architecture and interiors, so they are left out.
   - name: It's Nice That
     url: https://www.itsnicethat.com/articles.rss
@@ -299,6 +308,12 @@ feeds:
     kind: design
   - name: Figma Blog
     url: https://www.figma.com/blog/feed/atom.xml
+    kind: design
+  - name: Creative Bloq
+    url: https://www.creativebloq.com/feeds/all
+    kind: design
+  - name: Creative Boom
+    url: https://www.creativeboom.com/feed/
     kind: design
 
 # What counts as a reputable source.
@@ -338,6 +353,8 @@ trust:
     - printmag.com
     - sidebar.io
     - underconsideration.com
+    - creativebloq.com
+    - creativeboom.com
   # Never kept, whatever the content.
   blocked_domains:
     - medium.com

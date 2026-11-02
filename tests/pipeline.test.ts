@@ -309,6 +309,16 @@ test('prefilter numbers candidates and puts company posts first', () => {
   assert.deepEqual(kept.map((k) => [k.cid, k.title]), [['c1', 'b'], ['c2', 'a']]);
 });
 
+test('a blocked domain is allowed for its own feed only (Airbnb Design on medium.com)', () => {
+  const c = (title: string, feedDomain: string) => ({
+    cid: '', title, url: `https://medium.com/p/${title}`, source: 's', domain: 'medium.com', feedDomain,
+    publishedAt: new Date(NOW.getTime() - 3_600_000).toISOString(), summary: '', image: null, via: 'feed' as const, trust: 'company' as const, app: 'Airbnb',
+  });
+  const { kept, dropped } = prefilter(CFG, [c('own', 'medium.com'), c('linked', 'sidebar.io')], { now: NOW, seenUrls: new Set() });
+  assert.deepEqual(kept.map((k) => k.title), ['own']);
+  assert.deepEqual(dropped.map((d) => [d.title, d.reason]), [['linked', 'blocked source (medium.com)']]);
+});
+
 test('similar() catches the same headline written twice', () => {
   assert.ok(similar('Airbnb adds a Services tab to the app', 'Airbnb adds Services tab to the app') >= 0.8);
   assert.ok(similar('iOS 26.1 beta 1 adds a slider', 'Airbnb adds Services tab') < 0.3);

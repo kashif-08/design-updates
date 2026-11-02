@@ -41,6 +41,8 @@ export interface Candidate {
   summary: string;
   image: string | null;
   via: 'feed' | 'search';
+  /** Domain of the feed's own URL, for feed items. A feed's own posts skip the blocklist. */
+  feedDomain?: string;
   trust: 'company' | 'outlet';
   /** App the item is about, when the feed or search already knows. */
   app: string | null;

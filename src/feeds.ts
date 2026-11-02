@@ -110,6 +110,7 @@ export function feedCandidates(cfg: Config, results: FeedResult[]): Candidate[] 
         summary: e.summary,
         image: e.image,
         via: 'feed',
+        feedDomain: domainOf(r.feed.url),
         trust: r.feed.kind === 'company' ? 'company' : 'outlet',
         app: r.feed.app,
         ...(r.feed.kind === 'design' ? { design: true } : {}),

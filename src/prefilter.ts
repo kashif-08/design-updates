@@ -61,8 +61,11 @@ export function prefilter(cfg: Config, all: Candidate[], ctx: { now: Date; seenU
   const ok: Candidate[] = [];
   for (const c of byUrl.values()) {
     // An entry with a path (figma.com/community) blocks only that part of the site.
+    // A hand-picked feed's own posts are exempt (Airbnb Design lives on medium.com), but a medium.com
+    // link reached through another feed, such as Sidebar, is still blocked.
     const blocked = cfg.trust.blockedDomains.find((b) => (b.includes('/') ? c.url.replace(/^https?:\/\/(www\.)?/, '').startsWith(b) : onDomain(c.domain, [b])));
-    if (blocked) {
+    const ownFeed = c.via === 'feed' && c.feedDomain === c.domain;
+    if (blocked && !ownFeed) {
       drop(c, `blocked source (${blocked})`);
       continue;
     }
