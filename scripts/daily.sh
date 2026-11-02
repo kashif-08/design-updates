@@ -1,8 +1,8 @@
 #!/bin/sh
-# The morning job, run by macOS (launchd) at 07:00, with retries later in the day.
+# The morning job. macOS (launchd) starts it every hour from 07:00 to 23:00, and when the Mac logs in.
 # Collects today's changes with the company Claude, then uploads data/ to GitHub, which republishes the page.
-# Runs once per day: after a successful run, later retries that day do nothing. If the news was collected but
-# the upload failed, a later retry only uploads, so it doesn't spend company credits collecting again.
+# Runs once per day: the first hour the Mac is awake and online does the work, later hours do nothing. If the
+# news was collected but the upload failed, a later hour only uploads, so it doesn't spend credits again.
 # Log: .cache/daily.log   Installed by: scripts/install-mac.sh
 
 cd "$(dirname "$0")/.." || exit 1
@@ -14,8 +14,13 @@ COLLECTED=.cache/last-collected
 NODE="${RADAR_NODE:-node}"
 TODAY=$(date +%F)
 
+# Each message is shown at most once a day, so a Mac that is offline all day isn't nagged every hour.
+NOTIFIED=.cache/notified
 notify() {
-  /usr/bin/osascript -e "display notification \"$1\" with title \"Pixel Post\"" >/dev/null 2>&1
+  key="$TODAY $1"
+  grep -qxF "$key" "$NOTIFIED" 2>/dev/null && return 0
+  echo "$key" >>"$NOTIFIED"
+  ${RADAR_NOTIFY:-/usr/bin/osascript} -e "display notification \"$1\" with title \"Pixel Post\"" >/dev/null 2>&1
 }
 
 exec >>"$LOG" 2>&1
@@ -24,6 +29,12 @@ echo "=== $(date '+%F %T') daily run"
 
 if [ "$(cat "$STAMP" 2>/dev/null)" = "$TODAY" ] && [ -z "$RADAR_FORCE" ]; then
   echo "Already ran successfully today. Nothing to do."
+  exit 0
+fi
+
+# Logging in at 03:00 starts the job too; today's edition waits for 07:00.
+if [ "$(date +%H)" -lt 7 ] && [ -z "$RADAR_FORCE" ]; then
+  echo "Before 07:00. Waiting for the 07:00 run."
   exit 0
 fi
 
@@ -37,11 +48,11 @@ else
   code=$?
   cat .cache/last-run.txt
   if [ $code -ne 0 ]; then
-    echo "Collect failed with exit $code. A later retry today will try again."
+    echo "Collect failed with exit $code. The next hour will try again."
     if grep -q "company login has expired" .cache/last-run.txt; then
       notify "The company login has expired. Open Terminal and run: ada refresh"
     else
-      notify "Today's run failed (see .cache/daily.log). It will retry later today."
+      notify "Today's run failed (see .cache/daily.log). It will try again every hour."
     fi
     exit $code
   fi
@@ -52,8 +63,7 @@ else
   else
     git commit -qm "radar: $TODAY" && echo "Committed."
   fi
-  # Same 06:00 rule as below: a run just after midnight doesn't count as today's collection.
-  [ "$(date +%H)" -ge 6 ] && echo "$TODAY" >"$COLLECTED"
+  echo "$TODAY" >"$COLLECTED"
 fi
 
 upload
@@ -65,11 +75,11 @@ elif [ $up -eq 2 ]; then
   notify "GitHub rejected the upload: the token has probably expired. Make a new one and run git push once in Terminal."
   exit 1
 else
-  echo "Could not reach GitHub after 5 tries. The next run today will upload it without collecting again."
-  notify "Collected today's news but could not reach GitHub. The next run today will try the upload again."
+  echo "Could not reach GitHub after 5 tries. The next hour will upload it without collecting again."
+  notify "Collected today's news but could not reach GitHub. It will try the upload again every hour."
   exit 1
 fi
 
-# Only a run from 06:00 on counts as "today's edition"; one just after midnight still lets 07:00 run.
-[ "$(date +%H)" -ge 6 ] && echo "$TODAY" >"$STAMP"
+echo "$TODAY" >"$STAMP"
+tail -n 200 "$NOTIFIED" >"$NOTIFIED.tmp" 2>/dev/null && mv "$NOTIFIED.tmp" "$NOTIFIED"
 tail -n 3000 "$LOG" >"$LOG.tmp" && mv "$LOG.tmp" "$LOG"

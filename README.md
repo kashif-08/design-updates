@@ -2,7 +2,7 @@
 
 A morning paper for one: what apps, sites and brands changed in **UI design, UX and brand identity**, filtered so only real design changes get through. In English or Chinese.
 
-Every morning at 07:00 a job on the laptop reads news feeds, applies strict rules, asks the company Claude (Opus 5.5) to pick what is worth your time and write it up, and uploads the result. GitHub then publishes it as a static page at https://design-updates.github.io/. Today's changes are on top; older days are listed below with a date rail, category filters and unread dots.
+Every morning from 07:00 (or as soon as the laptop is on and online after that) a job on the laptop reads news feeds, applies strict rules, asks the company Claude (Opus 5.5) to pick what is worth your time and write it up, and uploads the result. GitHub then publishes it as a static page at https://design-updates.github.io/. Today's changes are on top; older days are listed below with a date rail, category filters and unread dots.
 
 | Phone (375px) | Desktop (1280px) |
 | --- | --- |
@@ -115,20 +115,24 @@ When this was set up (October 2026) there was no working public feed for the Air
 
 ## The morning job (this Mac)
 
-`scripts/daily.sh` runs the collector with the company Claude, then commits and uploads `data/` to GitHub, which republishes the page. macOS starts it at **07:00, 09:00, 12:00 and 16:00**; after the first successful run of the day, the later ones do nothing. So if the Mac was asleep or off the company network at 07:00, the next slot catches up.
+`scripts/daily.sh` runs the collector with the company Claude, then commits and uploads `data/` to GitHub, which republishes the page. macOS starts it **every hour from 07:00 to 23:00**, and also when you log in. The first time it finds the Mac awake and online, it does the day's run; every later check that day does nothing. So if the laptop was off or away from the company network at 07:00, the edition appears within an hour of it coming back.
+
+- **Asleep on the hour:** macOS runs the missed check as soon as the Mac wakes up.
+- **Switched off:** the check runs when you log in (but not before 07:00; a login at 05:00 waits for 07:00).
+- **Offline all day:** each hour tries again. A failure notification is shown once a day, not every hour.
 
 - **Install or update:** `sh scripts/install-mac.sh` (add `--run-now` to start a test run straight away).
 - **Remove:** `sh scripts/uninstall-mac.sh`.
 - **Log:** `.cache/daily.log`. The last run's full output is in `.cache/last-run.txt`.
 - **Run again today anyway:** `RADAR_FORCE=1 sh scripts/daily.sh`.
-- **Uploads retry.** A dropped connection to GitHub is tried 5 times over about 4 minutes. If it still fails, the next run that day only uploads, without collecting (and spending credits) again.
+- **Uploads retry.** A dropped connection to GitHub is tried 5 times over about 4 minutes. If it still fails, the next hour only uploads, without collecting (and spending credits) again.
 - **If something needs you,** a Mac notification says so: an expired company login (`ada refresh`), an expired GitHub token (GitHub rejects the login, so it stops at once), or an upload that could not get through.
 
-The Mac has to be awake at one of those times and able to reach the company AI server (`ada-cli-golang.ctripcorp.com`), which may need the office network or VPN. The upload uses the GitHub token saved in the macOS Keychain. Fine-grained tokens expire; when it does, make a new one (GitHub → Settings → Developer settings → Personal access tokens) and run `git push` once in Terminal to save it.
+The Mac has to be awake at some point between 07:00 and 23:00 and able to reach the company AI server (`ada-cli-golang.ctripcorp.com`), which may need the office network or VPN. The upload uses the GitHub token saved in the macOS Keychain. Fine-grained tokens expire; when it does, make a new one (GitHub → Settings → Developer settings → Personal access tokens) and run `git push` once in Terminal to save it.
 
 ## Changing the run time
 
-Edit the `HOURS` line in `scripts/install-mac.sh` (24-hour clock, this Mac's time zone), then run `sh scripts/install-mac.sh` again. The page's "today" follows `timezone:` in `watchlist.yaml`.
+Edit the `HOURS` line in `scripts/install-mac.sh` (the hours it checks, 24-hour clock, this Mac's time zone; the first one is the earliest an edition can appear), then run `sh scripts/install-mac.sh` again. The page's "today" follows `timezone:` in `watchlist.yaml`.
 
 ## Hosting on GitHub
 

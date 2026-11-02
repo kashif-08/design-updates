@@ -1,5 +1,6 @@
 #!/bin/sh
-# Installs the morning job on this Mac: 07:00 every day, with retries at 09:00, 12:00 and 16:00.
+# Installs the morning job on this Mac: every hour from 07:00 to 23:00, and at login. The first hour the
+# Mac is awake and online does the day's run; the rest do nothing. A Mac asleep on the hour runs it on wake.
 # Re-run after changing the times below. Remove with scripts/uninstall-mac.sh.
 # Usage: sh scripts/install-mac.sh [--run-now]
 
@@ -8,7 +9,7 @@ cd "$(dirname "$0")/.."
 REPO=$(pwd)
 LABEL=com.kashif.design-updates
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
-HOURS="7 9 12 16"   # change these to move the run time (24-hour clock, this Mac's time zone)
+HOURS="7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23"   # 24-hour clock, this Mac's time zone
 NODE=$(command -v node)
 [ -n "$NODE" ] || { echo "node not found. Install Node 24 first."; exit 1; }
 
@@ -32,6 +33,7 @@ cat >"$PLIST" <<EOF
     <key>RADAR_NODE</key><string>$NODE</string>
     <key>PATH</key><string>$(dirname "$NODE"):/usr/bin:/bin:/usr/sbin:/sbin</string>
   </dict>
+  <key>RunAtLoad</key><true/>
   <key>StartCalendarInterval</key>
   <array>$times
   </array>
@@ -43,7 +45,8 @@ EOF
 
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
-echo "Installed: runs at $(echo $HOURS | sed 's/ /:00, /g'):00 (stops after the first success each day)."
+echo "Installed: checks every hour from $(echo $HOURS | cut -d' ' -f1):00 to $(echo $HOURS | awk '{print $NF}'):00 and at login."
+echo "The first check each day that finds the Mac online does the run; the rest do nothing."
 echo "Log: $REPO/.cache/daily.log"
 
 if [ "$1" = "--run-now" ]; then
