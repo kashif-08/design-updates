@@ -1,5 +1,5 @@
 /* Pixel Post: a morning paper for one, set in pixels.
-   Pixelify Sans for display, Geist for reading. Muted paper, one coral-red accent, one dot colour per category. */
+   Pixelify Sans for display, Fustat for reading. Muted paper, one coral-red accent, one dot colour per category. */
 
 :root {
   --paper: #f3efe6;
@@ -18,10 +18,10 @@
   --consumer: #e0446e;
   --shadow: #1d1a16;
 
-  /* Pixelify Sans and Geist have no Chinese characters; Chinese text falls back to the system's Chinese font. */
+  /* Pixelify Sans and Fustat have no Chinese characters; Chinese text falls back to the system's Chinese font. */
   --cjk: 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
   --display: 'Pixelify Sans', var(--cjk), ui-monospace, 'SF Mono', Menlo, monospace;
-  --body: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', var(--cjk), sans-serif;
+  --body: 'Fustat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', var(--cjk), sans-serif;
   --px: 4px; /* one "pixel" of the pixel art */
   --page: 1180px;
   --gutter: clamp(20px, 5vw, 48px);
